@@ -1,10 +1,15 @@
 // ==================== CONFIG ====================
 // Detectar si estamos en local o en Netlify
-const API_BASE = window.location.hostname === 'localhost' 
-  ? 'http://localhost:3000' 
-  : window.location.origin;
+const isLocal = window.location.hostname === 'localhost';
+const API_BASE = isLocal ? 'http://localhost:3000' : window.location.origin;
 
-const API_URL = `${API_BASE}/api`;
+// En producción (Netlify), las funciones están en /.netlify/functions/
+const API_CLIENTES = isLocal ? `${API_BASE}/api/clientes` : `${API_BASE}/.netlify/functions/clientes`;
+const API_EQUIPOS = isLocal ? `${API_BASE}/api/equipos` : `${API_BASE}/.netlify/functions/equipos`;
+const API_SERVICIOS = isLocal ? `${API_BASE}/api/servicios` : `${API_BASE}/.netlify/functions/servicios`;
+const API_SERVICIO_EQUIPO = isLocal ? `${API_BASE}/api/servicio-equipo` : `${API_BASE}/.netlify/functions/servicio-equipo`;
+const API_DECOLECTA = isLocal ? `${API_BASE}/api/decolecta` : `${API_BASE}/.netlify/functions/decolecta`;
+const API_URL = `${API_BASE}/api`; // Para compatibilidad
 
 let reniecData = null;
 
@@ -149,7 +154,7 @@ async function consultarDecolecta() {
     document.getElementById('btnConsultarDNI').disabled = true;
 
     try {
-        const response = await fetch(`${API_URL}/decolecta/${dni}`);
+        const response = await fetch(`${API_DECOLECTA}/${dni}`);
 
         if (!response.ok) {
             const error = await response.json();
@@ -186,7 +191,7 @@ async function guardarClienteDesdeModal(e) {
         // ✅ MEJORA: Mostrar modal de carga
         mostrarModalCarga('Guardando...');
         
-        const response = await fetch(`${API_URL}/clientes`, {
+        const response = await fetch(`${API_CLIENTES}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(cliente)
@@ -215,7 +220,7 @@ async function guardarClienteDesdeModal(e) {
 
 async function cargarClientes() {
     try {
-        const response = await fetch(`${API_URL}/clientes`);
+        const response = await fetch(`${API_CLIENTES}`);
         const clientes = await response.json();
         const container = document.getElementById('clientesContainer');
 
@@ -267,7 +272,7 @@ async function cargarClientes() {
 async function filtrarClientes() {
     const busqueda = document.getElementById('searchClientes').value.toLowerCase();
     try {
-        const response = await fetch(`${API_URL}/clientes`);
+        const response = await fetch(`${API_CLIENTES}`);
         const clientes = await response.json();
         const filtrados = clientes.filter(c =>
             c.nombre.toLowerCase().includes(busqueda) ||
@@ -330,7 +335,7 @@ async function abrirModalVerCliente(id) {
         
         // Primero intenta obtener el cliente específico por ID
         let cliente = null;
-        const response = await fetch(`${API_URL}/clientes/${id}`);
+        const response = await fetch(`${API_CLIENTES}/${id}`);
         if (response.ok) {
             cliente = await response.json();
         } else {
@@ -537,7 +542,7 @@ async function guardarCambiosClienteDirecto(clienteId, telefonoNuevo, emailNuevo
         // ✅ MEJORA: Mostrar modal de carga
         mostrarModalCarga('Guardando...');
         
-        const response = await fetch(`${API_URL}/clientes/${clienteId}`, {
+        const response = await fetch(`${API_CLIENTES}/${clienteId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datosActualizados)
@@ -587,7 +592,7 @@ async function eliminarCliente(id) {
         // ✅ MEJORA: Mostrar modal de carga
         mostrarModalCarga('Eliminando...');
         
-        const response = await fetch(`${API_URL}/clientes/${id}`, {
+        const response = await fetch(`${API_CLIENTES}/${id}`, {
             method: 'DELETE'
         });
 
@@ -612,7 +617,7 @@ async function eliminarCliente(id) {
 
 async function actualizarSelectsClientes() {
     try {
-        const response = await fetch(`${API_URL}/clientes`);
+        const response = await fetch(`${API_CLIENTES}`);
         const clientes = await response.json();
 
         const selectClientes = document.getElementById('selectClientes');
@@ -880,7 +885,7 @@ async function abrirModalNuevoServicio() {
 async function generarNumeroSecuencial() {
     try {
         // Opción 1: Obtener del servidor
-        const response = await fetch(`${API_URL}/servicios/proximo-numero`);
+        const response = await fetch(`${API_SERVICIOS}/proximo-numero`);
         if (response.ok) {
             const datos = await response.json();
             return datos.numero; // SRV-2025-001
@@ -891,7 +896,7 @@ async function generarNumeroSecuencial() {
 
     // Opción 2: Generar localmente (si no hay servidor)
     try {
-        const servicios = await fetch(`${API_URL}/servicios`);
+        const servicios = await fetch(`${API_SERVICIOS}`);
         const todosServicios = await servicios.json();
 
         const ano = new Date().getFullYear();
@@ -956,7 +961,7 @@ async function buscarClientesPorDNI() {
     }
 
     try {
-        const response = await fetch(`${API_URL}/clientes`);
+        const response = await fetch(`${API_CLIENTES}`);
         const clientes = await response.json();
         const coincidencias = clientes.filter(c => c.dni && c.dni.includes(dni));
 
@@ -999,7 +1004,7 @@ async function buscarClientesPorDNI() {
 async function seleccionarClienteServicio(clienteId, clienteNombre) {
     // Obtener datos del cliente para verificar teléfono
     try {
-        const response = await fetch(`${API_URL}/clientes`);
+        const response = await fetch(`${API_CLIENTES}`);
         const clientes = await response.json();
         const cliente = clientes.find(c => String(c._id) === String(clienteId));
 
@@ -1094,7 +1099,7 @@ async function confirmarClienteConTelefono() {
 // NUEVO: Cargar todos los equipos disponibles
 async function cargarEquiposDelCliente(clienteId) {
     try {
-        const response = await fetch(`${API_URL}/equipos`);
+        const response = await fetch(`${API_EQUIPOS}`);
         const equipos = response.ok ? await response.json() : [];
 
         mostrarModalEquiposCliente(equipos, clienteId);
@@ -1114,7 +1119,7 @@ async function abrirModalEquiposDelCliente() {
     }
 
     try {
-        const response = await fetch(`${API_URL}/equipos`);
+        const response = await fetch(`${API_EQUIPOS}`);
         const equipos = response.ok ? await response.json() : [];
 
         mostrarModalEquiposCliente(equipos, clienteId);
@@ -1263,7 +1268,7 @@ async function guardarNuevoEquipoYSeleccionar(event, clienteId) {
     };
 
     try {
-        const response = await fetch(`${API_URL}/equipos`, {
+        const response = await fetch(`${API_EQUIPOS}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(equipo)
@@ -1330,7 +1335,7 @@ async function consultarReniecServicio() {
     document.getElementById('resultadoReniec').style.display = 'none';
 
     try {
-        const response = await fetch(`${API_URL}/decolecta/${dni}`);
+        const response = await fetch(`${API_DECOLECTA}/${dni}`);
 
         if (!response.ok) {
             throw new Error('No se encontraron datos para este DNI');
@@ -1378,7 +1383,7 @@ async function agregarClienteDesdeReniecServicio() {
     };
 
     try {
-        const response = await fetch(`${API_URL}/clientes`, {
+        const response = await fetch(`${API_CLIENTES}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(cliente)
@@ -1410,12 +1415,12 @@ async function agregarClienteDesdeReniecServicio() {
 // MEJORA 2: Validar estado del equipo
 async function validarEquipo(equipoId) {
     try {
-        const response = await fetch(`${API_URL}/equipos/${equipoId}`);
+        const response = await fetch(`${API_EQUIPOS}/${equipoId}`);
         const equipo = await response.json();
 
         // Verificar estado
         if (equipo.estado === 'En reparación') {
-            const servicios = await fetch(`${API_URL}/servicios?equipo_id=${equipoId}`);
+            const servicios = await fetch(`${API_SERVICIOS}?equipo_id=${equipoId}`);
             const serviciosActivos = await servicios.json();
             const servicioActivo = serviciosActivos.find(s => s.estado !== 'Completado');
 
@@ -1549,7 +1554,7 @@ async function mostrarResumenServicio(servicio) {
         } else if (equipoId) {
             // Obtener datos del equipo si existe
             try {
-                const equipoRes = await fetch(`${API_URL}/equipos/${equipoId}`);
+                const equipoRes = await fetch(`${API_EQUIPOS}/${equipoId}`);
                 if (equipoRes.ok) {
                     equipo = await equipoRes.json();
                 } else {
@@ -1737,7 +1742,7 @@ async function guardarServicioReal(servicio) {
         // (se guardará directamente en la tabla servicios)
 
         // Guardar servicio
-        const servicioRes = await fetch(`${API_URL}/servicios`, {
+        const servicioRes = await fetch(`${API_SERVICIOS}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(servicio)
@@ -1767,7 +1772,7 @@ async function guardarServicioReal(servicio) {
             };
 
             console.log('📤 Enviando servicio-equipo:', servicioEquipo);
-            const seRes = await fetch(`${API_URL}/servicio-equipo`, {
+            const seRes = await fetch(`${API_SERVICIO_EQUIPO}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(servicioEquipo)
@@ -1811,13 +1816,13 @@ async function cargarServicios() {
         const clientesRes = await fetch(`${API_URL}/clientes`);
         const clientes = await clientesRes.json();
 
-        const equiposRes = await fetch(`${API_URL}/equipos`);
+        const equiposRes = await fetch(`${API_EQUIPOS}`);
         const equipos = await equiposRes.json();
 
-        const serviciosRes = await fetch(`${API_URL}/servicios`);
+        const serviciosRes = await fetch(`${API_SERVICIOS}`);
         const servicios = await serviciosRes.json();
 
-        const servicioEquipoRes = await fetch(`${API_URL}/servicio-equipo`);
+        const servicioEquipoRes = await fetch(`${API_SERVICIO_EQUIPO}`);
         const serviciosEquipo = await servicioEquipoRes.json();
 
         const container = document.getElementById('serviciosContainer');
@@ -1979,7 +1984,7 @@ function obtenerEstadosPermitidos(estadoActual) {
 // Cambiar estado del servicio
 async function abrirModalCambiarEstado(servicioId) {
     try {
-        const serviciosRes = await fetch(`${API_URL}/servicios`);
+        const serviciosRes = await fetch(`${API_SERVICIOS}`);
         const servicios = await serviciosRes.json();
         const servicio = servicios.find(s => s._id === servicioId);
         
@@ -2057,7 +2062,7 @@ async function abrirModalIniciarReparacion(servicioId, servicio) {
         let equipo = { tipo_equipo: 'N/A', marca: 'N/A', modelo: 'N/A' };
         if (servicio.equipo_id) {
             try {
-                const equipoRes = await fetch(`${API_URL}/equipos/${servicio.equipo_id}`);
+                const equipoRes = await fetch(`${API_EQUIPOS}/${servicio.equipo_id}`);
                 if (equipoRes.ok) {
                     equipo = await equipoRes.json();
                 }
@@ -2187,7 +2192,7 @@ async function abrirModalConfirmarReparacion(servicioId, servicio) {
          let equipo = { tipo_equipo: 'N/A', marca: 'N/A', modelo: 'N/A' };
          if (servicio.equipo_id) {
              try {
-                 const equipoRes = await fetch(`${API_URL}/equipos/${servicio.equipo_id}`);
+                 const equipoRes = await fetch(`${API_EQUIPOS}/${servicio.equipo_id}`);
                  if (equipoRes.ok) {
                      equipo = await equipoRes.json();
                  }
@@ -2257,7 +2262,7 @@ async function abrirModalEntrega(servicioId, servicio) {
         let equipo = { tipo_equipo: 'N/A', marca: 'N/A', modelo: 'N/A' };
         if (servicio.equipo_id) {
             try {
-                const equipoRes = await fetch(`${API_URL}/equipos/${servicio.equipo_id}`);
+                const equipoRes = await fetch(`${API_EQUIPOS}/${servicio.equipo_id}`);
                 if (equipoRes.ok) {
                     equipo = await equipoRes.json();
                 }
@@ -2472,7 +2477,7 @@ function cerrarModalConfirmarReparacion() {
 // Cambiar estado en el servidor
 async function cambiarEstadoServicio(servicioId, nuevoEstado, datosAdicionales = '') {
     try {
-        const serviciosRes = await fetch(`${API_URL}/servicios`);
+        const serviciosRes = await fetch(`${API_SERVICIOS}`);
         const servicios = await serviciosRes.json();
         const servicio = servicios.find(s => s._id === servicioId);
         
@@ -2513,7 +2518,7 @@ async function cambiarEstadoServicio(servicioId, nuevoEstado, datosAdicionales =
                 break;
         }
         
-        const putRes = await fetch(`${API_URL}/servicios/${servicioId}`, {
+        const putRes = await fetch(`${API_SERVICIOS}/${servicioId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(actualizacion)
@@ -2559,7 +2564,7 @@ function filtrarServicios() {
 
 async function abrirModalDiagnostico(servicioId, clienteNombre) {
     try {
-        const serviciosRes = await fetch(`${API_URL}/servicios`);
+        const serviciosRes = await fetch(`${API_SERVICIOS}`);
         const servicios = await serviciosRes.json();
         const servicio = servicios.find(s => String(s._id) === String(servicioId));
 
@@ -2591,7 +2596,7 @@ async function abrirModalDiagnostico(servicioId, clienteNombre) {
                     fecha_inicio_diagnostico: new Date().toLocaleString()
                 };
                 
-                await fetch(`${API_URL}/servicios/${servicioId}`, {
+                await fetch(`${API_SERVICIOS}/${servicioId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(actualizacion)
@@ -2608,7 +2613,7 @@ async function abrirModalDiagnostico(servicioId, clienteNombre) {
          let equipoInfo = { tipo_equipo: '-', marca: '-', modelo: '-', serie: '-' };
          if (servicio.equipo_id) {
              try {
-                 const equiposRes = await fetch(`${API_URL}/equipos`);
+                 const equiposRes = await fetch(`${API_EQUIPOS}`);
                  const equipos = await equiposRes.json();
                  const equipo = equipos.find(e => String(e._id) === String(servicio.equipo_id));
                 if (equipo) {
@@ -2952,7 +2957,7 @@ async function guardarDiagnosticoInterno(finalizarDiag = false) {
         console.log(`📊 Finalizar: ${finalizarDiag ? 'Sí (→ En reparación)' : 'No (→ En diagnóstico)'}`);
 
         // Obtener servicio actual para preservar datos
-         const serviciosRes = await fetch(`${API_URL}/servicios`);
+         const serviciosRes = await fetch(`${API_SERVICIOS}`);
          const servicios = await serviciosRes.json();
          const servicioActual = servicios.find(s => String(s._id) === String(servicioId));
         
@@ -2972,7 +2977,7 @@ async function guardarDiagnosticoInterno(finalizarDiag = false) {
             actualizacion.fecha_inicio_reparacion = new Date().toLocaleString();
         }
         
-        const response = await fetch(`${API_URL}/servicios/${servicioId}`, {
+        const response = await fetch(`${API_SERVICIOS}/${servicioId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(actualizacion)
@@ -3029,7 +3034,7 @@ function generarMensajeWhatsApp(problemas, montoTotal, nombreTecnico) {
 // Abrir modal con todos los detalles del servicio
 async function abrirModalDetallesServicio(servicioId) {
     try {
-        const serviciosRes = await fetch(`${API_URL}/servicios`);
+        const serviciosRes = await fetch(`${API_SERVICIOS}`);
         const servicios = await serviciosRes.json();
         const servicio = servicios.find(s => s._id === servicioId);
 
@@ -3042,7 +3047,7 @@ async function abrirModalDetallesServicio(servicioId) {
         const clientes = await clientesRes.json();
         const cliente = clientes.find(c => c._id == servicio.cliente_id);
 
-        const equiposRes = await fetch(`${API_URL}/equipos`);
+        const equiposRes = await fetch(`${API_EQUIPOS}`);
         const equipos = await equiposRes.json();
 
         // Buscar equipo por equipo_id del servicio (primero intenta eso)
@@ -3053,7 +3058,7 @@ async function abrirModalDetallesServicio(servicioId) {
 
         // Si no encuentra por equipo_id, intenta buscar en la tabla servicio-equipo
         if (!equipo) {
-            const servicioEquipoRes = await fetch(`${API_URL}/servicio-equipo`);
+            const servicioEquipoRes = await fetch(`${API_SERVICIO_EQUIPO}`);
             const serviciosEquipo = await servicioEquipoRes.json();
             const servicioEquipo = serviciosEquipo.find(se => se.servicio_id == servicioId);
             if (servicioEquipo) {
@@ -3476,7 +3481,7 @@ async function eliminarServicio(id) {
         // ✅ MEJORA: Mostrar modal de carga
         mostrarModalCarga('Eliminando...');
         
-        const response = await fetch(`${API_URL}/servicios/${id}`, {
+        const response = await fetch(`${API_SERVICIOS}/${id}`, {
             method: 'DELETE'
         });
 
@@ -3501,7 +3506,7 @@ async function eliminarServicio(id) {
 
 async function actualizarSelectsEquipos() {
     try {
-        const response = await fetch(`${API_URL}/equipos`);
+        const response = await fetch(`${API_EQUIPOS}`);
         const equipos = await response.json();
         const select = document.getElementById('selectEquipos');
 
@@ -3570,7 +3575,7 @@ function cerrarModalSeleccionarEquipo() {
 // Cargar todos los equipos al abrir modal
 async function cargarEquiposEnModal() {
     try {
-        const response = await fetch(`${API_URL}/equipos`);
+        const response = await fetch(`${API_EQUIPOS}`);
         const equipos = await response.json();
         
         // Guardar equipos globalmente para búsqueda
@@ -3662,7 +3667,7 @@ async function abrirModalConfirmarEquipo(equipoId) {
     
     try {
         // Obtener datos del equipo
-        const response = await fetch(`${API_URL}/equipos`);
+        const response = await fetch(`${API_EQUIPOS}`);
         const equipos = await response.json();
         const equipo = equipos.find(e => String(e._id) === String(equipoId));
         
@@ -3839,7 +3844,7 @@ async function confirmarSeleccionEquipo() {
                 throw new Error('tipo_equipo no está presente');
             }
             
-            const response = await fetch(`${API_URL}/equipos`, {
+            const response = await fetch(`${API_EQUIPOS}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(window.equipoEditado)
@@ -3916,7 +3921,7 @@ async function guardarEquipo(e) {
         // ✅ MEJORA: Mostrar modal de carga
         mostrarModalCarga('Guardando...');
         
-        const response = await fetch(`${API_URL}/equipos`, {
+        const response = await fetch(`${API_EQUIPOS}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(equipo)
@@ -3963,7 +3968,7 @@ async function cargarEquipos() {
         const clientesRes = await fetch(`${API_URL}/clientes`);
         const clientes = await clientesRes.json();
 
-        const equiposRes = await fetch(`${API_URL}/equipos`);
+        const equiposRes = await fetch(`${API_EQUIPOS}`);
         const equipos = await equiposRes.json();
 
         const container = document.getElementById('equiposContainer');
@@ -4013,7 +4018,7 @@ async function cargarEquipos() {
 async function filtrarEquipos() {
     const busqueda = document.getElementById('searchEquipos').value.toLowerCase();
     try {
-        const equiposRes = await fetch(`${API_URL}/equipos`);
+        const equiposRes = await fetch(`${API_EQUIPOS}`);
         const equipos = await equiposRes.json();
         const filtrados = equipos.filter(eq =>
             eq.tipo_equipo.toLowerCase().includes(busqueda) ||
@@ -4068,7 +4073,7 @@ async function filtrarEquipos() {
                     
                     async function abrirModalEditarEquipo(id) {
                     try {
-                    const response = await fetch(`${API_URL}/equipos`);
+                    const response = await fetch(`${API_EQUIPOS}`);
                     const equipos = await response.json();
                     const equipo = equipos.find(e => String(e._id) === String(id));
 
@@ -4142,7 +4147,7 @@ async function guardarCambiosEquipo(e) {
         // ✅ MEJORA: Mostrar modal de carga
         mostrarModalCarga('Guardando...');
         
-        const response = await fetch(`${API_URL}/equipos/${id}`, {
+        const response = await fetch(`${API_EQUIPOS}/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(equipoActualizado)
@@ -4178,7 +4183,7 @@ async function eliminarEquipo(id) {
         // ✅ MEJORA: Mostrar modal de carga
         mostrarModalCarga('Eliminando...');
         
-        const response = await fetch(`${API_URL}/equipos/${id}`, {
+        const response = await fetch(`${API_EQUIPOS}/${id}`, {
             method: 'DELETE'
         });
 
@@ -4229,7 +4234,7 @@ window.onclick = function (event) {
 // Ver diagnóstico guardado
 async function verDiagnostico(servicioId) {
     try {
-        const response = await fetch(`${API_URL}/servicios`);
+        const response = await fetch(`${API_SERVICIOS}`);
         const servicios = await response.json();
         const servicio = servicios.find(s => s._id === servicioId);
 
@@ -4284,13 +4289,13 @@ function cerrarModalVerDiagnostico() {
 // Cargar diagnósticos
 async function cargarDiagnosticos() {
     try {
-        const serviciosRes = await fetch(`${API_URL}/servicios`);
+        const serviciosRes = await fetch(`${API_SERVICIOS}`);
         const servicios = await serviciosRes.json();
 
         const clientesRes = await fetch(`${API_URL}/clientes`);
         const clientes = await clientesRes.json();
 
-        const equiposRes = await fetch(`${API_URL}/equipos`);
+        const equiposRes = await fetch(`${API_EQUIPOS}`);
         const equipos = await equiposRes.json();
 
         // Filtrar solo diagnósticos
@@ -4351,7 +4356,7 @@ async function cargarDiagnosticos() {
 // Ver detalles del diagnóstico
 async function verDetallesDiagnostico(servicioId) {
     try {
-        const serviciosRes = await fetch(`${API_URL}/servicios`);
+        const serviciosRes = await fetch(`${API_SERVICIOS}`);
         const servicios = await serviciosRes.json();
         const servicio = servicios.find(s => s._id === servicioId);
 
@@ -4359,7 +4364,7 @@ async function verDetallesDiagnostico(servicioId) {
         const clientes = await clientesRes.json();
         const cliente = clientes.find(c => String(c._id) === String(servicio.cliente_id));
 
-        const equiposRes = await fetch(`${API_URL}/equipos`);
+        const equiposRes = await fetch(`${API_EQUIPOS}`);
         const equipos = await equiposRes.json();
         const equipo = equipos.find(e => String(e._id) === String(servicio.equipo_id));
 
@@ -4418,7 +4423,7 @@ async function verDetallesDiagnostico(servicioId) {
 // Generar WhatsApp para diagnóstico
 async function generarWhatsAppDiagnostico(servicioId) {
     try {
-        const serviciosRes = await fetch(`${API_URL}/servicios`);
+        const serviciosRes = await fetch(`${API_SERVICIOS}`);
         const servicios = await serviciosRes.json();
         const servicio = servicios.find(s => s._id === servicioId);
 
