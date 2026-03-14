@@ -8,8 +8,28 @@ command = "npm run dev"
 port = 3000
 
 [[redirects]]
-from = "/api/*"
-to = "/.netlify/functions/api:splat"
+from = "/api/clientes*"
+to = "/.netlify/functions/clientes:splat"
+status = 200
+
+[[redirects]]
+from = "/api/equipos*"
+to = "/.netlify/functions/equipos:splat"
+status = 200
+
+[[redirects]]
+from = "/api/servicios*"
+to = "/.netlify/functions/servicios:splat"
+status = 200
+
+[[redirects]]
+from = "/api/servicio-equipo*"
+to = "/.netlify/functions/servicio-equipo:splat"
+status = 200
+
+[[redirects]]
+from = "/api/decolecta*"
+to = "/.netlify/functions/decolecta:splat"
 status = 200
 
 [context.production.environment]

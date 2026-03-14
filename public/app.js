@@ -1,8 +1,10 @@
 // ==================== CONFIG ====================
 // Detectar si estamos en local o en Netlify
-const API_URL = window.location.hostname === 'localhost' 
-  ? 'http://localhost:3000/api' 
-  : `${window.location.origin}/.netlify/functions/api`;
+const API_BASE = window.location.hostname === 'localhost' 
+  ? 'http://localhost:3000' 
+  : window.location.origin;
+
+const API_URL = `${API_BASE}/api`;
 
 let reniecData = null;
 
