@@ -1,43 +1,56 @@
 const { MongoClient, ObjectId } = require('mongodb');
 
-const MONGODB_URI = process.env.MONGODB_URI;
-const DB_NAME = 'doctorpc';
-
-let cachedDb = null;
-
-async function connectDB() {
-  if (cachedDb) {
-    return cachedDb;
-  }
-
-  const client = new MongoClient(MONGODB_URI);
-  await client.connect();
-  cachedDb = client.db(DB_NAME);
-  return cachedDb;
-}
-
 exports.handler = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
 
+  let client;
+
   try {
-    const db = await connectDB();
-    const method = event.httpMethod;
-    const path = event.path.replace('/.netlify/functions/servicio-equipo', '');
-    const id = path.split('/')[1];
-    const body = event.body ? JSON.parse(event.body) : {};
+    const MONGODB_URI = process.env.MONGODB_URI;
+    
+    if (!MONGODB_URI) {
+      return {
+        statusCode: 500,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'MONGODB_URI not configured' })
+      };
+    }
+
+    client = new MongoClient(MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 5000
+    });
+
+    await client.connect();
+    const db = client.db('doctorpc');
+
+    const httpMethod = event.httpMethod;
+    const path = event.path || '';
+    const pathParts = path.split('/');
+    const id = pathParts[pathParts.length - 1];
+
+    let body = {};
+    if (event.body) {
+      try {
+        body = JSON.parse(event.body);
+      } catch (e) {}
+    }
+
+    console.log(`[servicio-equipo] ${httpMethod} - ID: ${id || 'none'}`);
 
     // GET /servicio-equipo
-    if (method === 'GET' && !id) {
+    if (httpMethod === 'GET' && (!id || id === 'servicio-equipo')) {
       const servicioEquipo = await db.collection('servicio_equipo').find({}).toArray();
+      await client.close();
       return {
         statusCode: 200,
-        body: JSON.stringify(servicioEquipo),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(servicioEquipo)
       };
     }
 
     // POST /servicio-equipo
-    if (method === 'POST' && !id) {
+    if (httpMethod === 'POST') {
       let numeroOrden;
       let exists = true;
       let contador = 1;
@@ -57,15 +70,17 @@ exports.handler = async (event, context) => {
       };
 
       const result = await db.collection('servicio_equipo').insertOne(nuevoServicioEquipo);
+      await client.close();
+      
       return {
         statusCode: 201,
-        body: JSON.stringify({ ...nuevoServicioEquipo, _id: result.insertedId }),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...nuevoServicioEquipo, _id: result.insertedId })
       };
     }
 
     // PUT /servicio-equipo/:id
-    if (method === 'PUT' && id) {
+    if (httpMethod === 'PUT' && id) {
       const updateData = {
         ...body,
         fecha_actualizacion: new Date().toISOString()
@@ -78,49 +93,63 @@ exports.handler = async (event, context) => {
         { returnDocument: 'after' }
       );
 
+      await client.close();
+
       if (!result.value) {
         return {
           statusCode: 404,
-          body: JSON.stringify({ error: 'Servicio-equipo no encontrado' }),
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ error: 'Servicio-equipo no encontrado' })
         };
       }
 
       return {
         statusCode: 200,
-        body: JSON.stringify(result.value),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(result.value)
       };
     }
 
     // DELETE /servicio-equipo/:id
-    if (method === 'DELETE' && id) {
+    if (httpMethod === 'DELETE' && id) {
       const result = await db.collection('servicio_equipo').deleteOne({ _id: new ObjectId(id) });
+      await client.close();
+
       if (result.deletedCount === 0) {
         return {
           statusCode: 404,
-          body: JSON.stringify({ error: 'Servicio-equipo no encontrado' }),
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ error: 'Servicio-equipo no encontrado' })
         };
       }
+
       return {
         statusCode: 200,
-        body: JSON.stringify({ success: true }),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ success: true })
       };
     }
 
+    await client.close();
+
     return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Método no soportado' }),
-      headers: { 'Content-Type': 'application/json' }
+      statusCode: 405,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: 'Método no permitido' })
     };
+
   } catch (error) {
-    console.error('Error:', error);
+    console.error('[servicio-equipo] Error:', error.message);
+    if (client) {
+      try {
+        await client.close();
+      } catch (e) {}
+    }
+
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: error.message || 'Internal Server Error' })
     };
   }
 };

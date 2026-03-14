@@ -1,64 +1,79 @@
 const { MongoClient, ObjectId } = require('mongodb');
 
-const MONGODB_URI = process.env.MONGODB_URI;
-const DB_NAME = 'doctorpc';
-
-let cachedDb = null;
-
-async function connectDB() {
-  if (cachedDb) {
-    return cachedDb;
-  }
-
-  const client = new MongoClient(MONGODB_URI);
-  await client.connect();
-  cachedDb = client.db(DB_NAME);
-  return cachedDb;
-}
-
 exports.handler = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
 
+  let client;
+
   try {
-    const db = await connectDB();
-    const method = event.httpMethod;
-    const path = event.path.replace('/.netlify/functions/servicios', '');
-    const id = path.split('/')[1];
-    const body = event.body ? JSON.parse(event.body) : {};
+    const MONGODB_URI = process.env.MONGODB_URI;
+    
+    if (!MONGODB_URI) {
+      return {
+        statusCode: 500,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'MONGODB_URI not configured' })
+      };
+    }
+
+    client = new MongoClient(MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 5000
+    });
+
+    await client.connect();
+    const db = client.db('doctorpc');
+
+    const httpMethod = event.httpMethod;
+    const path = event.path || '';
+    const pathParts = path.split('/');
+    const id = pathParts[pathParts.length - 1];
+
+    let body = {};
+    if (event.body) {
+      try {
+        body = JSON.parse(event.body);
+      } catch (e) {}
+    }
+
+    console.log(`[servicios] ${httpMethod} - ID: ${id || 'none'}`);
 
     // GET /servicios
-    if (method === 'GET' && !id) {
+    if (httpMethod === 'GET' && (!id || id === 'servicios')) {
       const servicios = await db.collection('servicios').find({}).toArray();
+      await client.close();
       return {
         statusCode: 200,
-        body: JSON.stringify(servicios),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(servicios)
       };
     }
 
     // GET /servicios/:id
-    if (method === 'GET' && id) {
+    if (httpMethod === 'GET' && id && id !== 'servicios') {
       const servicio = await db.collection('servicios').findOne({ _id: new ObjectId(id) });
+      await client.close();
+      
       if (!servicio) {
         return {
           statusCode: 404,
-          body: JSON.stringify({ error: 'Servicio no encontrado' }),
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ error: 'Servicio no encontrado' })
         };
       }
       return {
         statusCode: 200,
-        body: JSON.stringify(servicio),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(servicio)
       };
     }
 
     // POST /servicios
-    if (method === 'POST' && !id) {
+    if (httpMethod === 'POST') {
       const nuevoServicio = {
-        nombre_servicio: body.nombre_servicio,
-        categoria: body.categoria,
-        costo_base: body.costo_base,
+        nombre_servicio: body.nombre_servicio || '',
+        categoria: body.categoria || '',
+        costo_base: body.costo_base || 0,
         tiempo_estimado: body.tiempo_estimado || 0,
         descripcion: body.descripcion?.trim() || '',
         estado: body.estado || 'activo',
@@ -67,15 +82,17 @@ exports.handler = async (event, context) => {
       };
 
       const result = await db.collection('servicios').insertOne(nuevoServicio);
+      await client.close();
+      
       return {
         statusCode: 201,
-        body: JSON.stringify({ ...nuevoServicio, _id: result.insertedId }),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...nuevoServicio, _id: result.insertedId })
       };
     }
 
     // PUT /servicios/:id
-    if (method === 'PUT' && id) {
+    if (httpMethod === 'PUT' && id) {
       const updateData = {
         ...body,
         fecha_actualizacion: new Date().toISOString()
@@ -88,49 +105,63 @@ exports.handler = async (event, context) => {
         { returnDocument: 'after' }
       );
 
+      await client.close();
+
       if (!result.value) {
         return {
           statusCode: 404,
-          body: JSON.stringify({ error: 'Servicio no encontrado' }),
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ error: 'Servicio no encontrado' })
         };
       }
 
       return {
         statusCode: 200,
-        body: JSON.stringify(result.value),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(result.value)
       };
     }
 
     // DELETE /servicios/:id
-    if (method === 'DELETE' && id) {
+    if (httpMethod === 'DELETE' && id) {
       const result = await db.collection('servicios').deleteOne({ _id: new ObjectId(id) });
+      await client.close();
+
       if (result.deletedCount === 0) {
         return {
           statusCode: 404,
-          body: JSON.stringify({ error: 'Servicio no encontrado' }),
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ error: 'Servicio no encontrado' })
         };
       }
+
       return {
         statusCode: 200,
-        body: JSON.stringify({ success: true }),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ success: true })
       };
     }
 
+    await client.close();
+
     return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Método no soportado' }),
-      headers: { 'Content-Type': 'application/json' }
+      statusCode: 405,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: 'Método no permitido' })
     };
+
   } catch (error) {
-    console.error('Error:', error);
+    console.error('[servicios] Error:', error.message);
+    if (client) {
+      try {
+        await client.close();
+      } catch (e) {}
+    }
+
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: error.message || 'Internal Server Error' })
     };
   }
 };
