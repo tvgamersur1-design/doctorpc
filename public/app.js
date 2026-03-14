@@ -224,6 +224,13 @@ async function cargarClientes() {
         const clientes = await response.json();
         const container = document.getElementById('clientesContainer');
 
+        // Check if response is an error
+        if (!response.ok || clientes.error || !Array.isArray(clientes)) {
+            container.innerHTML = `<div class="error-message">Error al cargar clientes: ${clientes.error || 'Error desconocido'}</div>`;
+            console.error('API error:', clientes);
+            return;
+        }
+
         if (clientes.length === 0) {
             container.innerHTML = '<div class="no-records">No hay clientes registrados</div>';
             return;
@@ -274,6 +281,13 @@ async function filtrarClientes() {
     try {
         const response = await fetch(`${API_CLIENTES}`);
         const clientes = await response.json();
+        
+        // Check if response is an error
+        if (!response.ok || clientes.error || !Array.isArray(clientes)) {
+            console.error('API error:', clientes);
+            return;
+        }
+        
         const filtrados = clientes.filter(c =>
             c.nombre.toLowerCase().includes(busqueda) ||
             (c.telefono && c.telefono.includes(busqueda)) ||
