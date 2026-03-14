@@ -1,66 +1,82 @@
 const { MongoClient, ObjectId } = require('mongodb');
 
-const MONGODB_URI = process.env.MONGODB_URI;
-const DB_NAME = 'doctorpc';
-
-let cachedDb = null;
+let client = null;
+let db = null;
 
 async function connectDB() {
-  if (cachedDb) {
-    return cachedDb;
+  try {
+    if (!client) {
+      client = new MongoClient(process.env.MONGODB_URI);
+      await client.connect();
+      db = client.db('doctorpc');
+      console.log('✓ Conectado a MongoDB');
+    }
+    return db;
+  } catch (error) {
+    console.error('Error conectando a MongoDB:', error.message);
+    throw error;
   }
-
-  const client = new MongoClient(MONGODB_URI);
-  await client.connect();
-  cachedDb = client.db(DB_NAME);
-  return cachedDb;
 }
 
 exports.handler = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
 
   try {
-    const db = await connectDB();
-    const method = event.httpMethod;
-    const path = event.path.replace('/.netlify/functions/clientes', '');
-    const id = path.split('/')[1];
-    const body = event.body ? JSON.parse(event.body) : {};
+    const database = await connectDB();
+    const httpMethod = event.httpMethod;
+    const path = event.path || '';
+    const id = path.split('/').pop() || null;
+    let body = {};
 
-    // GET /clientes
-    if (method === 'GET' && !id) {
-      const clientes = await db.collection('clientes').find({}).toArray();
+    if (event.body) {
+      try {
+        body = JSON.parse(event.body);
+      } catch (e) {
+        body = {};
+      }
+    }
+
+    console.log(`${httpMethod} ${path}`);
+
+    // GET all clientes
+    if (httpMethod === 'GET' && (!id || id === 'clientes')) {
+      const clientes = await database.collection('clientes').find({}).toArray();
       return {
         statusCode: 200,
-        body: JSON.stringify(clientes),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(clientes)
       };
     }
 
-    // GET /clientes/:id
-    if (method === 'GET' && id) {
-      let cliente;
+    // GET clientes by ID
+    if (httpMethod === 'GET' && id && id !== 'clientes') {
+      let cliente = null;
+      
       if (ObjectId.isValid(id)) {
-        cliente = await db.collection('clientes').findOne({ _id: new ObjectId(id) });
+        cliente = await database.collection('clientes').findOne({ _id: new ObjectId(id) });
       }
+      
       if (!cliente && /^\d{8}$/.test(id)) {
-        cliente = await db.collection('clientes').findOne({ dni: id });
+        cliente = await database.collection('clientes').findOne({ dni: id });
       }
+
       if (!cliente) {
         return {
           statusCode: 404,
-          body: JSON.stringify({ error: 'Cliente no encontrado' }),
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ error: 'Cliente no encontrado' })
         };
       }
+
       return {
         statusCode: 200,
-        body: JSON.stringify(cliente),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cliente)
       };
     }
 
-    // POST /clientes
-    if (method === 'POST' && !id) {
+    // POST new cliente
+    if (httpMethod === 'POST') {
       const nuevoCliente = {
         nombre: body.nombre?.trim() || '',
         apellido_paterno: body.apellido_paterno?.trim() || '',
@@ -80,23 +96,24 @@ exports.handler = async (event, context) => {
         fecha_actualizacion: new Date().toISOString()
       };
 
-      const result = await db.collection('clientes').insertOne(nuevoCliente);
+      const result = await database.collection('clientes').insertOne(nuevoCliente);
+      
       return {
         statusCode: 201,
-        body: JSON.stringify({ ...nuevoCliente, _id: result.insertedId }),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...nuevoCliente, _id: result.insertedId })
       };
     }
 
-    // PUT /clientes/:id
-    if (method === 'PUT' && id) {
+    // PUT update cliente
+    if (httpMethod === 'PUT' && id) {
       const updateData = {
         ...body,
         fecha_actualizacion: new Date().toISOString()
       };
       delete updateData._id;
 
-      const result = await db.collection('clientes').findOneAndUpdate(
+      const result = await database.collection('clientes').findOneAndUpdate(
         { _id: new ObjectId(id) },
         { $set: updateData },
         { returnDocument: 'after' }
@@ -105,46 +122,52 @@ exports.handler = async (event, context) => {
       if (!result.value) {
         return {
           statusCode: 404,
-          body: JSON.stringify({ error: 'Cliente no encontrado' }),
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ error: 'Cliente no encontrado' })
         };
       }
 
       return {
         statusCode: 200,
-        body: JSON.stringify(result.value),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(result.value)
       };
     }
 
-    // DELETE /clientes/:id
-    if (method === 'DELETE' && id) {
-      const result = await db.collection('clientes').deleteOne({ _id: new ObjectId(id) });
+    // DELETE cliente
+    if (httpMethod === 'DELETE' && id) {
+      const result = await database.collection('clientes').deleteOne({ _id: new ObjectId(id) });
+
       if (result.deletedCount === 0) {
         return {
           statusCode: 404,
-          body: JSON.stringify({ error: 'Cliente no encontrado' }),
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ error: 'Cliente no encontrado' })
         };
       }
+
       return {
         statusCode: 200,
-        body: JSON.stringify({ success: true }),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ success: true })
       };
     }
 
     return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Método no soportado' }),
-      headers: { 'Content-Type': 'application/json' }
+      statusCode: 405,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: 'Método no permitido' })
     };
+
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error en handler:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        error: error.message || 'Error interno del servidor',
+        details: error.toString()
+      })
     };
   }
 };
