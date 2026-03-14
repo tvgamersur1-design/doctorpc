@@ -1,0 +1,61 @@
+<svg width="800" height="900" xmlns="http://www.w3.org/2000/svg" font-family="Arial">
+
+<!-- START -->
+<ellipse cx="400" cy="40" rx="80" ry="25" fill="#C8E6C9" stroke="#2E7D32" stroke-width="2"/>
+<text x="400" y="45" text-anchor="middle" font-size="14" font-weight="bold">START</text>
+
+<!-- Arrow -->
+<line x1="400" y1="65" x2="400" y2="110" stroke="black" stroke-width="2"/>
+
+<!-- Decision -->
+<polygon points="400,110 520,170 400,230 280,170" fill="#FFF3E0" stroke="#EF6C00" stroke-width="2"/>
+<text x="400" y="170" text-anchor="middle" font-size="14">¿Cliente existe?</text>
+
+<!-- NO Arrow -->
+<line x1="280" y1="170" x2="160" y2="170" stroke="black" stroke-width="2"/>
+<text x="210" y="160" font-size="12">NO</text>
+
+<!-- SI Arrow -->
+<line x1="520" y1="170" x2="640" y2="170" stroke="black" stroke-width="2"/>
+<text x="570" y="160" font-size="12">SI</text>
+
+<!-- Crear Cliente -->
+<rect x="60" y="150" width="150" height="60" rx="10" ry="10" fill="#E3F2FD" stroke="#1E88E5" stroke-width="2"/>
+<text x="135" y="185" text-anchor="middle" font-size="13">Crear Cliente</text>
+
+<!-- Actualizar Cliente -->
+<rect x="590" y="150" width="150" height="60" rx="10" ry="10" fill="#E3F2FD" stroke="#1E88E5" stroke-width="2"/>
+<text x="665" y="185" text-anchor="middle" font-size="13">Actualizar Cliente</text>
+
+<!-- Arrows down -->
+<line x1="135" y1="210" x2="400" y2="300" stroke="black" stroke-width="2"/>
+<line x1="665" y1="210" x2="400" y2="300" stroke="black" stroke-width="2"/>
+
+<!-- Registrar Equipo -->
+<rect x="250" y="300" width="300" height="70" rx="10" ry="10" fill="#E8F5E9" stroke="#43A047" stroke-width="2"/>
+<text x="400" y="335" text-anchor="middle" font-size="14">Registrar Equipo</text>
+<text x="400" y="355" text-anchor="middle" font-size="14">en Reparación</text>
+
+<!-- Arrow -->
+<line x1="400" y1="370" x2="400" y2="420" stroke="black" stroke-width="2"/>
+
+<!-- Seguimiento -->
+<rect x="250" y="420" width="300" height="80" rx="10" ry="10" fill="#FFFDE7" stroke="#F9A825" stroke-width="2"/>
+<text x="400" y="455" text-anchor="middle" font-size="14">Seguimiento Estado</text>
+<text x="400" y="475" text-anchor="middle" font-size="14">(En proceso / Listo)</text>
+
+<!-- Arrow -->
+<line x1="400" y1="500" x2="400" y2="560" stroke="black" stroke-width="2"/>
+
+<!-- Entrega -->
+<rect x="250" y="560" width="300" height="70" rx="10" ry="10" fill="#E1F5FE" stroke="#0288D1" stroke-width="2"/>
+<text x="400" y="600" text-anchor="middle" font-size="14">Entrega a Cliente</text>
+
+<!-- Arrow -->
+<line x1="400" y1="630" x2="400" y2="690" stroke="black" stroke-width="2"/>
+
+<!-- END -->
+<ellipse cx="400" cy="720" rx="80" ry="25" fill="#FFCDD2" stroke="#C62828" stroke-width="2"/>
+<text x="400" y="725" text-anchor="middle" font-size="14" font-weight="bold">END</text>
+
+</svg>

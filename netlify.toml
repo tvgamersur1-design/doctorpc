@@ -1,0 +1,16 @@
+[build]
+command = "npm install"
+functions = "functions"
+publish = "public"
+
+[dev]
+command = "npm run dev"
+port = 3000
+
+[[redirects]]
+from = "/api/*"
+to = "/.netlify/functions/api:splat"
+status = 200
+
+[context.production.environment]
+NODE_ENV = "production"

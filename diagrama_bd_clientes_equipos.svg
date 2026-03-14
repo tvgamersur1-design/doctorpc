@@ -1,0 +1,36 @@
+<svg width="900" height="400" xmlns="http://www.w3.org/2000/svg" font-family="Arial">
+
+<!-- CLIENTES -->
+<rect x="100" y="80" width="260" height="220" rx="10" ry="10" fill="#E3F2FD" stroke="#1E88E5" stroke-width="2"/>
+<text x="230" y="110" text-anchor="middle" font-size="16" font-weight="bold">CLIENTES</text>
+
+<text x="120" y="140" font-size="13">_id (PK)</text>
+<text x="120" y="160" font-size="13">nombre</text>
+<text x="120" y="180" font-size="13">telefono</text>
+<text x="120" y="200" font-size="13">email</text>
+<text x="120" y="220" font-size="13">dni</text>
+<text x="120" y="240" font-size="13">direccion</text>
+<text x="120" y="260" font-size="13">fechaRegistro</text>
+
+<!-- EQUIPOS -->
+<rect x="540" y="80" width="260" height="220" rx="10" ry="10" fill="#E8F5E9" stroke="#43A047" stroke-width="2"/>
+<text x="670" y="110" text-anchor="middle" font-size="16" font-weight="bold">EQUIPOS</text>
+
+<text x="560" y="140" font-size="13">_id (PK)</text>
+<text x="560" y="160" font-size="13">clienteId (FK)</text>
+<text x="560" y="180" font-size="13">tipo</text>
+<text x="560" y="200" font-size="13">marca</text>
+<text x="560" y="220" font-size="13">modelo</text>
+<text x="560" y="240" font-size="13">fechaIngreso</text>
+<text x="560" y="260" font-size="13">estado</text>
+
+<!-- Relationship line -->
+<line x1="360" y1="190" x2="540" y2="190" stroke="black" stroke-width="2"/>
+
+<!-- Cardinality -->
+<text x="370" y="175" font-size="13">1</text>
+<text x="520" y="175" font-size="13">N</text>
+
+<text x="400" y="210" font-size="13">1 Cliente → N Equipos</text>
+
+</svg>
