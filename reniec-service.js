@@ -26,7 +26,7 @@ class ReniecService {
             }
         ];
         
-        this.apiKey = process.env.RENIEC_API_KEY || '';
+        this.apiKey = process.env.DECOLECTA_API_KEY || '';
         this.timeout = 5000; // 5 segundos timeout
     }
 

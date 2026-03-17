@@ -34,9 +34,10 @@ exports.handler = async (event, context) => {
         };
       }
 
-      console.log(`Consultando DECOLECTA: ${decolectaUrl}/api/dni/${dni}`);
+      console.log(`Consultando DECOLECTA: ${decolectaUrl}/v1/reniec/dni?numero=${dni}`);
 
-      const response = await axios.get(`${decolectaUrl}/api/dni/${dni}`, {
+      const response = await axios.get(`${decolectaUrl}/v1/reniec/dni`, {
+        params: { numero: dni },
         headers: {
           'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json'
@@ -49,14 +50,14 @@ exports.handler = async (event, context) => {
       // Normalizar respuesta al formato esperado por frontend
       const datosNormalizados = {
         success: true,
-        document_number: data.numero || dni,
-        first_name: data.nombres || '',
-        first_last_name: data.apellido_paterno || '',
-        second_last_name: data.apellido_materno || '',
-        full_name: data.nombre_completo || `${data.apellido_paterno} ${data.apellido_materno} ${data.nombres}`.trim(),
-        nombres: data.nombres || '',
-        apellido_paterno: data.apellido_paterno || '',
-        apellido_materno: data.apellido_materno || ''
+        document_number: data.document_number || dni,
+        first_name: data.first_name || '',
+        first_last_name: data.first_last_name || '',
+        second_last_name: data.second_last_name || '',
+        full_name: data.full_name || `${data.first_last_name} ${data.second_last_name} ${data.first_name}`.trim(),
+        nombres: data.first_name || '',
+        apellido_paterno: data.first_last_name || '',
+        apellido_materno: data.second_last_name || ''
       };
 
       console.log('Respuesta DECOLECTA normalizada:', datosNormalizados);
