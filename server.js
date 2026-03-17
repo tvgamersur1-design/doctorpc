@@ -28,14 +28,22 @@ app.use(express.static('public'));
 async function connectDB() {
   try {
     console.log('🔗 Conectando a MongoDB Atlas...');
+    console.log('📌 MONGODB_URI configurado:', MONGODB_URI ? 'SÍ' : 'NO');
+    if (MONGODB_URI) {
+      const uriMascarado = MONGODB_URI.replace(/\/\/.+@/, '//****:****@');
+      console.log('📌 URI (mascarada):', uriMascarado);
+    }
+    
     await mongoClient.connect();
     db = mongoClient.db(DB_NAME);
     console.log('✓ Conectado a MongoDB exitosamente');
+    console.log('✓ Base de datos:', DB_NAME);
     
     // Crear índices automáticamente
     await createIndexes();
   } catch (error) {
     console.error('❌ Error al conectar a MongoDB:', error.message);
+    console.error('❌ Stack completo:', error.stack);
     process.exit(1);
   }
 }
@@ -167,14 +175,18 @@ function validarServicio(data, esActualizacion = false) {
 // GET all clientes
 app.get('/api/clientes', async (req, res) => {
   try {
+    console.log('🔍 GET /api/clientes - Conectado a BD:', !!db);
     const clientes = await db.collection('clientes').find({}).toArray();
     console.log(`📋 GET /api/clientes: Retornando ${clientes.length} clientes`);
     if (clientes.length > 0) {
       console.log(`   Primer cliente: _id=${clientes[0]._id}, nombre=${clientes[0].nombre}`);
+    } else {
+      console.warn('⚠️ No hay clientes en la base de datos');
     }
     res.json(clientes);
   } catch (error) {
-    console.error('Error GET /api/clientes:', error);
+    console.error('❌ Error GET /api/clientes:', error);
+    console.error('❌ BD conectada:', !!db);
     res.status(500).json({ error: error.message });
   }
 });
@@ -384,14 +396,18 @@ app.get('/api/servicios/proximo-numero', async (req, res) => {
 // GET all servicios
 app.get('/api/servicios', async (req, res) => {
   try {
+    console.log('🔍 GET /api/servicios - Conectado a BD:', !!db);
     const servicios = await db.collection('servicios').find({}).toArray();
     console.log(`📋 GET /api/servicios: Retornando ${servicios.length} servicios`);
     if (servicios.length > 0) {
       console.log(`   Primer servicio: _id=${servicios[0]._id}, nombre=${servicios[0].nombre_servicio}`);
+    } else {
+      console.warn('⚠️ No hay servicios en la base de datos');
     }
     res.json(servicios);
   } catch (error) {
     console.error('❌ Error GET /api/servicios:', error);
+    console.error('❌ BD conectada:', !!db);
     res.status(500).json({ error: error.message });
   }
 });
@@ -617,10 +633,16 @@ app.delete('/api/servicios/:id', async (req, res) => {
 // GET all equipos
 app.get('/api/equipos', async (req, res) => {
   try {
+    console.log('🔍 GET /api/equipos - Conectado a BD:', !!db);
     const equipos = await db.collection('equipos').find({}).toArray();
+    console.log(`📋 GET /api/equipos: Retornando ${equipos.length} equipos`);
+    if (equipos.length === 0) {
+      console.warn('⚠️ No hay equipos en la base de datos');
+    }
     res.json(equipos);
   } catch (error) {
-    console.error('Error GET /api/equipos:', error);
+    console.error('❌ Error GET /api/equipos:', error);
+    console.error('❌ BD conectada:', !!db);
     res.status(500).json({ error: error.message });
   }
 });
@@ -752,9 +774,16 @@ app.delete('/api/equipos/:id', async (req, res) => {
 // GET all servicio-equipo
 app.get('/api/servicio-equipo', async (req, res) => {
   try {
+    console.log('🔍 GET /api/servicio-equipo - Conectado a BD:', !!db);
     const servicioEquipo = await db.collection('servicio_equipo').find({}).toArray();
+    console.log(`📋 GET /api/servicio-equipo: Retornando ${servicioEquipo.length} órdenes`);
+    if (servicioEquipo.length === 0) {
+      console.warn('⚠️ No hay órdenes de servicio en la base de datos');
+    }
     res.json(servicioEquipo);
   } catch (error) {
+    console.error('❌ Error GET /api/servicio-equipo:', error);
+    console.error('❌ BD conectada:', !!db);
     res.status(500).json({ error: error.message });
   }
 });
@@ -889,6 +918,46 @@ app.get('/api/decolecta/:dni', async (req, res) => {
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', database: 'MongoDB Atlas' });
+});
+
+// ✅ NUEVO: Verificar conexión a BD
+app.get('/api/status-db', async (req, res) => {
+  try {
+    console.log('🔍 GET /api/status-db - Verificando conexión...');
+    console.log('   Base de datos inicializada:', !!db);
+    
+    if (!db) {
+      return res.status(503).json({ 
+        status: 'ERROR',
+        connected: false,
+        message: 'Base de datos no inicializada',
+        mongodb_uri: MONGODB_URI ? 'Configurado' : 'NO CONFIGURADO'
+      });
+    }
+    
+    // Intentar una consulta simple
+    const adminDb = db.admin();
+    const dbStats = await db.stats();
+    
+    console.log('✓ Conexión a BD confirmada');
+    
+    res.json({
+      status: 'OK',
+      connected: true,
+      database: DB_NAME,
+      mongodb_uri: MONGODB_URI ? 'Configurado' : 'NO CONFIGURADO',
+      collections: dbStats?.collections || 'N/A',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('❌ Error al verificar BD:', error.message);
+    res.status(503).json({
+      status: 'ERROR',
+      connected: false,
+      error: error.message,
+      mongodb_uri: MONGODB_URI ? 'Configurado' : 'NO CONFIGURADO'
+    });
+  }
 });
 
 // Iniciar servidor
