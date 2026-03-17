@@ -1,10 +1,16 @@
 const { MongoClient, ObjectId } = require('mongodb');
 
+const headers = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS'
+};
+
 let cachedClient = null;
 
 async function getMongoClient() {
   if (cachedClient) {
-    console.log('[servicios] ✓ Usando cliente MongoDB cacheado');
     return cachedClient;
   }
   
@@ -13,7 +19,6 @@ async function getMongoClient() {
     throw new Error('MONGODB_URI no configurado');
   }
   
-  console.log('[servicios] 🔗 Creando nueva conexión a MongoDB...');
   const client = new MongoClient(MONGODB_URI, {
     serverSelectionTimeoutMS: 15000,
     connectTimeoutMS: 15000,
@@ -23,14 +28,22 @@ async function getMongoClient() {
     retryWrites: true
   });
   
-  await client.connect();
-  cachedClient = client;
-  console.log('[servicios] ✓ Conectado a MongoDB');
-  return client;
+  try {
+    await client.connect();
+    cachedClient = client;
+    return client;
+  } catch (error) {
+    cachedClient = null;
+    throw error;
+  }
 }
 
 exports.handler = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
+
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 204, headers, body: '' };
+  }
 
   try {
     const MONGODB_URI = process.env.MONGODB_URI;
@@ -38,7 +51,7 @@ exports.handler = async (event, context) => {
     if (!MONGODB_URI) {
       return {
         statusCode: 500,
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ error: 'MONGODB_URI no configurado' })
       };
     }
@@ -67,7 +80,7 @@ exports.handler = async (event, context) => {
       console.log(`[servicios] ✓ Retornando ${servicios.length} servicios`);
       return {
         statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(servicios)
       };
     }
@@ -80,7 +93,7 @@ exports.handler = async (event, context) => {
       if (!servicio) {
         return {
           statusCode: 404,
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify({ error: 'Servicio no encontrado' })
         };
       }
@@ -88,7 +101,7 @@ exports.handler = async (event, context) => {
       console.log(`[servicios] ✓ Servicio encontrado: ${servicio.nombre_servicio}`);
       return {
         statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(servicio)
       };
     }
@@ -113,7 +126,7 @@ exports.handler = async (event, context) => {
 
       return {
         statusCode: 201,
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ ...nuevoServicio, _id: result.insertedId })
       };
     }
@@ -136,7 +149,7 @@ exports.handler = async (event, context) => {
       if (!result.value) {
         return {
           statusCode: 404,
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify({ error: 'Servicio no encontrado' })
         };
       }
@@ -144,7 +157,7 @@ exports.handler = async (event, context) => {
       console.log(`[servicios] ✓ Servicio actualizado: ${id}`);
       return {
         statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(result.value)
       };
     }
@@ -157,7 +170,7 @@ exports.handler = async (event, context) => {
       if (result.deletedCount === 0) {
         return {
           statusCode: 404,
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify({ error: 'Servicio no encontrado' })
         };
       }
@@ -165,14 +178,14 @@ exports.handler = async (event, context) => {
       console.log(`[servicios] ✓ Servicio eliminado: ${id}`);
       return {
         statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ success: true })
       };
     }
 
     return {
       statusCode: 405,
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ error: 'Método no permitido' })
     };
 
@@ -182,7 +195,7 @@ exports.handler = async (event, context) => {
 
     return {
       statusCode: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({
         error: error.message || 'Internal Server Error',
         type: error.constructor.name

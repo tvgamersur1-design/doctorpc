@@ -1,7 +1,18 @@
 const axios = require('axios');
 
+const headers = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS'
+};
+
 exports.handler = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
+
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 204, headers, body: '' };
+  }
 
   try {
     const method = event.httpMethod;
@@ -17,7 +28,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({ 
             error: 'DNI inválido. Debe tener 8 dígitos' 
           }),
-          headers: { 'Content-Type': 'application/json' }
+          headers
         };
       }
 
@@ -30,7 +41,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({ 
             error: 'API Key de DECOLECTA no configurado' 
           }),
-          headers: { 'Content-Type': 'application/json' }
+          headers
         };
       }
 
@@ -65,14 +76,14 @@ exports.handler = async (event, context) => {
       return {
         statusCode: 200,
         body: JSON.stringify(datosNormalizados),
-        headers: { 'Content-Type': 'application/json' }
+        headers
       };
     }
 
     return {
       statusCode: 400,
       body: JSON.stringify({ error: 'Método no soportado' }),
-      headers: { 'Content-Type': 'application/json' }
+      headers
     };
   } catch (error) {
     console.error('❌ Error DECOLECTA:', error.response?.data || error.message);
@@ -83,7 +94,7 @@ exports.handler = async (event, context) => {
     return {
       statusCode: statusCode,
       body: JSON.stringify({ error: errorMsg }),
-      headers: { 'Content-Type': 'application/json' }
+      headers
     };
   }
 };

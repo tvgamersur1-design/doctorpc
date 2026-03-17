@@ -3,13 +3,13 @@
 const isLocal = window.location.hostname === 'localhost';
 const API_BASE = isLocal ? 'http://localhost:3000' : window.location.origin;
 
-// En producción (Netlify), las funciones están en /.netlify/functions/
-const API_CLIENTES = isLocal ? `${API_BASE}/api/clientes` : `${API_BASE}/.netlify/functions/clientes`;
-const API_EQUIPOS = isLocal ? `${API_BASE}/api/equipos` : `${API_BASE}/.netlify/functions/equipos`;
-const API_SERVICIOS = isLocal ? `${API_BASE}/api/servicios` : `${API_BASE}/.netlify/functions/servicios`;
-const API_SERVICIO_EQUIPO = isLocal ? `${API_BASE}/api/servicio-equipo` : `${API_BASE}/.netlify/functions/servicio-equipo`;
-const API_DECOLECTA = isLocal ? `${API_BASE}/api/decolecta` : `${API_BASE}/.netlify/functions/decolecta`;
-const API_URL = `${API_BASE}/api`; // Para compatibilidad
+// Usar /api/* en ambos casos - en Netlify los redirects de netlify.toml redirigen a las funciones
+const API_CLIENTES = `${API_BASE}/api/clientes`;
+const API_EQUIPOS = `${API_BASE}/api/equipos`;
+const API_SERVICIOS = `${API_BASE}/api/servicios`;
+const API_SERVICIO_EQUIPO = `${API_BASE}/api/servicio-equipo`;
+const API_DECOLECTA = `${API_BASE}/api/decolecta`;
+const API_URL = `${API_BASE}/api`;
 
 // ✅ Interceptar fetch para validar URLs
 const originalFetch = window.fetch;
