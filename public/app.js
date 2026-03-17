@@ -1069,7 +1069,9 @@ async function seleccionarClienteServicio(clienteId, clienteNombre) {
             window.clienteSeleccionadoTemp = {
                 _id: clienteId,
                 nombre: clienteNombre,
-                telefono: cliente.telefono || ''
+                dni: cliente.dni || '',
+                telefono: cliente.telefono || '',
+                email: cliente.email || ''
             };
 
             // Mostrar sección de confirmación de teléfono

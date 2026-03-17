@@ -110,12 +110,20 @@ exports.handler = async (event, context) => {
     if (httpMethod === 'POST') {
       console.log('[servicios] POST: Creando nuevo servicio');
       const nuevoServicio = {
+        numero_servicio: body.numero_servicio || '',
+        cliente_id: body.cliente_id || null,
+        equipo_id: body.equipo_id || null,
+        fecha: body.fecha || '',
+        hora: body.hora || '',
+        local: body.local || '',
+        problemas: body.problemas || '',
+        observaciones: body.observaciones || '',
+        monto: parseFloat(body.monto) || 0,
+        adelanto: parseFloat(body.adelanto) || 0,
+        estado: body.estado || 'Pendiente de evaluación',
         nombre_servicio: body.nombre_servicio?.trim() || '',
         categoria: body.categoria?.trim() || '',
         descripcion: body.descripcion?.trim() || '',
-        costo_base: parseFloat(body.costo_base) || 0,
-        tiempo_estimado: parseFloat(body.tiempo_estimado) || 0,
-        estado: body.estado || 'activo',
         notas: body.notas?.trim() || '',
         fecha_creacion: new Date().toISOString(),
         fecha_actualizacion: new Date().toISOString()
