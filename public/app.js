@@ -11,9 +11,51 @@ const API_SERVICIO_EQUIPO = isLocal ? `${API_BASE}/api/servicio-equipo` : `${API
 const API_DECOLECTA = isLocal ? `${API_BASE}/api/decolecta` : `${API_BASE}/.netlify/functions/decolecta`;
 const API_URL = `${API_BASE}/api`; // Para compatibilidad
 
+// ✅ Interceptar fetch para validar URLs
+const originalFetch = window.fetch;
+window.fetch = function(url, options) {
+    // Validar que URL no contenga caracteres especiales o encoding incorrecto
+    if (typeof url === 'string') {
+        const urlStr = url.toLowerCase();
+        // Rechazar URLs con caracteres especiales UTF-8 (replacement character)
+        if (urlStr.includes('%ef%bf%bd') || urlStr.includes('undefined') || urlStr.includes('null')) {
+            console.error('❌ URL INVÁLIDA - Fetch bloqueado:', url);
+            return Promise.reject(new Error('URL inválida: ' + url));
+        }
+    }
+    return originalFetch.apply(this, arguments);
+};
+
 let reniecData = null;
 
 // ==================== UTILIDADES ====================
+
+// ✅ Validar ID antes de hacer requests
+function validarID(id) {
+    if (!id || typeof id !== 'string' || id.trim() === '') {
+        console.error('❌ ID inválido:', id);
+        return null;
+    }
+    return id.trim();
+}
+
+// ✅ Hacer request con manejo de errores
+async function hacerRequest(url, options = {}) {
+    try {
+        console.log(`🔗 Request: ${url}`);
+        const response = await fetch(url, options);
+        
+        if (!response.ok) {
+            console.error(`❌ Error HTTP ${response.status}: ${url}`);
+            return null;
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error(`❌ Error en request: ${error.message}`);
+        return null;
+    }
+}
 
 // Función para obtener icono según tipo de equipo
 function getIconoEquipo(tipo) {
