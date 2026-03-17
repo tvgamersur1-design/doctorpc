@@ -16,8 +16,9 @@ exports.handler = async (event, context) => {
 
   try {
     const method = event.httpMethod;
-    const path = event.path.replace('/.netlify/functions/decolecta', '');
-    const dni = path.split('/')[1];
+    const rawPath = event.rawUrl ? new URL(event.rawUrl).pathname : (event.path || '');
+    const match = rawPath.match(/\/(?:api\/)?decolecta\/([^/?]+)/);
+    const dni = match ? match[1] : null;
 
     // GET /decolecta/:dni
     if (method === 'GET' && dni) {
