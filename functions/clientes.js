@@ -62,9 +62,10 @@ exports.handler = async (event, context) => {
     const db = client.db('doctorpc');
 
     const httpMethod = event.httpMethod;
-    const path = event.path || '';
-    const pathParts = path.split('/');
-    const id = pathParts[pathParts.length - 1];
+    // Extraer ID del path original: /api/clientes/ID o /.netlify/functions/clientes/ID
+    const rawPath = event.rawUrl ? new URL(event.rawUrl).pathname : (event.path || '');
+    const match = rawPath.match(/\/(?:api\/)?clientes\/([^/?]+)/);
+    const id = match ? match[1] : null;
 
     let body = {};
     if (event.body) {
@@ -75,10 +76,10 @@ exports.handler = async (event, context) => {
       }
     }
 
-    console.log(`[clientes] ${httpMethod} - ID: ${id || 'none'}`);
+    console.log(`[clientes] ${httpMethod} path=${rawPath} ID=${id || 'none'}`);
 
     // GET /clientes (list all)
-    if (httpMethod === 'GET' && (!id || id === 'clientes')) {
+    if (httpMethod === 'GET' && !id) {
       console.log('[clientes] Obteniendo lista de clientes...');
       const clientes = await db.collection('clientes').find({}).toArray();
       console.log(`[clientes] ✓ Retornando ${clientes.length} clientes`);
@@ -91,7 +92,7 @@ exports.handler = async (event, context) => {
     }
 
     // GET /clientes/:id
-    if (httpMethod === 'GET' && id && id !== 'clientes') {
+    if (httpMethod === 'GET' && id) {
       console.log(`[clientes] Buscando cliente: ${id}`);
       let cliente = null;
 

@@ -60,9 +60,9 @@ exports.handler = async (event, context) => {
     const db = client.db('doctorpc');
 
     const httpMethod = event.httpMethod;
-    const path = event.path || '';
-    const pathParts = path.split('/');
-    const id = pathParts[pathParts.length - 1];
+    const rawPath = event.rawUrl ? new URL(event.rawUrl).pathname : (event.path || '');
+    const match = rawPath.match(/\/(?:api\/)?servicios\/([^/?]+)/);
+    const id = match ? match[1] : null;
 
     let body = {};
     if (event.body) {
@@ -71,10 +71,10 @@ exports.handler = async (event, context) => {
       } catch (e) {}
     }
 
-    console.log(`[servicios] ${httpMethod} - ID: ${id || 'none'}`);
+    console.log(`[servicios] ${httpMethod} path=${rawPath} ID=${id || 'none'}`);
 
     // GET /servicios
-    if (httpMethod === 'GET' && (!id || id === 'servicios')) {
+    if (httpMethod === 'GET' && !id) {
       console.log('[servicios] Obteniendo lista de servicios...');
       const servicios = await db.collection('servicios').find({}).toArray();
       console.log(`[servicios] ✓ Retornando ${servicios.length} servicios`);
@@ -86,7 +86,7 @@ exports.handler = async (event, context) => {
     }
 
     // GET /servicios/:id
-    if (httpMethod === 'GET' && id && id !== 'servicios') {
+    if (httpMethod === 'GET' && id) {
       console.log(`[servicios] Buscando servicio: ${id}`);
       const servicio = await db.collection('servicios').findOne({ _id: new ObjectId(id) });
 

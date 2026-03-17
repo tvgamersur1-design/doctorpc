@@ -8,28 +8,53 @@ command = "npm run dev"
 port = 3000
 
 [[redirects]]
-from = "/api/clientes*"
-to = "/.netlify/functions/clientes:splat"
+from = "/api/clientes"
+to = "/.netlify/functions/clientes"
 status = 200
 
 [[redirects]]
-from = "/api/equipos*"
-to = "/.netlify/functions/equipos:splat"
+from = "/api/clientes/*"
+to = "/.netlify/functions/clientes"
 status = 200
 
 [[redirects]]
-from = "/api/servicios*"
-to = "/.netlify/functions/servicios:splat"
+from = "/api/equipos"
+to = "/.netlify/functions/equipos"
 status = 200
 
 [[redirects]]
-from = "/api/servicio-equipo*"
-to = "/.netlify/functions/servicio-equipo:splat"
+from = "/api/equipos/*"
+to = "/.netlify/functions/equipos"
 status = 200
 
 [[redirects]]
-from = "/api/decolecta*"
-to = "/.netlify/functions/decolecta:splat"
+from = "/api/servicios"
+to = "/.netlify/functions/servicios"
+status = 200
+
+[[redirects]]
+from = "/api/servicios/*"
+to = "/.netlify/functions/servicios"
+status = 200
+
+[[redirects]]
+from = "/api/servicio-equipo"
+to = "/.netlify/functions/servicio-equipo"
+status = 200
+
+[[redirects]]
+from = "/api/servicio-equipo/*"
+to = "/.netlify/functions/servicio-equipo"
+status = 200
+
+[[redirects]]
+from = "/api/decolecta"
+to = "/.netlify/functions/decolecta"
+status = 200
+
+[[redirects]]
+from = "/api/decolecta/*"
+to = "/.netlify/functions/decolecta"
 status = 200
 
 [context.production.environment]

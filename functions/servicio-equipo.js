@@ -60,9 +60,9 @@ exports.handler = async (event, context) => {
     const db = client.db('doctorpc');
 
     const httpMethod = event.httpMethod;
-    const path = event.path || '';
-    const pathParts = path.split('/');
-    const id = pathParts[pathParts.length - 1];
+    const rawPath = event.rawUrl ? new URL(event.rawUrl).pathname : (event.path || '');
+    const match = rawPath.match(/\/(?:api\/)?servicio-equipo\/([^/?]+)/);
+    const id = match ? match[1] : null;
 
     let body = {};
     if (event.body) {
@@ -71,10 +71,10 @@ exports.handler = async (event, context) => {
       } catch (e) {}
     }
 
-    console.log(`[servicio-equipo] ${httpMethod} - ID: ${id || 'none'}`);
+    console.log(`[servicio-equipo] ${httpMethod} path=${rawPath} ID=${id || 'none'}`);
 
     // GET /servicio-equipo
-    if (httpMethod === 'GET' && (!id || id === 'servicio-equipo')) {
+    if (httpMethod === 'GET' && !id) {
       console.log('[servicio-equipo] Obteniendo lista de órdenes...');
       const servicioEquipo = await db.collection('servicio_equipo').find({}).toArray();
       console.log(`[servicio-equipo] ✓ Retornando ${servicioEquipo.length} órdenes`);
@@ -86,7 +86,7 @@ exports.handler = async (event, context) => {
     }
 
     // GET /servicio-equipo/:id
-    if (httpMethod === 'GET' && id && id !== 'servicio-equipo') {
+    if (httpMethod === 'GET' && id) {
       console.log(`[servicio-equipo] Buscando orden: ${id}`);
       const servicio = await db.collection('servicio_equipo').findOne({ _id: new ObjectId(id) });
 

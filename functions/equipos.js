@@ -60,9 +60,9 @@ exports.handler = async (event, context) => {
     const db = client.db('doctorpc');
 
     const httpMethod = event.httpMethod;
-    const path = event.path || '';
-    const pathParts = path.split('/');
-    const id = pathParts[pathParts.length - 1];
+    const rawPath = event.rawUrl ? new URL(event.rawUrl).pathname : (event.path || '');
+    const match = rawPath.match(/\/(?:api\/)?equipos\/([^/?]+)/);
+    const id = match ? match[1] : null;
 
     let body = {};
     if (event.body) {
@@ -71,10 +71,10 @@ exports.handler = async (event, context) => {
       } catch (e) {}
     }
 
-    console.log(`[equipos] ${httpMethod} - ID: ${id || 'none'}`);
+    console.log(`[equipos] ${httpMethod} path=${rawPath} ID=${id || 'none'}`);
 
     // GET /equipos
-    if (httpMethod === 'GET' && (!id || id === 'equipos')) {
+    if (httpMethod === 'GET' && !id) {
       console.log('[equipos] Obteniendo lista de equipos...');
       const equipos = await db.collection('equipos').find({}).toArray();
       console.log(`[equipos] ✓ Retornando ${equipos.length} equipos`);
@@ -86,7 +86,7 @@ exports.handler = async (event, context) => {
     }
 
     // GET /equipos/:id
-    if (httpMethod === 'GET' && id && id !== 'equipos') {
+    if (httpMethod === 'GET' && id) {
       console.log(`[equipos] Buscando equipo: ${id}`);
       const equipo = await db.collection('equipos').findOne({ _id: new ObjectId(id) });
 
