@@ -1,9 +1,36 @@
 const { MongoClient, ObjectId } = require('mongodb');
 
+let cachedClient = null;
+
+async function getMongoClient() {
+  if (cachedClient) {
+    console.log('[equipos] ✓ Usando cliente MongoDB cacheado');
+    return cachedClient;
+  }
+  
+  const MONGODB_URI = process.env.MONGODB_URI;
+  if (!MONGODB_URI) {
+    throw new Error('MONGODB_URI no configurado');
+  }
+  
+  console.log('[equipos] 🔗 Creando nueva conexión a MongoDB...');
+  const client = new MongoClient(MONGODB_URI, {
+    serverSelectionTimeoutMS: 15000,
+    connectTimeoutMS: 15000,
+    socketTimeoutMS: 25000,
+    maxPoolSize: 5,
+    minPoolSize: 1,
+    retryWrites: true
+  });
+  
+  await client.connect();
+  cachedClient = client;
+  console.log('[equipos] ✓ Conectado a MongoDB');
+  return client;
+}
+
 exports.handler = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
-
-  let client;
 
   try {
     const MONGODB_URI = process.env.MONGODB_URI;
@@ -12,19 +39,11 @@ exports.handler = async (event, context) => {
       return {
         statusCode: 500,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'MONGODB_URI not configured' })
+        body: JSON.stringify({ error: 'MONGODB_URI no configurado' })
       };
     }
 
-    client = new MongoClient(MONGODB_URI, {
-      serverSelectionTimeoutMS: 30000,
-      connectTimeoutMS: 30000,
-      socketTimeoutMS: 45000,
-      maxPoolSize: 10,
-      minPoolSize: 1
-    });
-
-    await client.connect();
+    const client = await getMongoClient();
     const db = client.db('doctorpc');
 
     const httpMethod = event.httpMethod;
@@ -43,8 +62,9 @@ exports.handler = async (event, context) => {
 
     // GET /equipos
     if (httpMethod === 'GET' && (!id || id === 'equipos')) {
+      console.log('[equipos] Obteniendo lista de equipos...');
       const equipos = await db.collection('equipos').find({}).toArray();
-      await client.close();
+      console.log(`[equipos] ✓ Retornando ${equipos.length} equipos`);
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
@@ -54,9 +74,9 @@ exports.handler = async (event, context) => {
 
     // GET /equipos/:id
     if (httpMethod === 'GET' && id && id !== 'equipos') {
+      console.log(`[equipos] Buscando equipo: ${id}`);
       const equipo = await db.collection('equipos').findOne({ _id: new ObjectId(id) });
-      await client.close();
-      
+
       if (!equipo) {
         return {
           statusCode: 404,
@@ -64,6 +84,8 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({ error: 'Equipo no encontrado' })
         };
       }
+
+      console.log(`[equipos] ✓ Equipo encontrado: ${equipo.modelo}`);
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
@@ -73,9 +95,10 @@ exports.handler = async (event, context) => {
 
     // POST /equipos
     if (httpMethod === 'POST') {
+      console.log('[equipos] POST: Creando nuevo equipo');
       const nuevoEquipo = {
         cliente_id: body.cliente_id || null,
-        tipo_equipo: body.tipo_equipo || '',
+        tipo_equipo: body.tipo_equipo,
         marca: body.marca?.trim() || '',
         modelo: body.modelo?.trim() || '',
         numero_serie: body.numero_serie?.trim() || '',
@@ -91,8 +114,8 @@ exports.handler = async (event, context) => {
       };
 
       const result = await db.collection('equipos').insertOne(nuevoEquipo);
-      await client.close();
-      
+      console.log(`[equipos] ✓ Equipo creado: ${result.insertedId}`);
+
       return {
         statusCode: 201,
         headers: { 'Content-Type': 'application/json' },
@@ -102,6 +125,7 @@ exports.handler = async (event, context) => {
 
     // PUT /equipos/:id
     if (httpMethod === 'PUT' && id) {
+      console.log(`[equipos] PUT: Actualizando equipo ${id}`);
       const updateData = {
         ...body,
         fecha_actualizacion: new Date().toISOString()
@@ -114,8 +138,6 @@ exports.handler = async (event, context) => {
         { returnDocument: 'after' }
       );
 
-      await client.close();
-
       if (!result.value) {
         return {
           statusCode: 404,
@@ -124,6 +146,7 @@ exports.handler = async (event, context) => {
         };
       }
 
+      console.log(`[equipos] ✓ Equipo actualizado: ${id}`);
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
@@ -133,8 +156,8 @@ exports.handler = async (event, context) => {
 
     // DELETE /equipos/:id
     if (httpMethod === 'DELETE' && id) {
+      console.log(`[equipos] DELETE: Eliminando equipo ${id}`);
       const result = await db.collection('equipos').deleteOne({ _id: new ObjectId(id) });
-      await client.close();
 
       if (result.deletedCount === 0) {
         return {
@@ -144,14 +167,13 @@ exports.handler = async (event, context) => {
         };
       }
 
+      console.log(`[equipos] ✓ Equipo eliminado: ${id}`);
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ success: true })
       };
     }
-
-    await client.close();
 
     return {
       statusCode: 405,
@@ -160,17 +182,16 @@ exports.handler = async (event, context) => {
     };
 
   } catch (error) {
-    console.error('[equipos] Error:', error.message);
-    if (client) {
-      try {
-        await client.close();
-      } catch (e) {}
-    }
+    console.error('[equipos] ❌ Error:', error.message);
+    console.error('[equipos] Stack:', error.stack);
 
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: error.message || 'Internal Server Error' })
+      body: JSON.stringify({
+        error: error.message || 'Internal Server Error',
+        type: error.constructor.name
+      })
     };
   }
 };

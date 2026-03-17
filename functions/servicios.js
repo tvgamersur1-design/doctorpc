@@ -1,9 +1,36 @@
 const { MongoClient, ObjectId } = require('mongodb');
 
+let cachedClient = null;
+
+async function getMongoClient() {
+  if (cachedClient) {
+    console.log('[servicios] ✓ Usando cliente MongoDB cacheado');
+    return cachedClient;
+  }
+  
+  const MONGODB_URI = process.env.MONGODB_URI;
+  if (!MONGODB_URI) {
+    throw new Error('MONGODB_URI no configurado');
+  }
+  
+  console.log('[servicios] 🔗 Creando nueva conexión a MongoDB...');
+  const client = new MongoClient(MONGODB_URI, {
+    serverSelectionTimeoutMS: 15000,
+    connectTimeoutMS: 15000,
+    socketTimeoutMS: 25000,
+    maxPoolSize: 5,
+    minPoolSize: 1,
+    retryWrites: true
+  });
+  
+  await client.connect();
+  cachedClient = client;
+  console.log('[servicios] ✓ Conectado a MongoDB');
+  return client;
+}
+
 exports.handler = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
-
-  let client;
 
   try {
     const MONGODB_URI = process.env.MONGODB_URI;
@@ -12,19 +39,11 @@ exports.handler = async (event, context) => {
       return {
         statusCode: 500,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'MONGODB_URI not configured' })
+        body: JSON.stringify({ error: 'MONGODB_URI no configurado' })
       };
     }
 
-    client = new MongoClient(MONGODB_URI, {
-      serverSelectionTimeoutMS: 30000,
-      connectTimeoutMS: 30000,
-      socketTimeoutMS: 45000,
-      maxPoolSize: 10,
-      minPoolSize: 1
-    });
-
-    await client.connect();
+    const client = await getMongoClient();
     const db = client.db('doctorpc');
 
     const httpMethod = event.httpMethod;
@@ -43,8 +62,9 @@ exports.handler = async (event, context) => {
 
     // GET /servicios
     if (httpMethod === 'GET' && (!id || id === 'servicios')) {
+      console.log('[servicios] Obteniendo lista de servicios...');
       const servicios = await db.collection('servicios').find({}).toArray();
-      await client.close();
+      console.log(`[servicios] ✓ Retornando ${servicios.length} servicios`);
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
@@ -54,9 +74,9 @@ exports.handler = async (event, context) => {
 
     // GET /servicios/:id
     if (httpMethod === 'GET' && id && id !== 'servicios') {
+      console.log(`[servicios] Buscando servicio: ${id}`);
       const servicio = await db.collection('servicios').findOne({ _id: new ObjectId(id) });
-      await client.close();
-      
+
       if (!servicio) {
         return {
           statusCode: 404,
@@ -64,6 +84,8 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({ error: 'Servicio no encontrado' })
         };
       }
+
+      console.log(`[servicios] ✓ Servicio encontrado: ${servicio.nombre_servicio}`);
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
@@ -73,20 +95,22 @@ exports.handler = async (event, context) => {
 
     // POST /servicios
     if (httpMethod === 'POST') {
+      console.log('[servicios] POST: Creando nuevo servicio');
       const nuevoServicio = {
-        nombre_servicio: body.nombre_servicio || '',
-        categoria: body.categoria || '',
-        costo_base: body.costo_base || 0,
-        tiempo_estimado: body.tiempo_estimado || 0,
+        nombre_servicio: body.nombre_servicio?.trim() || '',
+        categoria: body.categoria?.trim() || '',
         descripcion: body.descripcion?.trim() || '',
+        costo_base: parseFloat(body.costo_base) || 0,
+        tiempo_estimado: parseFloat(body.tiempo_estimado) || 0,
         estado: body.estado || 'activo',
+        notas: body.notas?.trim() || '',
         fecha_creacion: new Date().toISOString(),
         fecha_actualizacion: new Date().toISOString()
       };
 
       const result = await db.collection('servicios').insertOne(nuevoServicio);
-      await client.close();
-      
+      console.log(`[servicios] ✓ Servicio creado: ${result.insertedId}`);
+
       return {
         statusCode: 201,
         headers: { 'Content-Type': 'application/json' },
@@ -96,6 +120,7 @@ exports.handler = async (event, context) => {
 
     // PUT /servicios/:id
     if (httpMethod === 'PUT' && id) {
+      console.log(`[servicios] PUT: Actualizando servicio ${id}`);
       const updateData = {
         ...body,
         fecha_actualizacion: new Date().toISOString()
@@ -108,8 +133,6 @@ exports.handler = async (event, context) => {
         { returnDocument: 'after' }
       );
 
-      await client.close();
-
       if (!result.value) {
         return {
           statusCode: 404,
@@ -118,6 +141,7 @@ exports.handler = async (event, context) => {
         };
       }
 
+      console.log(`[servicios] ✓ Servicio actualizado: ${id}`);
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
@@ -127,8 +151,8 @@ exports.handler = async (event, context) => {
 
     // DELETE /servicios/:id
     if (httpMethod === 'DELETE' && id) {
+      console.log(`[servicios] DELETE: Eliminando servicio ${id}`);
       const result = await db.collection('servicios').deleteOne({ _id: new ObjectId(id) });
-      await client.close();
 
       if (result.deletedCount === 0) {
         return {
@@ -138,14 +162,13 @@ exports.handler = async (event, context) => {
         };
       }
 
+      console.log(`[servicios] ✓ Servicio eliminado: ${id}`);
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ success: true })
       };
     }
-
-    await client.close();
 
     return {
       statusCode: 405,
@@ -154,17 +177,16 @@ exports.handler = async (event, context) => {
     };
 
   } catch (error) {
-    console.error('[servicios] Error:', error.message);
-    if (client) {
-      try {
-        await client.close();
-      } catch (e) {}
-    }
+    console.error('[servicios] ❌ Error:', error.message);
+    console.error('[servicios] Stack:', error.stack);
 
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: error.message || 'Internal Server Error' })
+      body: JSON.stringify({
+        error: error.message || 'Internal Server Error',
+        type: error.constructor.name
+      })
     };
   }
 };

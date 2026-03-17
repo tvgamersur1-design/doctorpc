@@ -75,7 +75,8 @@ exports.handler = async (event, context) => {
       headers: { 'Content-Type': 'application/json' }
     };
   } catch (error) {
-    console.error('Error DECOLECTA:', error.response?.data || error.message);
+    console.error('❌ Error DECOLECTA:', error.response?.data || error.message);
+    console.error('   Stack:', error.stack);
     const statusCode = error.response?.status || 500;
     const errorMsg = error.response?.data?.message || error.message || 'Error al consultar DECOLECTA';
     

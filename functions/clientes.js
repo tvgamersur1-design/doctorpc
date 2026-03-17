@@ -1,5 +1,34 @@
 const { MongoClient, ObjectId } = require('mongodb');
 
+let cachedClient = null;
+
+async function getMongoClient() {
+  if (cachedClient) {
+    console.log('[clientes] ✓ Usando cliente MongoDB cacheado');
+    return cachedClient;
+  }
+  
+  const MONGODB_URI = process.env.MONGODB_URI;
+  if (!MONGODB_URI) {
+    throw new Error('MONGODB_URI no configurado');
+  }
+  
+  console.log('[clientes] 🔗 Creando nueva conexión a MongoDB...');
+  const client = new MongoClient(MONGODB_URI, {
+    serverSelectionTimeoutMS: 15000,
+    connectTimeoutMS: 15000,
+    socketTimeoutMS: 25000,
+    maxPoolSize: 5,
+    minPoolSize: 1,
+    retryWrites: true
+  });
+  
+  await client.connect();
+  cachedClient = client;
+  console.log('[clientes] ✓ Conectado a MongoDB');
+  return client;
+}
+
 exports.handler = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
 
@@ -12,20 +41,11 @@ exports.handler = async (event, context) => {
       return {
         statusCode: 500,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'MONGODB_URI not configured' })
+        body: JSON.stringify({ error: 'MONGODB_URI no configurado' })
       };
     }
 
-    // Crear nuevo cliente para cada request (simplifica timeout issues)
-    client = new MongoClient(MONGODB_URI, {
-      serverSelectionTimeoutMS: 30000,
-      connectTimeoutMS: 30000,
-      socketTimeoutMS: 45000,
-      maxPoolSize: 10,
-      minPoolSize: 1
-    });
-
-    await client.connect();
+    client = await getMongoClient();
     const db = client.db('doctorpc');
 
     const httpMethod = event.httpMethod;
@@ -46,9 +66,9 @@ exports.handler = async (event, context) => {
 
     // GET /clientes (list all)
     if (httpMethod === 'GET' && (!id || id === 'clientes')) {
+      console.log('[clientes] Obteniendo lista de clientes...');
       const clientes = await db.collection('clientes').find({}).toArray();
-      
-      await client.close();
+      console.log(`[clientes] ✓ Retornando ${clientes.length} clientes`);
       
       return {
         statusCode: 200,
@@ -59,6 +79,7 @@ exports.handler = async (event, context) => {
 
     // GET /clientes/:id
     if (httpMethod === 'GET' && id && id !== 'clientes') {
+      console.log(`[clientes] Buscando cliente: ${id}`);
       let cliente = null;
 
       if (ObjectId.isValid(id)) {
@@ -69,8 +90,6 @@ exports.handler = async (event, context) => {
         cliente = await db.collection('clientes').findOne({ dni: id });
       }
 
-      await client.close();
-
       if (!cliente) {
         return {
           statusCode: 404,
@@ -79,6 +98,7 @@ exports.handler = async (event, context) => {
         };
       }
 
+      console.log(`[clientes] ✓ Cliente encontrado: ${cliente.nombre}`);
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
@@ -88,6 +108,7 @@ exports.handler = async (event, context) => {
 
     // POST /clientes (create)
     if (httpMethod === 'POST') {
+      console.log('[clientes] POST: Creando nuevo cliente');
       const nuevoCliente = {
         nombre: body.nombre?.trim() || '',
         apellido_paterno: body.apellido_paterno?.trim() || '',
@@ -108,8 +129,7 @@ exports.handler = async (event, context) => {
       };
 
       const result = await db.collection('clientes').insertOne(nuevoCliente);
-
-      await client.close();
+      console.log(`[clientes] ✓ Cliente creado: ${result.insertedId}`);
 
       return {
         statusCode: 201,
@@ -120,6 +140,7 @@ exports.handler = async (event, context) => {
 
     // PUT /clientes/:id (update)
     if (httpMethod === 'PUT' && id) {
+      console.log(`[clientes] PUT: Actualizando cliente ${id}`);
       const updateData = {
         ...body,
         fecha_actualizacion: new Date().toISOString()
@@ -132,8 +153,6 @@ exports.handler = async (event, context) => {
         { returnDocument: 'after' }
       );
 
-      await client.close();
-
       if (!result.value) {
         return {
           statusCode: 404,
@@ -142,6 +161,7 @@ exports.handler = async (event, context) => {
         };
       }
 
+      console.log(`[clientes] ✓ Cliente actualizado: ${id}`);
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
@@ -151,9 +171,8 @@ exports.handler = async (event, context) => {
 
     // DELETE /clientes/:id
     if (httpMethod === 'DELETE' && id) {
+      console.log(`[clientes] DELETE: Eliminando cliente ${id}`);
       const result = await db.collection('clientes').deleteOne({ _id: new ObjectId(id) });
-
-      await client.close();
 
       if (result.deletedCount === 0) {
         return {
@@ -163,14 +182,13 @@ exports.handler = async (event, context) => {
         };
       }
 
+      console.log(`[clientes] ✓ Cliente eliminado: ${id}`);
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ success: true })
       };
     }
-
-    await client.close();
 
     return {
       statusCode: 405,
@@ -179,15 +197,8 @@ exports.handler = async (event, context) => {
     };
 
   } catch (error) {
-    console.error('[clientes] Error:', error.message);
-    
-    if (client) {
-      try {
-        await client.close();
-      } catch (e) {
-        // Ignorar error al cerrar
-      }
-    }
+    console.error('[clientes] ❌ Error:', error.message);
+    console.error('[clientes] Stack:', error.stack);
 
     return {
       statusCode: 500,

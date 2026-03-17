@@ -1,9 +1,36 @@
 const { MongoClient, ObjectId } = require('mongodb');
 
+let cachedClient = null;
+
+async function getMongoClient() {
+  if (cachedClient) {
+    console.log('[servicio-equipo] ✓ Usando cliente MongoDB cacheado');
+    return cachedClient;
+  }
+  
+  const MONGODB_URI = process.env.MONGODB_URI;
+  if (!MONGODB_URI) {
+    throw new Error('MONGODB_URI no configurado');
+  }
+  
+  console.log('[servicio-equipo] 🔗 Creando nueva conexión a MongoDB...');
+  const client = new MongoClient(MONGODB_URI, {
+    serverSelectionTimeoutMS: 15000,
+    connectTimeoutMS: 15000,
+    socketTimeoutMS: 25000,
+    maxPoolSize: 5,
+    minPoolSize: 1,
+    retryWrites: true
+  });
+  
+  await client.connect();
+  cachedClient = client;
+  console.log('[servicio-equipo] ✓ Conectado a MongoDB');
+  return client;
+}
+
 exports.handler = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
-
-  let client;
 
   try {
     const MONGODB_URI = process.env.MONGODB_URI;
@@ -12,19 +39,11 @@ exports.handler = async (event, context) => {
       return {
         statusCode: 500,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'MONGODB_URI not configured' })
+        body: JSON.stringify({ error: 'MONGODB_URI no configurado' })
       };
     }
 
-    client = new MongoClient(MONGODB_URI, {
-      serverSelectionTimeoutMS: 30000,
-      connectTimeoutMS: 30000,
-      socketTimeoutMS: 45000,
-      maxPoolSize: 10,
-      minPoolSize: 1
-    });
-
-    await client.connect();
+    const client = await getMongoClient();
     const db = client.db('doctorpc');
 
     const httpMethod = event.httpMethod;
@@ -43,8 +62,9 @@ exports.handler = async (event, context) => {
 
     // GET /servicio-equipo
     if (httpMethod === 'GET' && (!id || id === 'servicio-equipo')) {
+      console.log('[servicio-equipo] Obteniendo lista de órdenes...');
       const servicioEquipo = await db.collection('servicio_equipo').find({}).toArray();
-      await client.close();
+      console.log(`[servicio-equipo] ✓ Retornando ${servicioEquipo.length} órdenes`);
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
@@ -52,12 +72,36 @@ exports.handler = async (event, context) => {
       };
     }
 
+    // GET /servicio-equipo/:id
+    if (httpMethod === 'GET' && id && id !== 'servicio-equipo') {
+      console.log(`[servicio-equipo] Buscando orden: ${id}`);
+      const servicio = await db.collection('servicio_equipo').findOne({ _id: new ObjectId(id) });
+
+      if (!servicio) {
+        return {
+          statusCode: 404,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ error: 'Orden no encontrada' })
+        };
+      }
+
+      console.log(`[servicio-equipo] ✓ Orden encontrada: ${servicio.numero_orden}`);
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(servicio)
+      };
+    }
+
     // POST /servicio-equipo
     if (httpMethod === 'POST') {
+      console.log('[servicio-equipo] POST: Creando nueva orden');
+      
+      // Generar numero_orden único
       let numeroOrden;
       let exists = true;
       let contador = 1;
-
+      
       while (exists) {
         numeroOrden = `OS${String(contador).padStart(3, '0')}`;
         const doc = await db.collection('servicio_equipo').findOne({ numero_orden: numeroOrden });
@@ -65,25 +109,32 @@ exports.handler = async (event, context) => {
         contador++;
       }
 
-      const nuevoServicioEquipo = {
+      const nuevoServicio = {
         numero_orden: numeroOrden,
+        cliente_id: body.cliente_id || null,
+        equipo_id: body.equipo_id || null,
+        servicios: body.servicios || [],
+        costo_total: body.costo_total || 0,
+        estado: body.estado || 'Pendiente de evaluación',
+        descripcion_problema: body.descripcion_problema?.trim() || '',
+        observaciones: body.observaciones?.trim() || '',
         fecha_creacion: new Date().toISOString(),
-        fecha_actualizacion: new Date().toISOString(),
-        ...body
+        fecha_actualizacion: new Date().toISOString()
       };
 
-      const result = await db.collection('servicio_equipo').insertOne(nuevoServicioEquipo);
-      await client.close();
-      
+      const result = await db.collection('servicio_equipo').insertOne(nuevoServicio);
+      console.log(`[servicio-equipo] ✓ Orden creada: ${numeroOrden}`);
+
       return {
         statusCode: 201,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...nuevoServicioEquipo, _id: result.insertedId })
+        body: JSON.stringify({ ...nuevoServicio, _id: result.insertedId })
       };
     }
 
     // PUT /servicio-equipo/:id
     if (httpMethod === 'PUT' && id) {
+      console.log(`[servicio-equipo] PUT: Actualizando orden ${id}`);
       const updateData = {
         ...body,
         fecha_actualizacion: new Date().toISOString()
@@ -96,16 +147,15 @@ exports.handler = async (event, context) => {
         { returnDocument: 'after' }
       );
 
-      await client.close();
-
       if (!result.value) {
         return {
           statusCode: 404,
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ error: 'Servicio-equipo no encontrado' })
+          body: JSON.stringify({ error: 'Orden no encontrada' })
         };
       }
 
+      console.log(`[servicio-equipo] ✓ Orden actualizada: ${id}`);
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
@@ -115,25 +165,24 @@ exports.handler = async (event, context) => {
 
     // DELETE /servicio-equipo/:id
     if (httpMethod === 'DELETE' && id) {
+      console.log(`[servicio-equipo] DELETE: Eliminando orden ${id}`);
       const result = await db.collection('servicio_equipo').deleteOne({ _id: new ObjectId(id) });
-      await client.close();
 
       if (result.deletedCount === 0) {
         return {
           statusCode: 404,
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ error: 'Servicio-equipo no encontrado' })
+          body: JSON.stringify({ error: 'Orden no encontrada' })
         };
       }
 
+      console.log(`[servicio-equipo] ✓ Orden eliminada: ${id}`);
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ success: true })
       };
     }
-
-    await client.close();
 
     return {
       statusCode: 405,
@@ -142,17 +191,16 @@ exports.handler = async (event, context) => {
     };
 
   } catch (error) {
-    console.error('[servicio-equipo] Error:', error.message);
-    if (client) {
-      try {
-        await client.close();
-      } catch (e) {}
-    }
+    console.error('[servicio-equipo] ❌ Error:', error.message);
+    console.error('[servicio-equipo] Stack:', error.stack);
 
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: error.message || 'Internal Server Error' })
+      body: JSON.stringify({
+        error: error.message || 'Internal Server Error',
+        type: error.constructor.name
+      })
     };
   }
 };
