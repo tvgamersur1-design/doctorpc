@@ -924,8 +924,7 @@ async function abrirModalNuevoServicio() {
         document.getElementById('cliente_id').value = '';
         document.getElementById('clienteSeleccionado').value = '';
 
-        // ✅ MEJORA: Deshabilitar botón de equipo hasta que se seleccione cliente
-        document.getElementById('btnBuscarEquipo').disabled = true;
+        document.getElementById('btnBuscarEquipo').disabled = false;
 
         // Limpiar selección de equipo
         document.getElementById('equipo_id').value = '';
@@ -1169,12 +1168,7 @@ async function cargarEquiposDelCliente(clienteId) {
 
 // NUEVO: Abrirmodal equipos desde botón "Buscar"
 async function abrirModalEquiposDelCliente() {
-    const clienteId = window.clienteIdActual;
-
-    if (!clienteId) {
-        alert('❌ Selecciona un cliente primero');
-        return;
-    }
+    const clienteId = window.clienteIdActual || null;
 
     try {
         const response = await fetch(`${API_EQUIPOS}`);
