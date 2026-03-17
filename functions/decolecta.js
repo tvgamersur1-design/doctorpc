@@ -36,6 +36,11 @@ exports.handler = async (event, context) => {
       const decolectaUrl = process.env.DECOLECTA_URL || 'https://api.decolecta.com';
       const apiKey = process.env.DECOLECTA_API_KEY;
 
+      console.log('DEBUG ENV - DECOLECTA_API_KEY existe:', !!apiKey);
+      console.log('DEBUG ENV - DECOLECTA_API_KEY length:', apiKey ? apiKey.length : 0);
+      console.log('DEBUG ENV - DECOLECTA_API_KEY prefix:', apiKey ? apiKey.substring(0, 8) + '...' : 'N/A');
+      console.log('DEBUG ENV - DECOLECTA_URL:', decolectaUrl);
+
       if (!apiKey) {
         return {
           statusCode: 500,
