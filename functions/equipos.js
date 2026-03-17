@@ -151,7 +151,7 @@ exports.handler = async (event, context) => {
         { returnDocument: 'after' }
       );
 
-      if (!result.value) {
+      if (!result) {
         return {
           statusCode: 404,
           headers,
@@ -163,7 +163,7 @@ exports.handler = async (event, context) => {
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify(result.value)
+        body: JSON.stringify(result)
       };
     }
 
