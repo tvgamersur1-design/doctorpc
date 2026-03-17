@@ -3599,13 +3599,6 @@ function cerrarModalNuevoEquipo() {
 
 // Abrir modal seleccionar equipo
 async function abrirModalSeleccionarEquipo() {
-    const clienteId = window.clienteIdActual;
-
-    if (!clienteId) {
-        alert('❌ Selecciona un cliente primero');
-        return;
-    }
-
     // Mostrar modal
     document.getElementById('modalSeleccionarEquipo').classList.add('show');
     
