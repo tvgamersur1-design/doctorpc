@@ -3092,6 +3092,7 @@ function generarMensajeWhatsApp(problemas, montoTotal, nombreTecnico) {
 // Abrir modal con todos los detalles del servicio
 async function abrirModalDetallesServicio(servicioId) {
     try {
+        mostrarModalCarga('Cargando detalles...');
         const serviciosRes = await fetch(`${API_SERVICIOS}`);
         const servicios = await serviciosRes.json();
         const servicio = servicios.find(s => s._id === servicioId);
@@ -3510,10 +3511,12 @@ async function abrirModalDetallesServicio(servicioId) {
              </div>
          `;
 
+         cerrarModalCarga();
          document.body.appendChild(modal);
         
         console.log('✅ Modal de detalles abierto:', servicio);
     } catch (error) {
+        cerrarModalCarga();
         console.error('❌ Error:', error);
         alert('Error al cargar detalles del servicio: ' + error.message);
     }
