@@ -320,6 +320,7 @@ async function cargarClientes() {
         container.innerHTML = html;
     } catch (error) {
         console.error('Error al cargar clientes:', error);
+        container.innerHTML = '<div class="error-message">Error al cargar clientes</div>';
     }
 }
 
@@ -1979,17 +1980,19 @@ async function cargarServicios() {
             }
 
             const equipoStr = equipo ? `${equipo.tipo_equipo} ${equipo.marca || ''}`.trim() : 'N/A';
-            const descripcionStr = srv.problemas ? srv.problemas.substring(0, 40) + (srv.problemas.length > 40 ? '...' : '') : 'N/A';
+            const problemasRaw = srv.problemas_reportados || srv.problemas || '';
+            const problemasTexto = Array.isArray(problemasRaw) ? problemasRaw.join(', ') : String(problemasRaw);
+            const descripcionStr = problemasTexto ? problemasTexto.substring(0, 40) + (problemasTexto.length > 40 ? '...' : '') : 'N/A';
 
             html += `
                 <tr class="row-servicio" data-numero="${srv.numero_servicio}" data-cliente="${cliente ? cliente.nombre.toLowerCase() : ''}" 
-                    data-estado="${srv.estado.toLowerCase()}" data-equipo="${equipoStr.toLowerCase()}" data-problemas="${(srv.problemas || '').toLowerCase()}" data-local="${(srv.local || '').toLowerCase()}">
+                    data-estado="${srv.estado.toLowerCase()}" data-equipo="${equipoStr.toLowerCase()}" data-problemas="${problemasTexto.toLowerCase()}" data-local="${(srv.local || '').toLowerCase()}">
                     <td><strong>${srv.numero_servicio || 'N/A'}</strong></td>
                     <td>${new Date(srv.fecha).toLocaleDateString('es-PE')}</td>
                     <td><span style="padding: 4px 8px; border-radius: 4px; font-weight: 600; ${srv.local === 'Ferreñafe' ? 'background: #C8E6C9; color: #2E7D32;' : 'background: #BBDEFB; color: #1565C0;'}">${srv.local || 'N/A'}</span></td>
                     <td>${cliente ? cliente.nombre : 'N/A'}</td>
                     <td>${equipoStr}</td>
-                    <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${srv.problemas || ''}">${descripcionStr}</td>
+                    <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${problemasTexto}">${descripcionStr}</td>
                     <td>${estadoBadge}</td>
                     <td><strong>${costoTotal > 0 ? '$' + costoTotal.toFixed(2) : '-'}</strong></td>
                     <td class="actions">
@@ -2024,6 +2027,7 @@ async function cargarServicios() {
         container.innerHTML = html;
     } catch (error) {
         console.error('Error:', error);
+        container.innerHTML = '<div class="error-message">Error al cargar servicios</div>';
     }
 }
 
@@ -3734,6 +3738,9 @@ async function abrirModalConfirmarEquipo(equipoId) {
             return;
         }
         
+        // Limpiar edición previa
+        window.equipoEditado = null;
+        
         // Guardar ID y datos del equipo seleccionado
         window.equipoSeleccionadoId = equipoId;
         window.equipoSeleccionadoTipo = equipo.tipo_equipo;
@@ -3851,14 +3858,22 @@ function guardarCambiosEquipoConfirm() {
         return;
     }
     
-    // Guardar datos editados en variables temporales
-    window.equipoEditado = {
-        cliente_id: document.getElementById('cliente_id').value,
-        tipo_equipo: nuevoTipo,
-        marca: nuevaMarca || '',
-        modelo: nuevoModelo || '',
-        numero_serie: nuevaSerie || ''
-    };
+    // Solo marcar como editado si realmente hubo cambios
+    const hayCambios = nuevoTipo !== (window.equipoSeleccionadoTipo || '') ||
+        (nuevaMarca || '') !== (window.equipoSeleccionadoMarca || '') ||
+        (nuevoModelo || '') !== (window.equipoSeleccionadoModelo || '') ||
+        (nuevaSerie || '') !== (window.equipoSeleccionadoSerie || '');
+    
+    if (hayCambios) {
+        window.equipoEditado = {
+            tipo_equipo: nuevoTipo,
+            marca: nuevaMarca || '',
+            modelo: nuevoModelo || '',
+            numero_serie: nuevaSerie || ''
+        };
+    } else {
+        window.equipoEditado = null;
+    }
     
     // Actualizar vista normal con los nuevos datos
     const icono = getIconoEquipo(nuevoTipo);
@@ -3890,12 +3905,7 @@ async function confirmarSeleccionEquipo() {
         
         // Si se editó el equipo, crear nuevo equipo en BD
         if (window.equipoEditado) {
-            console.log('📤 Enviando equipo editado:', window.equipoEditado);
-            console.log('   (Equipo existente será reemplazado)');
-            
-            if (!window.equipoEditado.cliente_id) {
-                throw new Error('cliente_id no está presente');
-            }
+            console.log('📤 Creando nuevo equipo con datos editados:', window.equipoEditado);
             
             if (!window.equipoEditado.tipo_equipo) {
                 throw new Error('tipo_equipo no está presente');
@@ -4073,6 +4083,7 @@ async function cargarEquipos() {
         container.innerHTML = html;
     } catch (error) {
         console.error('Error:', error);
+        container.innerHTML = '<div class="error-message">Error al cargar equipos</div>';
     }
 }
 
