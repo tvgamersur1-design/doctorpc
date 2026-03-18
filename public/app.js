@@ -261,10 +261,15 @@ async function guardarClienteDesdeModal(e) {
 }
 
 async function cargarClientes() {
+    const container = document.getElementById('clientesContainer');
+    container.innerHTML = `
+        <div class="loading-spinner-inline">
+            <div class="loading-spinner-circle"></div>
+            <p class="loading-spinner-text">Cargando clientes...</p>
+        </div>`;
     try {
         const response = await fetch(`${API_CLIENTES}`);
         const clientes = await response.json();
-        const container = document.getElementById('clientesContainer');
 
         // Check if response is an error
         if (!response.ok || clientes.error || !Array.isArray(clientes)) {
@@ -1864,6 +1869,12 @@ async function guardarServicioReal(servicio) {
 }
 
 async function cargarServicios() {
+    const container = document.getElementById('serviciosContainer');
+    container.innerHTML = `
+        <div class="loading-spinner-inline">
+            <div class="loading-spinner-circle"></div>
+            <p class="loading-spinner-text">Cargando servicios...</p>
+        </div>`;
     try {
         const clientesRes = await fetch(`${API_URL}/clientes`);
         const clientes = await clientesRes.json();
@@ -1876,8 +1887,6 @@ async function cargarServicios() {
 
         const servicioEquipoRes = await fetch(`${API_SERVICIO_EQUIPO}`);
         const serviciosEquipo = await servicioEquipoRes.json();
-
-        const container = document.getElementById('serviciosContainer');
 
         if (servicios.length === 0) {
             container.innerHTML = '<div class="no-records">No hay servicios registrados</div>';
@@ -4012,14 +4021,18 @@ async function guardarEquipo(e) {
 }
 
 async function cargarEquipos() {
+    const container = document.getElementById('equiposContainer');
+    container.innerHTML = `
+        <div class="loading-spinner-inline">
+            <div class="loading-spinner-circle"></div>
+            <p class="loading-spinner-text">Cargando equipos...</p>
+        </div>`;
     try {
         const clientesRes = await fetch(`${API_URL}/clientes`);
         const clientes = await clientesRes.json();
 
         const equiposRes = await fetch(`${API_EQUIPOS}`);
         const equipos = await equiposRes.json();
-
-        const container = document.getElementById('equiposContainer');
 
         if (equipos.length === 0) {
             container.innerHTML = '<div class="no-records">No hay equipos registrados</div>';

@@ -940,3 +940,13 @@ button {
     line-height: 1.4;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+/* Spinner inline para carga de tablas */
+.loading-spinner-inline {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    animation: fadeInLoadingSpinner 0.3s ease-out;
+}
