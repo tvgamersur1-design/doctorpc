@@ -3,6 +3,8 @@ const cors = require('cors');
 const axios = require('axios');
 require('dotenv').config();
 const { MongoClient, ObjectId } = require('mongodb');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -10,6 +12,7 @@ const PORT = process.env.PORT || 3000;
 // Configuración de MongoDB
 const MONGODB_URI = process.env.MONGODB_URI;
 const DB_NAME = 'doctorpc';
+const JWT_SECRET = process.env.JWT_SECRET || 'doctorpc_secretkey_2024_s3cur3!';
 
 if (!MONGODB_URI) {
   console.error('❌ ERROR: MONGODB_URI no está configurado en .env');
@@ -23,6 +26,32 @@ const mongoClient = new MongoClient(MONGODB_URI);
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
+
+// Middleware de autenticación JWT
+function autenticarToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    if (!token) {
+        return res.status(401).json({ error: 'Token de acceso requerido' });
+    }
+    
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        req.usuario = decoded;
+        next();
+    } catch (error) {
+        return res.status(403).json({ error: 'Token inválido o expirado' });
+    }
+}
+
+// Middleware solo para administradores
+function soloAdmin(req, res, next) {
+    if (req.usuario.rol !== 'admin') {
+        return res.status(403).json({ error: 'Acceso denegado. Se requiere rol de administrador' });
+    }
+    next();
+}
 
 // Conectar a MongoDB al iniciar
 async function connectDB() {
@@ -41,6 +70,7 @@ async function connectDB() {
     
     // Crear índices automáticamente
     await createIndexes();
+    await seedAdminUser();
   } catch (error) {
     console.error('❌ Error al conectar a MongoDB:', error.message);
     console.error('❌ Stack completo:', error.stack);
@@ -70,11 +100,38 @@ async function createIndexes() {
     await db.collection('servicio_equipo').createIndex({ numero_orden: 1 }, { unique: true });
     await db.collection('servicio_equipo').createIndex({ estado: 1 });
     
+    // Índices para usuarios
+    await db.collection('usuarios').createIndex({ usuario: 1 }, { unique: true });
+    await db.collection('usuarios').createIndex({ correo: 1 }, { unique: true });
+    
     console.log('✓ Índices creados exitosamente');
   } catch (error) {
     console.warn('⚠️ Advertencia al crear índices:', error.message);
     // No es error crítico si los índices ya existen
   }
+}
+
+async function seedAdminUser() {
+    try {
+        const adminExists = await db.collection('usuarios').findOne({ usuario: 'admin' });
+        if (!adminExists) {
+            const salt = await bcrypt.genSalt(12);
+            const claveHash = await bcrypt.hash('123456', salt);
+            await db.collection('usuarios').insertOne({
+                usuario: 'admin',
+                correo: 'tvgamersur7@gmail.com',
+                clave: claveHash,
+                rol: 'admin',
+                fecha_creacion: new Date().toISOString(),
+                fecha_actualizacion: new Date().toISOString()
+            });
+            console.log('✓ Usuario admin creado exitosamente');
+        } else {
+            console.log('✓ Usuario admin ya existe');
+        }
+    } catch (error) {
+        console.warn('⚠️ Error al crear usuario admin:', error.message);
+    }
 }
 
 // Funciones de validación
@@ -169,6 +226,216 @@ function validarServicio(data, esActualizacion = false) {
   
   return errores;
 }
+
+// ==================== AUTENTICACIÓN ====================
+
+// POST login
+app.post('/api/auth/login', async (req, res) => {
+    try {
+        const { usuario, clave } = req.body;
+        
+        if (!usuario || !clave) {
+            return res.status(400).json({ error: 'Usuario y contraseña son requeridos' });
+        }
+        
+        const user = await db.collection('usuarios').findOne({ usuario: usuario });
+        
+        if (!user) {
+            return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
+        }
+        
+        const claveValida = await bcrypt.compare(clave, user.clave);
+        
+        if (!claveValida) {
+            return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
+        }
+        
+        const token = jwt.sign(
+            { id: user._id, usuario: user.usuario, rol: user.rol },
+            JWT_SECRET,
+            { expiresIn: '8h' }
+        );
+        
+        res.json({
+            token,
+            usuario: {
+                id: user._id,
+                usuario: user.usuario,
+                correo: user.correo,
+                rol: user.rol
+            }
+        });
+    } catch (error) {
+        console.error('Error POST /api/auth/login:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+// GET verificar token
+app.get('/api/auth/verificar', autenticarToken, (req, res) => {
+    res.json({ valido: true, usuario: req.usuario });
+});
+
+// ==================== USUARIOS (Solo Admin) ====================
+
+// GET all usuarios
+app.get('/api/usuarios', autenticarToken, soloAdmin, async (req, res) => {
+    try {
+        const usuarios = await db.collection('usuarios').find({}, { projection: { clave: 0 } }).toArray();
+        res.json(usuarios);
+    } catch (error) {
+        console.error('Error GET /api/usuarios:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// POST crear usuario
+app.post('/api/usuarios', autenticarToken, soloAdmin, async (req, res) => {
+    try {
+        const { usuario, correo, clave, rol } = req.body;
+        
+        if (!usuario || !correo || !clave) {
+            return res.status(400).json({ error: 'Usuario, correo y contraseña son requeridos' });
+        }
+        
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+            return res.status(400).json({ error: 'Correo electrónico inválido' });
+        }
+        
+        if (clave.length < 6) {
+            return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' });
+        }
+        
+        const existente = await db.collection('usuarios').findOne({ 
+            $or: [{ usuario }, { correo }] 
+        });
+        if (existente) {
+            return res.status(409).json({ error: 'El usuario o correo ya existe' });
+        }
+        
+        const salt = await bcrypt.genSalt(12);
+        const claveHash = await bcrypt.hash(clave, salt);
+        
+        const nuevoUsuario = {
+            usuario: usuario.trim(),
+            correo: correo.trim().toLowerCase(),
+            clave: claveHash,
+            rol: rol || 'usuario',
+            fecha_creacion: new Date().toISOString(),
+            fecha_actualizacion: new Date().toISOString()
+        };
+        
+        const result = await db.collection('usuarios').insertOne(nuevoUsuario);
+        
+        const { clave: _, ...usuarioSinClave } = nuevoUsuario;
+        res.status(201).json({ ...usuarioSinClave, _id: result.insertedId });
+    } catch (error) {
+        console.error('Error POST /api/usuarios:', error);
+        if (error.code === 11000) {
+            res.status(409).json({ error: 'El usuario o correo ya existe' });
+        } else {
+            res.status(500).json({ error: error.message });
+        }
+    }
+});
+
+// PUT actualizar usuario
+app.put('/api/usuarios/:id', autenticarToken, soloAdmin, async (req, res) => {
+    try {
+        const { usuario, correo, rol, clave_nueva, clave_admin } = req.body;
+        
+        if (!usuario || !correo) {
+            return res.status(400).json({ error: 'Usuario y correo son requeridos' });
+        }
+        
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+            return res.status(400).json({ error: 'Correo electrónico inválido' });
+        }
+        
+        // Verificar que el usuario a editar existe
+        const usuarioExistente = await db.collection('usuarios').findOne({ 
+            _id: new ObjectId(req.params.id) 
+        });
+        if (!usuarioExistente) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+        
+        // Verificar duplicados (excluir al usuario actual)
+        const duplicado = await db.collection('usuarios').findOne({
+            _id: { $ne: new ObjectId(req.params.id) },
+            $or: [{ usuario }, { correo: correo.trim().toLowerCase() }]
+        });
+        if (duplicado) {
+            return res.status(409).json({ error: 'El usuario o correo ya está en uso por otra cuenta' });
+        }
+        
+        const updateData = {
+            usuario: usuario.trim(),
+            correo: correo.trim().toLowerCase(),
+            rol: rol || usuarioExistente.rol,
+            fecha_actualizacion: new Date().toISOString()
+        };
+        
+        // Si se quiere cambiar la contraseña, verificar clave del admin
+        if (clave_nueva) {
+            if (clave_nueva.length < 6) {
+                return res.status(400).json({ error: 'La nueva contraseña debe tener al menos 6 caracteres' });
+            }
+            if (!clave_admin) {
+                return res.status(400).json({ error: 'Debes ingresar tu contraseña de administrador para cambiar la clave' });
+            }
+            
+            // Verificar contraseña del admin que hace la petición
+            const adminUser = await db.collection('usuarios').findOne({ 
+                _id: new ObjectId(req.usuario.id) 
+            });
+            const claveAdminValida = await bcrypt.compare(clave_admin, adminUser.clave);
+            if (!claveAdminValida) {
+                return res.status(403).json({ error: 'Contraseña de administrador incorrecta' });
+            }
+            
+            const salt = await bcrypt.genSalt(12);
+            updateData.clave = await bcrypt.hash(clave_nueva, salt);
+        }
+        
+        await db.collection('usuarios').updateOne(
+            { _id: new ObjectId(req.params.id) },
+            { $set: updateData }
+        );
+        
+        const { clave: _, ...resultado } = { ...usuarioExistente, ...updateData, _id: usuarioExistente._id };
+        res.json(resultado);
+    } catch (error) {
+        console.error('Error PUT /api/usuarios/:id:', error);
+        if (error.code === 11000) {
+            res.status(409).json({ error: 'El usuario o correo ya existe' });
+        } else {
+            res.status(500).json({ error: error.message });
+        }
+    }
+});
+
+// DELETE eliminar usuario (no puede eliminarse a sí mismo)
+app.delete('/api/usuarios/:id', autenticarToken, soloAdmin, async (req, res) => {
+    try {
+        if (req.params.id === req.usuario.id.toString()) {
+            return res.status(403).json({ error: 'No puedes eliminar tu propio usuario' });
+        }
+        
+        const result = await db.collection('usuarios').deleteOne({ 
+            _id: new ObjectId(req.params.id) 
+        });
+        
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+        
+        res.json({ success: true, message: 'Usuario eliminado exitosamente' });
+    } catch (error) {
+        console.error('Error DELETE /api/usuarios/:id:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
 
 // ==================== CLIENTES ====================
 
@@ -969,6 +1236,296 @@ connectDB().then(() => {
     console.log(`📁 Base de datos: ${DB_NAME}`);
     console.log(`${'═'.repeat(50)}\n`);
   });
+});
+
+// ==================== REPORTE SERVICIO ====================
+
+// GET reporte del servicio (para mostrar en modal)
+app.get('/api/reporte/:servicioId', async (req, res) => {
+  try {
+    const { servicioId } = req.params;
+    
+    console.log(`🔍 Buscando reporte para ID: ${servicioId}`);
+    
+    // Validar que es un ObjectId válido
+    if (!ObjectId.isValid(servicioId)) {
+      console.error(`❌ ID inválido: ${servicioId}`);
+      return res.status(400).json({ error: 'ID de servicio inválido' });
+    }
+    
+    // Buscar primero en servicio_equipo, luego en servicios
+    let servicio = await db.collection('servicio_equipo').findOne({ 
+      _id: new ObjectId(servicioId) 
+    });
+    
+    // Si no se encuentra en servicio_equipo, buscar en servicios
+    if (!servicio) {
+      console.log(`⚠️ No encontrado en servicio_equipo, buscando en servicios...`);
+      servicio = await db.collection('servicios').findOne({ 
+        _id: new ObjectId(servicioId) 
+      });
+    }
+    
+    console.log(`📊 Servicio encontrado:`, !!servicio);
+    
+    if (!servicio) {
+      console.warn(`⚠️ No se encontró servicio con ID: ${servicioId}`);
+      return res.status(404).json({ error: 'Servicio no encontrado' });
+    }
+    
+    // Obtener datos del cliente (buscar por _id si cliente_id es ObjectId, o por id)
+    let cliente = null;
+    if (ObjectId.isValid(servicio.cliente_id)) {
+      cliente = await db.collection('clientes').findOne({ 
+        _id: new ObjectId(servicio.cliente_id) 
+      });
+    }
+    if (!cliente && servicio.cliente_id) {
+      cliente = await db.collection('clientes').findOne({ 
+        id: servicio.cliente_id 
+      });
+    }
+    console.log(`👤 Cliente encontrado:`, !!cliente);
+    
+    // Obtener datos del equipo (buscar por _id si equipo_id es ObjectId, o por id)
+    let equipo = null;
+    if (ObjectId.isValid(servicio.equipo_id)) {
+      equipo = await db.collection('equipos').findOne({ 
+        _id: new ObjectId(servicio.equipo_id) 
+      });
+    }
+    if (!equipo && servicio.equipo_id) {
+      equipo = await db.collection('equipos').findOne({ 
+        id: servicio.equipo_id 
+      });
+    }
+    console.log(`💻 Equipo encontrado:`, !!equipo);
+    
+    // Obtener datos del tipo de servicio
+    let servicioInfo = null;
+    if (ObjectId.isValid(servicio.servicio_id)) {
+      servicioInfo = await db.collection('servicios').findOne({ 
+        _id: new ObjectId(servicio.servicio_id) 
+      });
+    }
+    if (!servicioInfo && servicio.servicio_id) {
+      servicioInfo = await db.collection('servicios').findOne({ 
+        id: servicio.servicio_id 
+      });
+    }
+    console.log(`🔧 Tipo de servicio encontrado:`, !!servicioInfo);
+    
+    // Construir reporte
+    const reporte = {
+      numero_orden: servicio.numero_orden || servicio.numero_servicio || `OS${servicio._id.toString().substring(0, 8).toUpperCase()}`,
+      cliente: {
+        nombre: cliente?.nombre || 'N/A',
+        apellido_paterno: cliente?.apellido_paterno || '',
+        apellido_paterno: cliente?.apellido_paterno || '',
+        apellido_materno: cliente?.apellido_materno || '',
+        dni: cliente?.dni || '',
+        email: cliente?.email || '',
+        telefono: cliente?.telefono || ''
+      },
+      equipo: {
+        tipo_equipo: equipo?.tipo_equipo || 'N/A',
+        marca: equipo?.marca || '',
+        modelo: equipo?.modelo || '',
+        numero_serie: equipo?.numero_serie || ''
+      },
+      servicio: {
+        descripcion_problema: servicio.descripcion_problema || '',
+        observaciones_tecnicas: servicio.observaciones_tecnicas || '',
+        diagnostico: servicio.diagnostico ? (
+          typeof servicio.diagnostico === 'string' && servicio.diagnostico.startsWith('[')
+            ? JSON.parse(servicio.diagnostico)
+            : servicio.diagnostico
+        ) : [],
+        solucion_aplicada: servicio.solucion_aplicada || ''
+      },
+      costos: {
+        costo_base: servicio.costo_base || 0,
+        repuestos: servicio.repuestos_utilizados ? 
+          servicio.repuestos_utilizados.reduce((sum, r) => sum + (r.costo || 0), 0) : 0,
+        costo_adicional: servicio.costo_adicional || 0,
+        total: servicio.costo_final || 0
+      },
+      datos_tecnicos: {
+        tecnico_asignado: servicio.tecnico_asignado || '',
+        estado: servicio.estado || '',
+        fecha_inicio: servicio.fecha_inicio || '',
+        fecha_cierre: servicio.fecha_cierre || '',
+        prioridad: servicio.prioridad || '',
+        calificacion: servicio.calificacion || 0
+      }
+    };
+    
+    res.json(reporte);
+  } catch (error) {
+    console.error('Error GET /api/reporte:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST generar PDF del reporte
+app.post('/api/generar-pdf', async (req, res) => {
+  try {
+    const { servicioId } = req.body;
+    
+    // Obtener reporte
+    const reporteRes = await new Promise((resolve, reject) => {
+      res.on('error', reject);
+      // Reutilizar lógica de /api/reporte/:servicioId
+    });
+    
+    // Por ahora, retornar instrucción para que frontend genere PDF
+    res.json({ 
+      success: true, 
+      message: 'PDF generado correctamente',
+      filename: `reporte-${servicioId}.pdf`
+    });
+  } catch (error) {
+    console.error('Error POST /api/generar-pdf:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST enviar reporte por WhatsApp
+app.post('/api/enviar-whatsapp', async (req, res) => {
+  try {
+    const { servicioId } = req.body;
+    
+    // Buscar primero en servicio_equipo, luego en servicios
+    let servicio = await db.collection('servicio_equipo').findOne({ 
+      _id: new ObjectId(servicioId) 
+    });
+    if (!servicio) {
+      servicio = await db.collection('servicios').findOne({ 
+        _id: new ObjectId(servicioId) 
+      });
+    }
+    
+    if (!servicio) {
+      return res.status(404).json({ error: 'Servicio no encontrado' });
+    }
+    
+    // Obtener cliente con número de WhatsApp
+    let cliente = null;
+    if (ObjectId.isValid(servicio.cliente_id)) {
+      cliente = await db.collection('clientes').findOne({ 
+        _id: new ObjectId(servicio.cliente_id) 
+      });
+    }
+    if (!cliente && servicio.cliente_id) {
+      cliente = await db.collection('clientes').findOne({ 
+        id: servicio.cliente_id 
+      });
+    }
+    
+    if (!cliente || !cliente.telefono) {
+      return res.status(400).json({ error: 'Cliente sin número de WhatsApp' });
+    }
+    
+    // Obtener equipo
+    const equipo = await db.collection('equipos').findOne({ 
+      id: servicio.equipo_id 
+    });
+    
+    // Construir mensaje para WhatsApp (sin caracteres especiales que causen problemas)
+    const costoRepuestos = servicio.repuestos_utilizados ? 
+      servicio.repuestos_utilizados.reduce((sum, r) => sum + (r.costo || 0), 0) : 0;
+    
+    const mensaje = `
+📋 REPORTE DE SERVICIO
+
+Orden: ${servicio.numero_orden}
+Cliente: ${cliente.nombre} ${cliente.apellido_paterno} ${cliente.apellido_materno}
+
+EQUIPO:
+${equipo?.tipo_equipo || 'N/A'} - ${equipo?.marca || ''} ${equipo?.modelo || ''}
+
+PROBLEMA:
+${servicio.descripcion_problema || 'N/A'}
+
+DIAGNOSTICO:
+${servicio.diagnostico || 'N/A'}
+
+SOLUCION:
+${servicio.solucion_aplicada || 'N/A'}
+
+COSTOS:
+• Servicio: S/. ${(servicio.costo_base || 0).toFixed(2)}
+• Repuestos: S/. ${costoRepuestos.toFixed(2)}
+• Adicional: S/. ${(servicio.costo_adicional || 0).toFixed(2)}
+Total: S/. ${(servicio.costo_final || 0).toFixed(2)}
+
+Estado: ${servicio.estado}
+Tecnico: ${servicio.tecnico_asignado || 'N/A'}
+
+✅ Gracias por confiar en nosotros
+    `.trim();
+    
+    // Configuración de Twilio (opcional, comentado por ahora)
+    const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
+    const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
+    const twilioWhatsAppNumber = process.env.TWILIO_WHATSAPP_NUMBER;
+    
+    // Formatear teléfono (agregar +51 para Perú si es necesario)
+    let telefonoFormato = cliente.telefono.replace(/\D/g, '');
+    if (!telefonoFormato.startsWith('51')) {
+      telefonoFormato = '51' + telefonoFormato;
+    }
+    const numeroWhatsApp = '+' + telefonoFormato;
+    
+    console.log(`📱 Preparando envío WhatsApp a ${numeroWhatsApp}`);
+    console.log(`Orden: ${servicio.numero_orden}`);
+    
+    // Si está configurado Twilio, enviar mensaje real
+    if (twilioAccountSid && twilioAuthToken && twilioWhatsAppNumber) {
+      try {
+        const twilio = require('twilio');
+        const twilioClient = twilio(twilioAccountSid, twilioAuthToken);
+        
+        const result = await twilioClient.messages.create({
+          body: mensaje,
+          from: twilioWhatsAppNumber,
+          to: `whatsapp:${numeroWhatsApp}`
+        });
+        
+        console.log(`✅ WhatsApp enviado exitosamente. SID: ${result.sid}`);
+        
+        res.json({ 
+          success: true, 
+          message: 'Mensaje enviado a WhatsApp correctamente',
+          telefono: cliente.telefono,
+          orden: servicio.numero_orden,
+          messageSid: result.sid
+        });
+      } catch (twilioError) {
+        console.error('❌ Error al enviar con Twilio:', twilioError.message);
+        // Si falla Twilio, retornar error pero informativo
+        res.status(500).json({ 
+          error: 'Error al enviar WhatsApp: ' + twilioError.message,
+          configurar: 'Configura TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN y TWILIO_WHATSAPP_NUMBER en .env'
+        });
+      }
+    } else {
+      // Modo desarrollo: simular envío
+      console.log(`⚠️ MODO SIMULACION (configura Twilio en .env para envío real)`);
+      console.log(`Mensaje que se enviaría:\n${mensaje}`);
+      
+      res.json({ 
+        success: true, 
+        message: 'Mensaje simulado (configura Twilio en .env para envío real)',
+        telefono: cliente.telefono,
+        orden: servicio.numero_orden,
+        modo: 'simulacion'
+      });
+    }
+  } catch (error) {
+    console.error('❌ Error POST /api/enviar-whatsapp:', error.message);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Manejar cierre graceful

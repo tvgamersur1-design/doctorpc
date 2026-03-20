@@ -57,5 +57,20 @@ from = "/api/decolecta/*"
 to = "/.netlify/functions/decolecta"
 status = 200
 
+[[redirects]]
+from = "/api/auth/*"
+to = "/.netlify/functions/auth"
+status = 200
+
+[[redirects]]
+from = "/api/usuarios"
+to = "/.netlify/functions/usuarios"
+status = 200
+
+[[redirects]]
+from = "/api/usuarios/*"
+to = "/.netlify/functions/usuarios"
+status = 200
+
 [context.production.environment]
 NODE_ENV = "production"

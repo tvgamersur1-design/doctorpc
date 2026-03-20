@@ -1,3 +1,36 @@
+// ==================== AUTENTICACIÓN ====================
+function verificarSesion() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = 'login.html';
+        return false;
+    }
+    return true;
+}
+
+function cerrarSesion() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    window.location.href = 'login.html';
+}
+
+function getToken() {
+    return localStorage.getItem('token');
+}
+
+function getUsuarioActual() {
+    try {
+        return JSON.parse(localStorage.getItem('usuario'));
+    } catch {
+        return null;
+    }
+}
+
+// Verificar sesión al cargar
+if (!window.location.pathname.includes('login.html')) {
+    verificarSesion();
+}
+
 // ==================== CONFIG ====================
 // Detectar si estamos en local o en Netlify
 const isLocal = window.location.hostname === 'localhost';
@@ -11,19 +44,33 @@ const API_SERVICIO_EQUIPO = `${API_BASE}/api/servicio-equipo`;
 const API_DECOLECTA = `${API_BASE}/api/decolecta`;
 const API_URL = `${API_BASE}/api`;
 
-// ✅ Interceptar fetch para validar URLs
+// ✅ Interceptar fetch para validar URLs y agregar token de autenticación
 const originalFetch = window.fetch;
-window.fetch = function(url, options) {
-    // Validar que URL no contenga caracteres especiales o encoding incorrecto
+window.fetch = function(url, options = {}) {
     if (typeof url === 'string') {
         const urlStr = url.toLowerCase();
-        // Rechazar URLs con caracteres especiales UTF-8 (replacement character)
         if (urlStr.includes('%ef%bf%bd') || urlStr.includes('undefined') || urlStr.includes('null')) {
             console.error('❌ URL INVÁLIDA - Fetch bloqueado:', url);
             return Promise.reject(new Error('URL inválida: ' + url));
         }
     }
-    return originalFetch.apply(this, arguments);
+    const token = localStorage.getItem('token');
+    if (token && !url.includes('/api/auth/login')) {
+        options.headers = options.headers || {};
+        if (typeof options.headers === 'object' && !(options.headers instanceof Headers)) {
+            options.headers['Authorization'] = 'Bearer ' + token;
+        }
+    }
+    return originalFetch.call(this, url, options).then(response => {
+        if (response.status === 401 || response.status === 403) {
+            if (!url.includes('/api/auth/')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('usuario');
+                window.location.href = 'login.html';
+            }
+        }
+        return response;
+    });
 };
 
 let reniecData = null;
@@ -117,6 +164,7 @@ window.addEventListener('resize', updateMenuToggleVisibility);
 // Llamar función al cargar la página
 document.addEventListener('DOMContentLoaded', function () {
     updateMenuToggleVisibility();
+    inicializarUI();
 
     // Cerrar menú cuando se hace clic fuera de él
     document.addEventListener('click', function (event) {
@@ -160,6 +208,7 @@ function switchTab(tab) {
         cargarEquipos();
         actualizarSelectsClientes();
     }
+    if (tab === 'usuarios') cargarUsuarios();
 }
 
 // ==================== CLIENTES ====================
@@ -3216,7 +3265,7 @@ async function abrirModalDetallesServicio(servicioId) {
                          <i class="fas fa-exclamation-circle" style="margin-right: 6px;"></i>Problemas Reportados
                      </h3>
                      <div style="background: #fff8e1; padding: 12px; border-radius: 4px; border-left: 3px solid #FF9800; font-size: 13px; line-height: 1.8; color: #333;">
-                         ${servicio.problemas || 'No especificado'}
+                         ${servicio.problemas_reportados || servicio.descripcion_problema || servicio.problemas || 'No especificado'}
                      </div>
                  </div>
 
@@ -3438,7 +3487,22 @@ async function abrirModalDetallesServicio(servicioId) {
                          })()}
                      </div>
                  ` : ''}
-         `;
+
+                 <!-- Acciones de Reporte (PDF y WhatsApp) -->
+                 <div style="padding: 16px 0; border-top: 2px solid #2192B8; margin-top: 20px;">
+                     <h3 style="margin: 0 0 15px 0; font-size: 14px; color: #2192B8; font-weight: 600;">
+                         <i class="fas fa-share-alt" style="margin-right: 6px;"></i>Opciones de Reporte al Cliente
+                     </h3>
+                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                         <button class="btn-primary" onclick="reporteServicio.descargarPDF('${servicio._id}')" style="padding: 12px; background: #FF6B6B; border: 2px solid #FF6B6B; color: white; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s;">
+                             <i class="fas fa-file-pdf" style="margin-right: 8px;"></i> Generar PDF
+                         </button>
+                         <button class="btn-primary" onclick="reporteServicio.enviarWhatsAppDesdeMotal('${servicio._id}', '${cliente && cliente.telefono ? cliente.telefono : ''}')" style="padding: 12px; background: #25D366; border: 2px solid #25D366; color: white; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s;">
+                             <i class="fab fa-whatsapp" style="margin-right: 8px;"></i> Enviar WhatsApp
+                         </button>
+                     </div>
+                 </div>
+                 `;
 
         // Agregar estilos responsivos dinámicamente
          const styleSheet = document.createElement('style');
@@ -4571,3 +4635,213 @@ document.addEventListener('DOMContentLoaded', function () {
     cargarClientes();
     actualizarSelectsClientes();
 });
+
+// ==================== USUARIOS (Solo Admin) ====================
+
+function abrirModalNuevoUsuario() {
+    document.getElementById('modalNuevoUsuario').classList.add('show');
+    document.getElementById('formNuevoUsuario').reset();
+}
+
+function cerrarModalNuevoUsuario() {
+    document.getElementById('modalNuevoUsuario').classList.remove('show');
+}
+
+async function guardarNuevoUsuario(e) {
+    e.preventDefault();
+    const usuario = document.getElementById('nuevoUsuarioNombre').value.trim();
+    const correo = document.getElementById('nuevoUsuarioCorreo').value.trim();
+    const clave = document.getElementById('nuevoUsuarioClave').value;
+    const rol = document.getElementById('nuevoUsuarioRol').value;
+
+    try {
+        mostrarModalCarga('Creando usuario...');
+        const response = await fetch(`${API_BASE}/api/usuarios`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ usuario, correo, clave, rol })
+        });
+
+        cerrarModalCarga();
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Error al crear usuario');
+        }
+
+        cerrarModalNuevoUsuario();
+        mostrarNotificacionExito('Usuario creado exitosamente');
+        cargarUsuarios();
+    } catch (error) {
+        cerrarModalCarga();
+        alert('Error: ' + error.message);
+    }
+}
+
+async function cargarUsuarios() {
+    const container = document.getElementById('usuariosContainer');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="loading-spinner-inline">
+            <div class="loading-spinner-circle"></div>
+            <p class="loading-spinner-text">Cargando usuarios...</p>
+        </div>`;
+
+    try {
+        const response = await fetch(`${API_BASE}/api/usuarios`);
+        if (!response.ok) throw new Error('Error al cargar usuarios');
+        
+        const usuarios = await response.json();
+        const usuarioActual = getUsuarioActual();
+
+        if (usuarios.length === 0) {
+            container.innerHTML = '<div class="no-records">No hay usuarios registrados</div>';
+            return;
+        }
+
+        let html = `<table class="records-table">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Correo</th>
+                    <th>Rol</th>
+                    <th>Fecha Creación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+        usuarios.forEach(u => {
+            const esMiUsuario = usuarioActual && u._id === usuarioActual.id;
+            const fechaCreacion = u.fecha_creacion ? new Date(u.fecha_creacion).toLocaleDateString('es-PE') : 'N/A';
+            const rolBadge = u.rol === 'admin' 
+                ? '<span style="background: #e3f2fd; color: #1565C0; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;"><i class="fas fa-shield-alt"></i> Admin</span>'
+                : '<span style="background: #f5f5f5; color: #666; padding: 3px 10px; border-radius: 12px; font-size: 12px;"><i class="fas fa-user"></i> Usuario</span>';
+
+            html += `<tr>
+                <td data-label="Usuario"><strong>${u.usuario}</strong></td>
+                <td data-label="Correo">${u.correo}</td>
+                <td data-label="Rol">${rolBadge}</td>
+                <td data-label="Fecha">${fechaCreacion}</td>
+                <td data-label="Acciones">
+                    <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                        <button class="btn-edit" onclick="abrirModalEditarUsuario('${u._id}', '${u.usuario}', '${u.correo}', '${u.rol}')" style="padding: 6px 12px; font-size: 12px;">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        ${esMiUsuario 
+                            ? '<span style="color: #999; font-size: 11px;"><i class="fas fa-lock"></i> Tu cuenta</span>'
+                            : `<button class="btn-danger" onclick="eliminarUsuario('${u._id}', '${u.usuario}')" style="padding: 6px 12px; font-size: 12px;">
+                                <i class="fas fa-trash"></i> Eliminar
+                              </button>`
+                        }
+                    </div>
+                </td>
+            </tr>`;
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    } catch (error) {
+        console.error('Error:', error);
+        container.innerHTML = '<div class="no-records" style="color: #c62828;">Error al cargar usuarios</div>';
+    }
+}
+
+async function eliminarUsuario(id, nombre) {
+    if (!confirm(`¿Estás seguro de eliminar al usuario "${nombre}"?`)) return;
+
+    try {
+        mostrarModalCarga('Eliminando usuario...');
+        const response = await fetch(`${API_BASE}/api/usuarios/${id}`, {
+            method: 'DELETE'
+        });
+
+        cerrarModalCarga();
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Error al eliminar usuario');
+        }
+
+        mostrarNotificacionExito('Usuario eliminado');
+        cargarUsuarios();
+    } catch (error) {
+        cerrarModalCarga();
+        alert('Error: ' + error.message);
+    }
+}
+
+// Editar usuario
+function abrirModalEditarUsuario(id, usuario, correo, rol) {
+    document.getElementById('editUsuarioId').value = id;
+    document.getElementById('editUsuarioNombre').value = usuario;
+    document.getElementById('editUsuarioCorreo').value = correo;
+    document.getElementById('editUsuarioRol').value = rol;
+    document.getElementById('editUsuarioClaveNueva').value = '';
+    document.getElementById('editUsuarioClaveAdmin').value = '';
+    document.getElementById('seccionClaveAdmin').style.display = 'none';
+    document.getElementById('modalEditarUsuario').classList.add('show');
+
+    // Mostrar/ocultar campo de clave admin al escribir nueva contraseña
+    document.getElementById('editUsuarioClaveNueva').oninput = function() {
+        document.getElementById('seccionClaveAdmin').style.display = this.value.length > 0 ? 'block' : 'none';
+    };
+}
+
+function cerrarModalEditarUsuario() {
+    document.getElementById('modalEditarUsuario').classList.remove('show');
+}
+
+async function guardarEdicionUsuario(e) {
+    e.preventDefault();
+    const id = document.getElementById('editUsuarioId').value;
+    const usuario = document.getElementById('editUsuarioNombre').value.trim();
+    const correo = document.getElementById('editUsuarioCorreo').value.trim();
+    const rol = document.getElementById('editUsuarioRol').value;
+    const claveNueva = document.getElementById('editUsuarioClaveNueva').value;
+    const claveAdmin = document.getElementById('editUsuarioClaveAdmin').value;
+
+    const body = { usuario, correo, rol };
+    if (claveNueva) {
+        body.clave_nueva = claveNueva;
+        body.clave_admin = claveAdmin;
+    }
+
+    try {
+        mostrarModalCarga('Actualizando usuario...');
+        const response = await fetch(`${API_BASE}/api/usuarios/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+
+        cerrarModalCarga();
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Error al actualizar usuario');
+        }
+
+        cerrarModalEditarUsuario();
+        mostrarNotificacionExito('Usuario actualizado');
+        cargarUsuarios();
+    } catch (error) {
+        cerrarModalCarga();
+        alert('Error: ' + error.message);
+    }
+}
+
+// Inicializar interfaz según rol
+function inicializarUI() {
+    const usuario = getUsuarioActual();
+    if (usuario) {
+        const nombreSpan = document.getElementById('nombreUsuarioSidebar');
+        if (nombreSpan) nombreSpan.textContent = usuario.usuario;
+        
+        if (usuario.rol === 'admin') {
+            const tabUsuarios = document.getElementById('tabUsuarios');
+            if (tabUsuarios) tabUsuarios.style.display = 'flex';
+        }
+    }
+}

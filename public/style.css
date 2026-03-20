@@ -27,6 +27,8 @@ body {
     box-shadow: 4px 0 20px rgba(33, 146, 184, 0.3);
     overflow-y: auto;
     z-index: 100;
+    display: flex;
+    flex-direction: column;
 }
 
 .sidebar-logo {
@@ -51,6 +53,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    flex: 1;
 }
 
 .tab-btn {

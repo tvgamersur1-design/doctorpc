@@ -6,6 +6,9 @@
     <title>Sistema de Administración - Doctor PC</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="reporte.css">
+    <!-- Librería para generar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <div class="main-wrapper">
@@ -28,7 +31,17 @@
                 <button class="tab-btn" onclick="switchTab('equipos')">
                     <i class="fas fa-computer"></i> Equipos
                 </button>
-
+                <button class="tab-btn" id="tabUsuarios" onclick="switchTab('usuarios')" style="display: none;">
+                    <i class="fas fa-users-cog"></i> Usuarios
+                </button>
+                <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
+                    <div style="padding: 8px 12px; font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 8px;">
+                        <i class="fas fa-user-circle"></i> <span id="nombreUsuarioSidebar">Usuario</span>
+                    </div>
+                    <button class="tab-btn" onclick="cerrarSesion()" style="background: rgba(220,53,69,0.2); color: #ff6b6b;">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </button>
+                </div>
             </nav>
         </aside>
 
@@ -102,6 +115,18 @@
                     </div>
                 </div>
 
+                <!-- USUARIOS TAB (Solo Admin) -->
+                <div id="usuariosTab" class="tab-content">
+                    <div class="form-section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 style="margin: 0;">Gestión de Usuarios</h2>
+                            <button type="button" class="btn-primary" onclick="abrirModalNuevoUsuario()">
+                                <i class="fas fa-user-plus"></i> Nuevo Usuario
+                            </button>
+                        </div>
+                        <div id="usuariosContainer"></div>
+                    </div>
+                </div>
 
             </div>
         </div>
@@ -1132,5 +1157,98 @@
                   }
               </style>
 
+              <!-- Modal Nuevo Usuario -->
+              <!-- Modal Editar Usuario -->
+              <div id="modalEditarUsuario" class="modal">
+                  <div class="modal-content" style="max-width: 500px;">
+                      <div class="modal-header">
+                          <h2><i class="fas fa-user-edit" style="margin-right: 8px;"></i>Editar Usuario</h2>
+                          <button class="close-btn" onclick="cerrarModalEditarUsuario()">×</button>
+                      </div>
+                      <form id="formEditarUsuario" onsubmit="guardarEdicionUsuario(event)">
+                          <input type="hidden" id="editUsuarioId">
+                          <div class="form-section">
+                              <div class="form-group full">
+                                  <label>Usuario: <span style="color: #d32f2f;">*</span></label>
+                                  <input type="text" id="editUsuarioNombre" required minlength="3" placeholder="Nombre de usuario">
+                              </div>
+                              <div class="form-group full">
+                                  <label>Correo Electrónico: <span style="color: #d32f2f;">*</span></label>
+                                  <input type="email" id="editUsuarioCorreo" required placeholder="correo@ejemplo.com">
+                              </div>
+                              <div class="form-group full">
+                                  <label>Rol:</label>
+                                  <select id="editUsuarioRol">
+                                      <option value="usuario">Usuario</option>
+                                      <option value="admin">Administrador</option>
+                                  </select>
+                              </div>
+
+                              <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, #ddd, transparent); margin: 15px 0;">
+
+                              <div style="background: #fff8e1; padding: 12px; border-radius: 6px; border-left: 4px solid #FF9800; margin-bottom: 15px;">
+                                  <p style="margin: 0; font-size: 12px; color: #E65100;">
+                                      <i class="fas fa-info-circle"></i> Deja vacío si no deseas cambiar la contraseña
+                                  </p>
+                              </div>
+                              <div class="form-group full">
+                                  <label>Nueva Contraseña: <span style="color: #999; font-size: 12px;">(Opcional)</span></label>
+                                  <input type="password" id="editUsuarioClaveNueva" minlength="6" placeholder="Mínimo 6 caracteres">
+                              </div>
+                              <div class="form-group full" id="seccionClaveAdmin" style="display: none;">
+                                  <label>Tu Contraseña de Admin: <span style="color: #d32f2f;">*</span></label>
+                                  <input type="password" id="editUsuarioClaveAdmin" placeholder="Ingresa tu contraseña para confirmar">
+                                  <small style="color: #999;">Requerida para cambiar la contraseña del usuario</small>
+                              </div>
+                          </div>
+                          <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                              <button type="button" class="btn-secondary" onclick="cerrarModalEditarUsuario()">Cancelar</button>
+                              <button type="submit" class="btn-primary">
+                                  <i class="fas fa-save"></i> Guardar Cambios
+                              </button>
+                          </div>
+                      </form>
+                  </div>
+              </div>
+
+                         <div id="modalNuevoUsuario" class="modal">
+                  <div class="modal-content" style="max-width: 500px;">
+                      <div class="modal-header">
+                          <h2><i class="fas fa-user-plus" style="margin-right: 8px;"></i>Nuevo Usuario</h2>
+                          <button class="close-btn" onclick="cerrarModalNuevoUsuario()">×</button>
+                      </div>
+                      <form id="formNuevoUsuario" onsubmit="guardarNuevoUsuario(event)">
+                          <div class="form-section">
+                              <div class="form-group full">
+                                  <label>Usuario: <span style="color: #d32f2f;">*</span></label>
+                                  <input type="text" id="nuevoUsuarioNombre" required minlength="3" placeholder="Nombre de usuario">
+                              </div>
+                              <div class="form-group full">
+                                  <label>Correo Electrónico: <span style="color: #d32f2f;">*</span></label>
+                                  <input type="email" id="nuevoUsuarioCorreo" required placeholder="correo@ejemplo.com">
+                              </div>
+                              <div class="form-group full">
+                                  <label>Contraseña: <span style="color: #d32f2f;">*</span></label>
+                                  <input type="password" id="nuevoUsuarioClave" required minlength="6" placeholder="Mínimo 6 caracteres">
+                              </div>
+                              <div class="form-group full">
+                                  <label>Rol:</label>
+                                  <select id="nuevoUsuarioRol">
+                                      <option value="usuario">Usuario</option>
+                                      <option value="admin">Administrador</option>
+                                  </select>
+                              </div>
+                          </div>
+                          <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                              <button type="button" class="btn-secondary" onclick="cerrarModalNuevoUsuario()">Cancelar</button>
+                              <button type="submit" class="btn-primary">
+                                  <i class="fas fa-save"></i> Guardar Usuario
+                              </button>
+                          </div>
+                      </form>
+                  </div>
+              </div>
+
+                         <script src="reporte.js"></script>
               </body>
               </html>
