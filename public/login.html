@@ -256,6 +256,9 @@
             btnLogin.classList.toggle('loading', loading);
         }
 
+        const isLocal = window.location.hostname === 'localhost';
+        const API_BASE = isLocal ? 'http://localhost:3000' : window.location.origin;
+
         form.addEventListener('submit', async function (e) {
             e.preventDefault();
             hideError();
@@ -271,7 +274,7 @@
             setLoading(true);
 
             try {
-                const response = await fetch('/api/auth/login', {
+                const response = await fetch(API_BASE + '/api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ usuario, clave })
@@ -284,7 +287,7 @@
                     localStorage.setItem('usuario', JSON.stringify(data.usuario));
                     window.location.href = 'index.html';
                 } else {
-                    showError(data.mensaje || data.message || 'Credenciales incorrectas.');
+                    showError(data.error || data.mensaje || 'Credenciales incorrectas.');
                 }
             } catch (err) {
                 showError('Error de conexión. Intente nuevamente.');
