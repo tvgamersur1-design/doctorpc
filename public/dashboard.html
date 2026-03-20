@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Administración - Doctor PC</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="reporte.css">
+    <!-- Librería para generar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div class="main-wrapper">
+        <!-- OVERLAY PARA MENÚ MÓVIL -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMenu()"></div>
+        
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h2><i class="fas fa-laptop-medical"></i> Doctor PC</h2>
+                <p>Sistema Admin</p>
+            </div>
+            <nav class="nav-tabs">
+                <button class="tab-btn active" onclick="switchTab('clientes')">
+                    <i class="fas fa-users"></i> Clientes
+                </button>
+                <button class="tab-btn" onclick="switchTab('servicios')">
+                    <i class="fas fa-tools"></i> Servicios
+                </button>
+                <button class="tab-btn" onclick="switchTab('equipos')">
+                    <i class="fas fa-computer"></i> Equipos
+                </button>
+                <button class="tab-btn" id="tabUsuarios" onclick="switchTab('usuarios')" style="display: none;">
+                    <i class="fas fa-users-cog"></i> Usuarios
+                </button>
+                <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
+                    <div style="padding: 8px 12px; font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 8px;">
+                        <i class="fas fa-user-circle"></i> <span id="nombreUsuarioSidebar">Usuario</span>
+                    </div>
+                    <button class="tab-btn" onclick="cerrarSesion()" style="background: rgba(220,53,69,0.2); color: #ff6b6b;">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </button>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- CONTENT -->
+        <div class="content-wrapper">
+            <header class="header">
+                <button class="menu-toggle" id="menuToggle" onclick="toggleMenu()" style="display: none;">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Doctor PC - Sistema de Administración</h1>
+                <p>Gestiona clientes, servicios y equipos de manera eficiente</p>
+            </header>
+
+            <div class="container">
+                <!-- CLIENTES TAB -->
+                <div id="clientesTab" class="tab-content active">
+                    <div class="form-section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 style="margin: 0;">Gestión de Clientes</h2>
+                            <button type="button" class="btn-primary" onclick="abrirModalNuevoCliente()">
+                                <i class="fas fa-plus"></i> Agregar Nuevo Cliente
+                            </button>
+                        </div>
+
+                        <!-- ✅ REMOVIDO: Mensaje verde reemplazado por notificación centrada -->
+
+                        <h3 style="margin-top: 30px; margin-bottom: 15px;">Clientes Registrados</h3>
+                        <div class="search-box" style="margin-bottom: 20px; position: relative;">
+                            <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #2192B8; font-size: 14px; pointer-events: none;"></i>
+                            <input type="text" id="searchClientes" placeholder="Buscar por nombre, teléfono, email o DNI..." onkeyup="filtrarClientes()" style="max-width: 100%; padding: 12px 15px 12px 40px; font-size: 14px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                        </div>
+                        <div id="clientesContainer" style="overflow-x: auto;"></div>
+                    </div>
+                </div>
+
+                <!-- SERVICIOS TAB -->
+                <div id="serviciosTab" class="tab-content">
+                    <div class="form-section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 style="margin: 0;">Gestión de Servicios</h2>
+                            <button type="button" class="btn-primary" onclick="abrirModalNuevoServicio()">
+                                <i class="fas fa-plus"></i> Agregar Nuevo Servicio
+                            </button>
+                        </div>
+
+                        <!-- ✅ REMOVIDO: Mensaje verde reemplazado por notificación centrada -->
+
+                        <h3 style="margin-top: 30px; margin-bottom: 15px;">Servicios Registrados</h3>
+                        <div id="serviciosContainer"></div>
+                    </div>
+                </div>
+
+                <!-- EQUIPOS TAB -->
+                <div id="equiposTab" class="tab-content">
+                    <div class="form-section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 style="margin: 0;">Gestión de Equipos</h2>
+                            <button type="button" class="btn-primary" onclick="abrirModalNuevoEquipo()">
+                                <i class="fas fa-plus"></i> Agregar Nuevo Equipo
+                            </button>
+                        </div>
+
+                        <!-- ✅ REMOVIDO: Mensaje verde reemplazado por notificación centrada -->
+
+                        <h3 style="margin-top: 30px; margin-bottom: 15px;">Equipos Registrados</h3>
+                        <div class="search-box" style="margin-bottom: 20px; position: relative;">
+                            <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #2192B8; font-size: 14px; pointer-events: none;"></i>
+                            <input type="text" id="searchEquipos" placeholder="Buscar equipo..." onkeyup="filtrarEquipos()" style="padding: 12px 15px 12px 40px; font-size: 14px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                        </div>
+                        <div id="equiposContainer"></div>
+                    </div>
+                </div>
+
+                <!-- USUARIOS TAB (Solo Admin) -->
+                <div id="usuariosTab" class="tab-content">
+                    <div class="form-section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 style="margin: 0;">Gestión de Usuarios</h2>
+                            <button type="button" class="btn-primary" onclick="abrirModalNuevoUsuario()">
+                                <i class="fas fa-user-plus"></i> Nuevo Usuario
+                            </button>
+                        </div>
+                        <div id="usuariosContainer"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo Cliente -->
+    <div id="modalNuevoCliente" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nuevo Cliente</h2>
+                <button class="close-btn" onclick="cerrarModalNuevoCliente()">×</button>
+            </div>
+            <form id="formModalCliente" onsubmit="guardarClienteDesdeModal(event)">
+                <!-- Sección de búsqueda por DNI -->
+                <div class="form-section">
+                    <h3><i class="fas fa-search"></i> Buscar por DNI (Opcional)</h3>
+                    <div class="form-group full">
+                        <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px;">
+                            <div>
+                                <label>Número de DNI:</label>
+                                <input type="text" id="dniConsulta" placeholder="Ej: 46027897" maxlength="8">
+                            </div>
+                            <div style="display: flex; align-items: flex-end;">
+                                <button type="button" class="btn-primary" onclick="consultarDecolecta()" id="btnConsultarDNI" style="width: 100%;">
+                                    <i class="fas fa-search"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="decolectaLoading" style="display:none; text-align:center; margin: 10px 0;">
+                        <i class="fas fa-spinner fa-spin"></i> Consultando...
+                    </div>
+                    <div id="decolectaError" style="display:none; margin: 10px 0; background: #ffebee; padding: 10px; border-radius: 5px; color: #c62828; font-size: 12px;">
+                        <strong>Error:</strong> <span id="decolectaErrorMsg"></span>
+                    </div>
+                </div>
+
+                <!-- Sección de datos -->
+                <div class="form-section">
+                    <h3><i class="fas fa-id-card"></i> Datos del Cliente</h3>
+                    
+                    <!-- Fila 1: DNI y Nombre -->
+                    <div class="form-group">
+                        <div>
+                            <label>DNI:</label>
+                            <input type="text" name="dni" id="inputDNI" maxlength="8" required>
+                        </div>
+                        <div>
+                            <label>Nombre:</label>
+                            <input type="text" name="nombre" id="inputNombre" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Fila 2: Apellidos -->
+                    <div class="form-group">
+                        <div>
+                            <label>Apellido Paterno:</label>
+                            <input type="text" name="apellido_paterno" id="inputApellidoPaterno">
+                        </div>
+                        <div>
+                            <label>Apellido Materno:</label>
+                            <input type="text" name="apellido_materno" id="inputApellidoMaterno">
+                        </div>
+                    </div>
+                    
+                    <!-- Fila 3: Contacto (Opcional) -->
+                    <div class="form-group">
+                        <div>
+                            <label>Teléfono: <span style="color: #999; font-size: 12px;">(Opcional)</span></label>
+                            <input type="text" name="telefono" id="inputTelefono" placeholder="Ej: 987654321">
+                        </div>
+                        <div>
+                            <label>Email: <span style="color: #999; font-size: 12px;">(Opcional)</span></label>
+                            <input type="email" name="email" id="inputEmail" placeholder="Ej: correo@ejemplo.com">
+                        </div>
+                    </div>
+                    
+                    <!-- Fila 4: Dirección (Opcional, ancho completo) -->
+                    <div class="form-group full">
+                        <label>Dirección: <span style="color: #999; font-size: 12px;">(Opcional)</span></label>
+                        <input type="text" name="direccion" id="inputDireccion" placeholder="Ej: Jr. Lima 123, Apt 4B">
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalNuevoCliente()">Cancelar</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Guardar Cliente
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo Servicio -->
+    <div id="modalNuevoServicio" class="modal">
+        <div class="modal-content" style="max-width: 900px; width: 90%; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2>Nuevo Servicio</h2>
+                <button class="close-btn" onclick="cerrarModalNuevoServicio()">×</button>
+            </div>
+            <form id="formServicio" onsubmit="guardarServicio(event)">
+                <div class="form-section">
+                    <!-- Primera fila: Número, Fecha, Hora (3 columnas) -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div class="form-group" style="margin: 0;">
+                            <label>Número de Servicio:</label>
+                            <input type="text" id="numeroServicio" name="numero_servicio" readonly style="background-color: #f5f5f5; cursor: not-allowed;">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label>Fecha:</label>
+                            <input type="date" id="fechaServicio" name="fecha" readonly style="background-color: #f5f5f5; cursor: not-allowed;">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label>Hora:</label>
+                            <input type="time" id="horaServicio" name="hora" required>
+                        </div>
+                    </div>
+
+                    <!-- Segunda fila: Cliente, Equipo y Local (3 columnas) -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div class="form-group" style="margin: 0;">
+                            <label>Cliente:</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="clienteSeleccionado" placeholder="Seleccionar cliente..." readonly style="flex: 1; background-color: #f5f5f5; cursor: pointer; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                                <input type="hidden" id="cliente_id" name="cliente_id" required>
+                                <button type="button" class="btn-primary" onclick="abrirModalSeleccionarCliente()" style="padding: 10px 20px;">
+                                    <i class="fas fa-search"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label>Equipo:</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="equipoSeleccionado" placeholder="Seleccionar equipo..." readonly style="flex: 1; background-color: #f5f5f5; cursor: pointer; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                                <input type="hidden" id="equipo_id" name="equipo_id" required>
+                                <button type="button" class="btn-primary" id="btnBuscarEquipo" onclick="abrirModalSeleccionarEquipo()" style="padding: 10px 20px;">
+                                    <i class="fas fa-search"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label>Local:</label>
+                            <select name="local" id="localServicio" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; height: 41px;">
+                                <option value="">Seleccionar...</option>
+                                <option value="Ferreñafe">Ferreñafe</option>
+                                <option value="Chiclayo">Chiclayo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group full">
+                        <label>Problemas Reportados:</label>
+                        <div style="margin-bottom: 10px;">
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;">
+                                <button type="button" class="btn-shortcut" onclick="agregarProblemaAtajo('No enciende')" style="padding: 6px 12px; font-size: 12px; background: #e3f2fd; color: #2192B8; border: 1px solid #2192B8; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                                    No enciende
+                                </button>
+                                <button type="button" class="btn-shortcut" onclick="agregarProblemaAtajo('Pantalla rota')" style="padding: 6px 12px; font-size: 12px; background: #e3f2fd; color: #2192B8; border: 1px solid #2192B8; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                                    Pantalla rota
+                                </button>
+                                <button type="button" class="btn-shortcut" onclick="agregarProblemaAtajo('Lento')" style="padding: 6px 12px; font-size: 12px; background: #e3f2fd; color: #2192B8; border: 1px solid #2192B8; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                                    Lento
+                                </button>
+                                <button type="button" class="btn-shortcut" onclick="agregarProblemaAtajo('Teclado dañado')" style="padding: 6px 12px; font-size: 12px; background: #e3f2fd; color: #2192B8; border: 1px solid #2192B8; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                                    Teclado dañado
+                                </button>
+                                <button type="button" class="btn-shortcut" onclick="agregarProblemaAtajo('No carga batería')" style="padding: 6px 12px; font-size: 12px; background: #e3f2fd; color: #2192B8; border: 1px solid #2192B8; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                                    No carga batería
+                                </button>
+                                <button type="button" class="btn-shortcut" onclick="agregarProblemaAtajo('Ventilador ruidoso')" style="padding: 6px 12px; font-size: 12px; background: #e3f2fd; color: #2192B8; border: 1px solid #2192B8; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                                    Ventilador ruidoso
+                                </button>
+                                <button type="button" class="btn-shortcut" onclick="agregarProblemaAtajo('Virus/Malware')" style="padding: 6px 12px; font-size: 12px; background: #e3f2fd; color: #2192B8; border: 1px solid #2192B8; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                                    Virus/Malware
+                                </button>
+                                <button type="button" class="btn-shortcut" onclick="agregarProblemaAtajo('Sin Internet')" style="padding: 6px 12px; font-size: 12px; background: #e3f2fd; color: #2192B8; border: 1px solid #2192B8; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                                    Sin Internet
+                                </button>
+                            </div>
+                        </div>
+                        <textarea name="problemas" id="problemasTexto" required style="min-height: 100px;"></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>Observaciones:</label>
+                        <textarea name="observaciones" style="min-height: 80px;"></textarea>
+                    </div>
+                    
+                    <!-- Última fila: Adelanto y Monto (2 columnas) -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group" style="margin: 0;">
+                            <label>Adelanto ($):</label>
+                            <input type="number" name="adelanto" step="0.01">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label>Monto Total ($):</label>
+                            <input type="number" name="monto" step="0.01">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalNuevoServicio()">Cancelar</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Guardar Servicio
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Seleccionar Cliente para Servicio -->
+    <div id="modalSeleccionarCliente" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Seleccionar Cliente</h2>
+                <button class="close-btn" onclick="cerrarModalSeleccionarCliente()">×</button>
+            </div>
+            <div class="form-section">
+                <div class="form-group full">
+                    <label>Buscar por DNI:</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="dniClienteBusqueda" placeholder="Ingrese DNI..." maxlength="8" onkeyup="buscarClientesPorDNI()" style="flex: 1;">
+                        <button type="button" class="btn-primary" id="btnConsultarReniecServicio" onclick="consultarReniecServicio()" style="display: none;">
+                            <i class="fas fa-search"></i> Consultar RENIEC
+                        </button>
+                    </div>
+                </div>
+
+                <div id="clientesBusquedaContainer" style="margin-top: 15px;">
+                    <div id="mensajeBusqueda" style="text-align: center; color: #999; padding: 20px;">
+                        Ingrese un DNI para buscar
+                    </div>
+                </div>
+
+                <!-- Sección de confirmación de teléfono para cliente seleccionado -->
+                <div id="seccionTelefonoCliente" style="display: none; margin-top: 15px; padding: 15px; background: #f5f5f5; border-radius: 5px;">
+                    <h4 id="nombreClienteConfirm"></h4>
+                    <div class="form-group full">
+                        <label>Número de Teléfono: <span style="color: #d32f2f;">*</span></label>
+                        <input type="text" id="telefonoClienteServicio" placeholder="Ej: 987654321" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                        <small style="color: #999;">Campo obligatorio para registrar el servicio</small>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button type="button" class="btn-secondary" onclick="limpiarSeleccionClienteServicio()" style="flex: 1;">Atrás</button>
+                        <button type="button" class="btn-primary" id="btnConfirmarCliente" onclick="confirmarClienteConTelefono()" style="flex: 1;">Confirmar</button>
+                    </div>
+                </div>
+
+                <div id="resultadoReniec" style="display: none; margin-top: 15px; padding: 15px; background: #f5f5f5; border-radius: 5px;">
+                    <h4>Resultado de RENIEC:</h4>
+                    <div id="datosReniecServicio"></div>
+                    <div class="form-group full">
+                        <label>Número de Teléfono: <span style="color: #d32f2f;">*</span></label>
+                        <input type="text" id="telefonoReniecServicio" placeholder="Ej: 987654321" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    <button type="button" class="btn-primary" onclick="agregarClienteDesdeReniecServicio()" style="margin-top: 10px; width: 100%;">
+                        <i class="fas fa-plus"></i> Seleccionar este cliente
+                    </button>
+                </div>
+
+                <div id="loadingReniec" style="display: none; text-align: center; margin-top: 15px;">
+                    <i class="fas fa-spinner fa-spin"></i> Consultando RENIEC...
+                </div>
+
+                <div id="errorReniec" style="display: none; margin-top: 15px; padding: 15px; background: #ffebee; color: #c62828; border-radius: 5px;">
+                    <strong>Error:</strong> <span id="mensajeErrorReniec"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Diagnóstico de Equipo -->
+    <div id="modalDiagnostico" class="modal">
+        <div class="modal-content" style="max-width: 70vw; width: 90%;">
+            <div class="modal-header">
+                <h2><i class="fas fa-stethoscope"></i> Diagnóstico del Equipo</h2>
+                <button class="close-btn" onclick="cerrarModalDiagnostico()">×</button>
+            </div>
+            <div class="form-section">
+                <!-- Grid de Información: 3 Columnas -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                    
+                    <!-- Datos del Servicio -->
+                    <div style="padding: 12px; background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%); border-radius: 8px; border-left: 4px solid #FF9800;">
+                        <h4 style="color: #FF9800; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px; font-size: 13px;">
+                            <i class="fas fa-file-alt"></i> Servicio
+                        </h4>
+                        <div style="font-size: 11px; line-height: 1.7;">
+                            <p style="margin: 3px 0; display: flex; gap: 4px;"><span style="color: #999; font-weight: 600; min-width: 65px;">Número:</span><strong style="color: #333; font-size: 12px;" id="numeroServicioDiagnostico">-</strong></p>
+                            <p style="margin: 3px 0; display: flex; gap: 4px;"><span style="color: #999; font-weight: 600; min-width: 65px;">Cliente:</span><strong style="color: #333; font-size: 12px;" id="clienteDiagnostico">-</strong></p>
+                            <p style="margin: 3px 0; display: flex; gap: 4px;"><span style="color: #999; font-weight: 600; min-width: 65px;">Teléfono:</span><strong style="color: #333; font-size: 12px;" id="telefonoDiagnostico">-</strong></p>
+                        </div>
+                    </div>
+
+                    <!-- Datos del Equipo -->
+                    <div style="padding: 12px; background: linear-gradient(135deg, #e3f2fd 0%, #f3f7ff 100%); border-radius: 8px; border-left: 4px solid #2196F3;">
+                        <h4 style="color: #2196F3; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px; font-size: 13px;">
+                            <i class="fas fa-laptop"></i> Equipo
+                        </h4>
+                        <div style="font-size: 11px; line-height: 1.7;">
+                            <p style="margin: 3px 0; display: flex; gap: 4px;"><span style="color: #999; font-weight: 600; min-width: 75px;">Tipo:</span><strong style="color: #333; font-size: 12px;" id="equipoTipoDiagnostico">-</strong></p>
+                            <p style="margin: 3px 0; display: flex; gap: 4px;"><span style="color: #999; font-weight: 600; min-width: 75px;">Marca/Modelo:</span><strong style="color: #333; font-size: 12px;"><span id="equipoMarcaDiagnostico">-</span> <span id="equipoModeloDiagnostico">-</span></strong></p>
+                            <p style="margin: 3px 0; display: flex; gap: 4px;"><span style="color: #999; font-weight: 600; min-width: 75px;">Serie:</span><strong style="color: #333; font-family: monospace; font-size: 12px;" id="equipoSerieDiagnostico">-</strong></p>
+                        </div>
+                    </div>
+
+                    <!-- Descripción del Servicio -->
+                    <div style="padding: 12px; background: #fff8e1; border-radius: 8px; border-left: 4px solid #FBC02D;">
+                        <h4 style="color: #F57F17; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px; font-size: 13px;">
+                            <i class="fas fa-file-lines"></i> Descripción
+                        </h4>
+                        <p id="descripcionServicioDiagnostico" style="margin: 0; color: #333; font-size: 11px; line-height: 1.5; background: white; padding: 8px; border-radius: 4px; max-height: 85px; overflow-y: auto;">-</p>
+                    </div>
+                </div>
+
+                <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, #ddd, transparent); margin-bottom: 15px;">
+
+                <!-- Título de Problemas y Técnico en una fila -->
+                <div style="margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; gap: 20px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <h3 style="color: #333; margin: 0; display: flex; align-items: center; gap: 8px; font-size: 16px;">
+                            <i class="fas fa-list-check" style="color: #999; font-size: 16px;"></i> Problemas Encontrados
+                        </h3>
+                        <button type="button" class="btn-primary" onclick="agregarProblemaFila()" style="padding: 8px 14px; font-size: 13px; display: flex; align-items: center; gap: 6px; background: #2196F3; border-color: #2196F3; font-weight: 600;">
+                            <i class="fas fa-plus-circle"></i> Agregar
+                        </button>
+                    </div>
+                    
+                    <!-- Técnico Diagnosticador -->
+                    <div style="padding: 10px 12px; background: #f0f0f0; border-radius: 6px; border-left: 3px solid #757575; display: flex; align-items: center; gap: 8px;">
+                        <label style="margin: 0; font-size: 12px; font-weight: 600; color: #333;">Técnico <span style="color: #d32f2f;">*</span></label>
+                        <input type="text" id="nombreTecnicoDiagnostico" placeholder="Nombre" style="width: 150px; padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; transition: all 0.3s ease;" onFocus="this.style.borderColor='#2192B8'; this.style.boxShadow='0 0 6px rgba(33,146,184,0.2)';" onBlur="this.style.borderColor='#ddd'; this.style.boxShadow='none';">
+                    </div>
+                </div>
+
+                <div id="problemasContainer" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px; border: 1px solid #f0f0f0; border-radius: 6px;"></div>
+
+                <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, #ddd, transparent); margin-bottom: 20px;">
+
+                <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, #ddd, transparent); margin-bottom: 20px;">
+
+                <!-- Monto Total -->
+                <div style="padding: 15px; background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%); border-radius: 8px; border-left: 4px solid #4CAF50; margin-bottom: 20px;">
+                    <p style="margin: 0 0 8px 0; color: #666; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600;">Monto Total del Diagnóstico</p>
+                    <h2 style="color: #2E7D32; margin: 0; font-size: 28px; font-weight: 700;">$ <span id="montoTotalDiagnostico">0.00</span></h2>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalDiagnostico()" style="padding: 10px 18px; display: flex; align-items: center; gap: 6px; background: #f0f0f0; border-color: #e0e0e0; color: #666; font-weight: 600; font-size: 13px;">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn-primary" onclick="guardarProcesoDiagnostico()" style="padding: 10px 18px; background: #2196F3; border-color: #2196F3; display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 13px;" title="Guarda el progreso pero continúa en diagnóstico">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                    <button type="button" class="btn-primary" onclick="finalizarDiagnostico()" style="padding: 10px 18px; background: #4CAF50; border-color: #4CAF50; display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 13px;" title="Finaliza el diagnóstico y pasa a reparación">
+                        <i class="fas fa-check-circle"></i> Finalizar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ver Diagnóstico Guardado -->
+    <div id="modalVerDiagnostico" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-eye"></i> Ver Diagnóstico</h2>
+                <button class="close-btn" onclick="cerrarModalVerDiagnostico()">×</button>
+            </div>
+            <div class="form-section">
+                <div style="padding: 15px; background: #f5f5f5; border-radius: 5px; margin-bottom: 20px;">
+                    <p><strong>Número de Servicio:</strong> <span id="numeroServicioVerDiag"></span></p>
+                </div>
+
+                <label style="display: block; margin-bottom: 15px;"><strong>Problemas Registrados</strong></label>
+                <div id="diagnosticoVerContainer" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px; background: #f9f9f9; padding: 15px; border-radius: 5px; border-left: 4px solid #2192B8;"></div>
+
+                <div style="padding: 15px; background: #e8f5e9; border-radius: 5px; margin-top: 20px;">
+                    <h4 style="margin-top: 0;">Monto Total:</h4>
+                    <h3 style="color: #2192B8; margin: 10px 0;">$ <span id="montoTotalVerDiag">0.00</span></h3>
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" class="btn-primary" onclick="cerrarModalVerDiagnostico()">
+                        <i class="fas fa-check"></i> Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Seleccionar Equipo para Servicio -->
+    <div id="modalSeleccionarEquipo" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-laptop" style="margin-right: 8px;"></i>Seleccionar Equipo</h2>
+                <button class="close-btn" onclick="cerrarModalSeleccionarEquipo()">×</button>
+            </div>
+            <div class="form-section">
+                <!-- Barra de búsqueda -->
+                <div class="form-group full" style="margin-bottom: 20px;">
+                    <label><i class="fas fa-search"></i> Buscar Equipo:</label>
+                    <input type="text" id="busquedaEquipoModal" placeholder="Buscar por Tipo, Marca, Modelo o Serie..." 
+                           onkeyup="filtrarEquiposModal()" style="width: 100%; padding: 12px; font-size: 14px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                </div>
+
+                <!-- Contenedor de equipos disponibles -->
+                <div id="equiposDisponiblesContainer" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px;">
+                    <div style="text-align: center; color: #999; padding: 20px;">
+                        <i class="fas fa-spinner fa-spin"></i> Cargando equipos...
+                    </div>
+                </div>
+
+                <!-- Botón para agregar nuevo equipo -->
+                <button type="button" onclick="abrirFormularioNuevoEquipoModal()" 
+                        style="width: 100%; padding: 14px 16px; margin-top: 15px; background: #2192B8; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s ease;"
+                        onmouseover="this.style.background='#1976A2'; this.style.boxShadow='0 4px 12px rgba(33,146,184,0.3)';"
+                        onmouseout="this.style.background='#2192B8'; this.style.boxShadow='none';">
+                    <i class="fas fa-plus"></i> Agregar Nuevo Equipo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmar Selección de Equipo -->
+    <div id="modalConfirmarEquipo" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-check-circle" style="margin-right: 8px; color: #4CAF50;"></i>Confirmar Equipo</h2>
+                <button class="close-btn" onclick="cerrarModalConfirmarEquipo()">×</button>
+            </div>
+            <div class="form-section">
+                <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; border-left: 4px solid #2192B8; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h4 style="color: #333; margin: 0;">Datos del Equipo Seleccionado:</h4>
+                        <button type="button" id="btnToggleEditar" onclick="toggleEditarDatosEquipo()" style="padding: 6px 12px; background: #2192B8; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                    </div>
+                    
+                    <!-- Vista Normal (sin editar) -->
+                    <div id="viewDatosEquipo" style="display: grid; gap: 12px;">
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e0e0e0;">
+                            <strong style="color: #555;">Tipo:</strong>
+                            <span id="confirmTipoEquipo" style="color: #2192B8;">-</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e0e0e0;">
+                            <strong style="color: #555;">Marca:</strong>
+                            <span id="confirmMarcaEquipo">-</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e0e0e0;">
+                            <strong style="color: #555;">Modelo:</strong>
+                            <span id="confirmModeloEquipo">-</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                            <strong style="color: #555;">Serie:</strong>
+                            <span id="confirmSerieEquipo" style="font-family: monospace; color: #666;">-</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Vista Editable -->
+                    <div id="editDatosEquipo" style="display: none; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <label style="font-size: 12px; color: #666;">Tipo:</label>
+                            <select id="editConfirmTipoEquipo" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                                <option value="Laptop">Laptop</option>
+                                <option value="Desktop">Desktop</option>
+                                <option value="Monitor">Monitor</option>
+                                <option value="Impresora">Impresora</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 12px; color: #666;">Marca:</label>
+                            <input type="text" id="editConfirmMarcaEquipo" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                        </div>
+                        <div>
+                            <label style="font-size: 12px; color: #666;">Modelo:</label>
+                            <input type="text" id="editConfirmModeloEquipo" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                        </div>
+                        <div>
+                            <label style="font-size: 12px; color: #666;">Serie:</label>
+                            <input type="text" id="editConfirmSerieEquipo" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box; font-family: monospace;">
+                        </div>
+                        <div style="grid-column: 1 / -1; display: flex; gap: 8px; margin-top: 8px;">
+                            <button type="button" onclick="guardarCambiosEquipoConfirm()" style="flex: 1; padding: 8px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                                <i class="fas fa-save"></i> Guardar Cambios
+                            </button>
+                            <button type="button" onclick="cancelarEditarDatosEquipo()" style="flex: 1; padding: 8px; background: #999; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #e8f5e9; padding: 12px; border-radius: 4px; margin-bottom: 20px; text-align: center;">
+                    <p style="margin: 0; color: #2e7d32; font-size: 14px;">
+                        <i class="fas fa-info-circle"></i> ¿Deseas continuar con este equipo?
+                    </p>
+                </div>
+
+                <!-- Botones -->
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalConfirmarEquipo()">
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn-primary" onclick="confirmarSeleccionEquipo()" style="background: #4CAF50; border-color: #4CAF50;">
+                        <i class="fas fa-check"></i> Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo Equipo -->
+    <div id="modalNuevoEquipo" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nuevo Equipo</h2>
+                <button class="close-btn" onclick="cerrarModalNuevoEquipo()">×</button>
+            </div>
+            <form id="formEquipo" onsubmit="guardarEquipo(event)">
+                <div class="form-section">
+                    <div class="form-group">
+                        <label>Tipo de Equipo:</label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <select name="tipo_equipo" id="tipoEquipoNuevoForm" required onchange="actualizarIconoNuevo()" style="flex: 1;">
+                                <option value="">Seleccionar...</option>
+                                <option value="Laptop">Laptop</option>
+                                <option value="Desktop">Desktop</option>
+                                <option value="Monitor">Monitor</option>
+                                <option value="Impresora">Impresora</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                            <i id="iconoNuevoEquipo" class="fas fa-cube" style="font-size: 24px; color: #2192B8;"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Marca:</label>
+                        <input type="text" name="marca">
+                    </div>
+                    <div class="form-group">
+                        <label>Modelo:</label>
+                        <input type="text" name="modelo">
+                    </div>
+                    <div class="form-group">
+                         <label>Serie:</label>
+                         <input type="text" name="numero_serie">
+                      </div>
+                </div>
+
+                <!-- Botones -->
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalNuevoEquipo()">Cancelar</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Guardar Equipo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Editar Equipo -->
+    <div id="modalEditarEquipo" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Equipo</h2>
+                <button class="close-btn" onclick="cerrarModalEditarEquipo()">×</button>
+            </div>
+            <form id="formEditarEquipo" onsubmit="guardarCambiosEquipo(event)">
+                <div class="form-section">
+                    <input type="hidden" id="editEquipoId">
+                    <div class="form-group">
+                        <label>Tipo de Equipo:</label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <select id="editTipoEquipo" required onchange="actualizarIconoEditar()" style="flex: 1;">
+                                <option value="">Seleccionar...</option>
+                                <option value="Laptop">Laptop</option>
+                                <option value="Desktop">Desktop</option>
+                                <option value="Monitor">Monitor</option>
+                                <option value="Impresora">Impresora</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                            <i id="iconoEditarEquipo" class="fas fa-cube" style="font-size: 24px; color: #2192B8;"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Marca:</label>
+                        <input type="text" id="editMarca">
+                    </div>
+                    <div class="form-group">
+                        <label>Modelo:</label>
+                        <input type="text" id="editModelo">
+                    </div>
+                    <div class="form-group">
+                        <label>Serie:</label>
+                        <input type="text" id="editSerie">
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalEditarEquipo()">Cancelar</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Ver Detalles Cliente -->
+    <div id="modalVerCliente" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-circle"></i> Detalles del Cliente</h2>
+                <button class="close-btn" onclick="cerrarModalVerCliente()">×</button>
+            </div>
+            <div id="detallesClienteContent"></div>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content" style="max-width: 300px;">
+            <div class="modal-header">
+                <h2>Confirmación</h2>
+                <button class="close-btn" onclick="cerrarModal()">×</button>
+            </div>
+            <p id="confirmMsg"></p>
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                <button id="confirmBtn" class="btn-danger">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmar Reparación (Problemas completados) -->
+    <div id="modalConfirmarReparacion" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-check-circle" style="color: #4CAF50; margin-right: 8px;"></i>Confirmar Reparación</h2>
+                <button class="close-btn" onclick="cerrarModalConfirmarReparacion()">×</button>
+            </div>
+            <div class="form-section">
+                <!-- Grid de Información: Servicio, Equipo, Cliente -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                    <div style="padding: 12px; background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%); border-radius: 8px; border-left: 4px solid #FF9800;">
+                        <h4 style="color: #FF9800; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px; font-size: 13px;">
+                            <i class="fas fa-file-alt"></i> Servicio
+                        </h4>
+                        <div style="font-size: 11px; line-height: 1.7;">
+                            <p style="margin: 3px 0;"><span style="color: #999;">Número:</span> <strong style="color: #333;" id="numeroServicioReparacion">-</strong></p>
+                            <p style="margin: 3px 0;"><span style="color: #999;">Fecha:</span> <strong style="color: #333;" id="fechaServicioReparacion">-</strong></p>
+                        </div>
+                    </div>
+                    <div style="padding: 12px; background: linear-gradient(135deg, #e3f2fd 0%, #f3f7ff 100%); border-radius: 8px; border-left: 4px solid #2196F3;">
+                        <h4 style="color: #2196F3; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px; font-size: 13px;">
+                            <i class="fas fa-laptop"></i> Equipo
+                        </h4>
+                        <div style="font-size: 11px; line-height: 1.7;">
+                            <p style="margin: 3px 0;"><span style="color: #999;">Tipo:</span> <strong style="color: #333;" id="equipoTipoReparacion">-</strong></p>
+                            <p style="margin: 3px 0;"><span style="color: #999;">Marca/Modelo:</span> <strong style="color: #333;" id="marcaModeloReparacion">-</strong></p>
+                        </div>
+                    </div>
+                    <div style="padding: 12px; background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%); border-radius: 8px; border-left: 4px solid #4CAF50;">
+                        <h4 style="color: #4CAF50; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px; font-size: 13px;">
+                            <i class="fas fa-user"></i> Cliente
+                        </h4>
+                        <div style="font-size: 11px; line-height: 1.7;">
+                            <p style="margin: 3px 0;"><span style="color: #999;">Nombre:</span> <strong style="color: #333;" id="clienteNombreReparacion">-</strong></p>
+                            <p style="margin: 3px 0;"><span style="color: #999;">Teléfono:</span> <strong style="color: #333;" id="clienteTelefonoReparacion">-</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, #ddd, transparent); margin-bottom: 20px;">
+
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="color: #333; margin-bottom: 10px;">Problemas encontrados en diagnóstico:</h4>
+                    <p style="font-size: 13px; color: #666; margin: 0;">Confirma que todos estos problemas han sido reparados:</p>
+                </div>
+
+                <div id="problemasReparacionContainer" style="max-height: 300px; overflow-y: auto; margin-bottom: 20px;"></div>
+
+                <div class="form-group full" style="margin-bottom: 20px;">
+                    <label style="font-size: 13px; color: #666;">
+                        <i class="fas fa-comment"></i> Comentario (Opcional)
+                    </label>
+                    <textarea id="comentarioReparacion" placeholder="Agrega notas sobre la reparación realizada..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; resize: vertical; min-height: 80px;"></textarea>
+                </div>
+
+                <div style="background: #fff3e0; border-left: 4px solid #FF9800; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                    <p style="margin: 0; color: #E65100; font-size: 13px;">
+                        <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
+                        Marca todos los problemas como completados para finalizar la reparación.
+                    </p>
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalConfirmarReparacion()">
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn-primary" id="btnConfirmarReparacion" onclick="confirmarReparacionCompleta()" style="background: #4CAF50; border-color: #4CAF50;" disabled>
+                        <i class="fas fa-check"></i> Marcar como Completado
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Error de Validación -->
+    <div id="modalErrorValidacion" class="modal" style="z-index: 1050;">
+        <div class="modal-content" style="max-width: 400px; background: #fff3e0; border-left: 4px solid #FF9800;">
+            <div style="padding: 20px; text-align: center;">
+                <h3 style="color: #E65100; margin: 0 0 10px 0; font-size: 16px;">
+                    <i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i>Campos Incompletos
+                </h3>
+                <p style="color: #333; font-size: 14px; margin: 0;" id="mensajeErrorValidacion">
+                    Por favor completa los campos obligatorios resaltados
+                </p>
+            </div>
+            <div style="display: flex; justify-content: center; padding: 15px;">
+                <button type="button" class="btn-primary" onclick="cerrarModalErrorValidacion()" style="background: #2196F3; border-color: #2196F3;">
+                    <i class="fas fa-check"></i> Aceptar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Iniciar Reparación -->
+    <div id="modalIniciarReparacion" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-tools" style="color: #FF6F00; margin-right: 8px;"></i>Iniciar Reparación</h2>
+                <button class="close-btn" onclick="cerrarModalIniciarReparacion()">×</button>
+            </div>
+            <div class="form-section">
+                <!-- Grid de Información: Servicio, Equipo, Cliente -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                    <div style="padding: 12px; background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border-radius: 8px; border-left: 4px solid #FF9800;">
+                        <h4 style="color: #FF9800; margin: 0 0 10px 0; font-size: 13px;"><i class="fas fa-file-alt"></i> Servicio</h4>
+                        <p style="margin: 3px 0; font-size: 12px;"><strong id="repNumeroServicio">-</strong></p>
+                        <p style="margin: 3px 0; font-size: 11px; color: #666;" id="repFechaServicio">-</p>
+                    </div>
+                    <div style="padding: 12px; background: linear-gradient(135deg, #e3f2fd 0%, #f3f7ff 100%); border-radius: 8px; border-left: 4px solid #2196F3;">
+                        <h4 style="color: #2196F3; margin: 0 0 10px 0; font-size: 13px;"><i class="fas fa-laptop"></i> Equipo</h4>
+                        <p style="margin: 3px 0; font-size: 12px;"><strong id="repTipoEquipo">-</strong></p>
+                        <p style="margin: 3px 0; font-size: 11px; color: #666;" id="repMarcaModelo">-</p>
+                    </div>
+                    <div style="padding: 12px; background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%); border-radius: 8px; border-left: 4px solid #4CAF50;">
+                        <h4 style="color: #4CAF50; margin: 0 0 10px 0; font-size: 13px;"><i class="fas fa-user-circle"></i> Cliente</h4>
+                        <p style="margin: 3px 0; font-size: 12px;"><strong id="repNombreCliente">-</strong></p>
+                        <p style="margin: 3px 0; font-size: 11px; color: #666;" id="repTelefonoCliente">-</p>
+                    </div>
+                </div>
+
+                <!-- Datos de Inicio de Reparación -->
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="color: #FF6F00; margin: 0 0 15px 0;"><i class="fas fa-tools"></i> Información de Reparación</h4>
+                    
+                    <div class="form-group">
+                        <label style="font-size: 12px; color: #333;"><i class="fas fa-user-hard-hat"></i> Técnico Asignado <span style="color: #d32f2f;">*</span></label>
+                        <input type="text" id="repTecnicoReparacion" placeholder="Nombre del técnico que realizará la reparación" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="font-size: 12px; color: #333;"><i class="fas fa-hourglass-half"></i> Tiempo Estimado <span style="color: #d32f2f;">*</span></label>
+                        <input type="text" id="repTiempoEstimado" placeholder="Ej: 2 horas, 1 día, etc..." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="font-size: 12px; color: #333;"><i class="fas fa-file-alt"></i> Observaciones Iniciales (Opcional)</label>
+                        <textarea id="repObservacionesInicio" placeholder="Notas sobre el equipo o la reparación a realizar..." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; resize: vertical; min-height: 60px;"></textarea>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalIniciarReparacion()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn-primary" onclick="confirmarInicioReparacion()" style="background: #FF6F00; border-color: #FF6F00;">
+                        <i class="fas fa-check"></i> Iniciar Reparación
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Entrega de Servicio -->
+    <div id="modalEntregaServicio" class="modal">
+        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2><i class="fas fa-box-open" style="color: #4CAF50; margin-right: 8px;"></i>Entrega de Servicio y Saldo de Deuda</h2>
+                <button class="close-btn" onclick="cerrarModalEntrega()">×</button>
+            </div>
+            <div class="form-section">
+                <!-- Grid de Información: Servicio, Equipo, Cliente -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                    <div style="padding: 12px; background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border-radius: 8px; border-left: 4px solid #FF9800;">
+                        <h4 style="color: #FF9800; margin: 0 0 10px 0; font-size: 13px;"><i class="fas fa-file-alt"></i> Servicio</h4>
+                        <p style="margin: 3px 0; font-size: 12px;"><strong id="entregaNumeroServicio">-</strong></p>
+                        <p style="margin: 3px 0; font-size: 11px; color: #666;" id="entregaFechaServicio">-</p>
+                    </div>
+                    <div style="padding: 12px; background: linear-gradient(135deg, #e3f2fd 0%, #f3f7ff 100%); border-radius: 8px; border-left: 4px solid #2196F3;">
+                        <h4 style="color: #2196F3; margin: 0 0 10px 0; font-size: 13px;"><i class="fas fa-laptop"></i> Equipo</h4>
+                        <p style="margin: 3px 0; font-size: 12px;"><strong id="entregaTipoEquipo">-</strong></p>
+                        <p style="margin: 3px 0; font-size: 11px; color: #666;" id="entregaMarcaModelo">-</p>
+                    </div>
+                    <div style="padding: 12px; background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%); border-radius: 8px; border-left: 4px solid #4CAF50;">
+                        <h4 style="color: #4CAF50; margin: 0 0 10px 0; font-size: 13px;"><i class="fas fa-user-circle"></i> Cliente</h4>
+                        <p style="margin: 3px 0; font-size: 12px;"><strong id="entregaNombreCliente">-</strong></p>
+                        <p style="margin: 3px 0; font-size: 11px; color: #666;" id="entregaTelefonoCliente">-</p>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 1: DATOS DE ENTREGA -->
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="color: #2192B8; margin: 0 0 15px 0;"><i class="fas fa-truck"></i> Datos de Entrega</h4>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div class="form-group">
+                            <label style="font-size: 12px; color: #333;"><i class="fas fa-calendar-alt"></i> Fecha Entrega</label>
+                            <input type="date" id="entFechaEntrega" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                        </div>
+                        <div class="form-group">
+                            <label style="font-size: 12px; color: #333;"><i class="fas fa-clock"></i> Hora Entrega</label>
+                            <input type="time" id="entHoraEntrega" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="font-size: 12px; color: #333;"><i class="fas fa-user-tie"></i> Encargado de Entrega</label>
+                        <input type="text" id="entEncargado" placeholder="Nombre del técnico o responsable" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="font-size: 12px; color: #333;"><i class="fas fa-check-square"></i> Estado del Equipo</label>
+                        <select id="entEstadoEquipo" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                            <option value="">Selecciona estado...</option>
+                            <option value="Funcionando correctamente">✓ Funcionando correctamente</option>
+                            <option value="Con observaciones">⚠ Con observaciones</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="font-size: 12px; color: #333;"><i class="fas fa-file-alt"></i> Observaciones de Entrega (Opcional)</label>
+                        <textarea id="entObservaciones" placeholder="Anota cualquier detalle importante..." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; resize: vertical; min-height: 60px;"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="font-size: 12px; color: #333;"><i class="fas fa-camera"></i> Foto de Entrega (Opcional)</label>
+                        <input type="file" id="entFoto" accept="image/*" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 2: RESUMEN FINANCIERO -->
+                <div style="background: #f0f7ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2196F3;">
+                    <h4 style="color: #2196F3; margin: 0 0 15px 0;"><i class="fas fa-dollar-sign"></i> Resumen Financiero</h4>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+                        <div style="padding: 10px; background: white; border-radius: 4px; border-left: 3px solid #4CAF50;">
+                            <p style="margin: 0 0 4px 0; font-size: 11px; color: #666; font-weight: 600;">Monto Total</p>
+                            <p style="margin: 0; font-size: 14px; font-weight: 700; color: #333;">$<span id="entMontoTotal">0.00</span></p>
+                        </div>
+                        <div style="padding: 10px; background: white; border-radius: 4px; border-left: 3px solid #FF9800;">
+                            <p style="margin: 0 0 4px 0; font-size: 11px; color: #666; font-weight: 600;">Pagado Hasta Ahora</p>
+                            <p style="margin: 0; font-size: 14px; font-weight: 700; color: #333;">$<span id="entPagadoHasta">0.00</span></p>
+                        </div>
+                        <div style="padding: 10px; background: white; border-radius: 4px; border-left: 3px solid #d32f2f;">
+                            <p style="margin: 0 0 4px 0; font-size: 11px; color: #666; font-weight: 600;">Saldo Pendiente</p>
+                            <p style="margin: 0; font-size: 14px; font-weight: 700; color: #d32f2f;">$<span id="entSaldoPendiente">0.00</span></p>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div class="form-group">
+                            <label style="font-size: 12px; color: #333;"><i class="fas fa-money-bill"></i> Monto a Cobrar Hoy</label>
+                            <input type="number" id="entMontoCobraHoy" step="0.01" value="0" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;" onchange="recalcularSaldoEntrega()">
+                        </div>
+                        <div class="form-group">
+                            <label style="font-size: 12px; color: #333;"><i class="fas fa-credit-card"></i> Método de Pago</label>
+                            <div style="position: relative; display: inline-block; width: 100%;">
+                                <select id="entMetodoPago" style="width: 100%; padding: 8px 8px 8px 32px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; appearance: none; background-image: url(\"data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e\"); background-repeat: no-repeat; background-position: right 8px center; background-size: 16px; padding-right: 30px;">
+                                    <option value="">Selecciona método...</option>
+                                    <option value="Efectivo">Efectivo</option>
+                                    <option value="Transferencia">Transferencia</option>
+                                    <option value="Tarjeta">Tarjeta</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                                <i class="fas fa-money-bill" style="position: absolute; left: 8px; top: 50%; transform: translateY(-50%); color: #2192B8; pointer-events: none; font-size: 14px;"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="font-size: 12px; color: #333;"><i class="fas fa-receipt"></i> Comprobante/Referencia (Opcional)</label>
+                        <input type="text" id="entComprobante" placeholder="Número de comprobante o referencia..." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 3: INFORMACIÓN ADICIONAL -->
+                <div style="background: #f3e5f5; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #9C27B0;">
+                    <h4 style="color: #6A1B9A; margin: 0 0 15px 0;"><i class="fas fa-shield-alt"></i> Información Adicional</h4>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label style="font-size: 12px; color: #333;"><i class="fas fa-calendar-check"></i> Garantía Hasta (Opcional)</label>
+                            <input type="date" id="entGarantia" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                        </div>
+                        <div class="form-group">
+                            <label style="font-size: 12px; color: #333;"><i class="fas fa-lightbulb"></i> Recomendaciones (Opcional)</label>
+                            <input type="text" id="entRecomendaciones" placeholder="Mantenimiento próximo, cuidados, etc..." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTONES -->
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalEntrega()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn-primary" onclick="confirmarEntregaServicio()" style="background: #4CAF50; border-color: #4CAF50;">
+                        <i class="fas fa-check"></i> Confirmar Entrega
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmar Cierre de Diagnóstico -->
+    <div id="modalConfirmarCierreDiagnostico" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-exclamation-triangle" style="color: #FF9800; margin-right: 8px;"></i>Cambios sin guardar</h2>
+                <button class="close-btn" onclick="cerrarConfirmacionDiagnostico('cancelar')">×</button>
+            </div>
+            <div style="padding: 20px; text-align: center;">
+                <p style="font-size: 15px; color: #333; margin-bottom: 20px;">
+                    ¿Deseas cerrar sin guardar el diagnóstico?
+                </p>
+                <p style="font-size: 13px; color: #999; margin-bottom: 20px;">
+                    Si cierras ahora, los cambios no guardados se perderán.
+                </p>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" class="btn-secondary" onclick="cerrarConfirmacionDiagnostico('cancelar')">
+                    Volver al Diagnóstico
+                </button>
+                <button type="button" class="btn-danger" onclick="cerrarConfirmacionDiagnostico('confirmar')">
+                    Cerrar sin guardar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="animations.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // Incluir modales en el cierre al hacer clic fuera
+         const originalWindowOnclick = window.onclick;
+          window.onclick = function(event) {
+              const modalNuevoServicio = document.getElementById('modalNuevoServicio');
+              const modalNuevoEquipo = document.getElementById('modalNuevoEquipo');
+              const modalEditarEquipo = document.getElementById('modalEditarEquipo');
+              const modalSeleccionarCliente = document.getElementById('modalSeleccionarCliente');
+              const modalSeleccionarEquipo = document.getElementById('modalSeleccionarEquipo');
+              const modalConfirmarEquipo = document.getElementById('modalConfirmarEquipo');
+              const modalDiagnostico = document.getElementById('modalDiagnostico');
+              const modalVerDiagnostico = document.getElementById('modalVerDiagnostico');
+              const modalDetallesServicio = document.getElementById('modalDetallesServicio');
+              if (event.target === modalNuevoServicio) {
+                  cerrarModalNuevoServicio();
+              }
+              if (event.target === modalNuevoEquipo) {
+                  cerrarModalNuevoEquipo();
+              }
+              if (event.target === modalEditarEquipo) {
+                  cerrarModalEditarEquipo();
+              }
+              if (event.target === modalSeleccionarCliente) {
+                  cerrarModalSeleccionarCliente();
+              }
+              if (event.target === modalSeleccionarEquipo) {
+                  cerrarModalSeleccionarEquipo();
+              }
+              if (event.target === modalConfirmarEquipo) {
+                  cerrarModalConfirmarEquipo();
+              }
+              if (event.target === modalDiagnostico) {
+                  cerrarModalDiagnostico();
+              }
+              if (event.target === modalVerDiagnostico) {
+                  cerrarModalVerDiagnostico();
+              }
+              if (event.target === modalDetallesServicio) {
+                  cerrarModalDetallesServicio();
+              }
+              originalWindowOnclick.call(this, event);
+              }
+              </script>
+
+              <!-- Modal Reparación Completada -->
+              <div id="modalReparacionCompleta" class="modal" style="z-index: 1100; transition: opacity 0.3s ease;">
+                  <div class="modal-content" style="max-width: 450px; text-align: center; padding: 60px 40px; background: white; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                      <div style="display: inline-flex; align-items: center; justify-content: center; width: 100px; height: 100px; background: #4CAF50; border-radius: 50%; margin: 0 auto 30px; animation: scaleIn 0.5s ease;">
+                          <i class="fas fa-check" style="font-size: 50px; color: white;"></i>
+                      </div>
+                      <h2 style="color: #333; margin: 0 0 15px 0; font-size: 26px; font-weight: 600;">Reparación Completada</h2>
+                      <p style="color: #999; margin: 0; font-size: 15px; line-height: 1.5;">Reparación completada correctamente</p>
+                  </div>
+              </div>
+
+              <style>
+                  @keyframes scaleIn {
+                      from {
+                          transform: scale(0);
+                          opacity: 0;
+                      }
+                      to {
+                          transform: scale(1);
+                          opacity: 1;
+                      }
+                  }
+              </style>
+
+              <!-- Modal Nuevo Usuario -->
+              <!-- Modal Editar Usuario -->
+              <div id="modalEditarUsuario" class="modal">
+                  <div class="modal-content" style="max-width: 500px;">
+                      <div class="modal-header">
+                          <h2><i class="fas fa-user-edit" style="margin-right: 8px;"></i>Editar Usuario</h2>
+                          <button class="close-btn" onclick="cerrarModalEditarUsuario()">×</button>
+                      </div>
+                      <form id="formEditarUsuario" onsubmit="guardarEdicionUsuario(event)">
+                          <input type="hidden" id="editUsuarioId">
+                          <div class="form-section">
+                              <div class="form-group full">
+                                  <label>Usuario: <span style="color: #d32f2f;">*</span></label>
+                                  <input type="text" id="editUsuarioNombre" required minlength="3" placeholder="Nombre de usuario">
+                              </div>
+                              <div class="form-group full">
+                                  <label>Correo Electrónico: <span style="color: #d32f2f;">*</span></label>
+                                  <input type="email" id="editUsuarioCorreo" required placeholder="correo@ejemplo.com">
+                              </div>
+                              <div class="form-group full">
+                                  <label>Rol:</label>
+                                  <select id="editUsuarioRol">
+                                      <option value="usuario">Usuario</option>
+                                      <option value="admin">Administrador</option>
+                                  </select>
+                              </div>
+
+                              <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, #ddd, transparent); margin: 15px 0;">
+
+                              <div style="background: #fff8e1; padding: 12px; border-radius: 6px; border-left: 4px solid #FF9800; margin-bottom: 15px;">
+                                  <p style="margin: 0; font-size: 12px; color: #E65100;">
+                                      <i class="fas fa-info-circle"></i> Deja vacío si no deseas cambiar la contraseña
+                                  </p>
+                              </div>
+                              <div class="form-group full">
+                                  <label>Nueva Contraseña: <span style="color: #999; font-size: 12px;">(Opcional)</span></label>
+                                  <input type="password" id="editUsuarioClaveNueva" minlength="6" placeholder="Mínimo 6 caracteres">
+                              </div>
+                              <div class="form-group full" id="seccionClaveAdmin" style="display: none;">
+                                  <label>Tu Contraseña de Admin: <span style="color: #d32f2f;">*</span></label>
+                                  <input type="password" id="editUsuarioClaveAdmin" placeholder="Ingresa tu contraseña para confirmar">
+                                  <small style="color: #999;">Requerida para cambiar la contraseña del usuario</small>
+                              </div>
+                          </div>
+                          <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                              <button type="button" class="btn-secondary" onclick="cerrarModalEditarUsuario()">Cancelar</button>
+                              <button type="submit" class="btn-primary">
+                                  <i class="fas fa-save"></i> Guardar Cambios
+                              </button>
+                          </div>
+                      </form>
+                  </div>
+              </div>
+
+                         <div id="modalNuevoUsuario" class="modal">
+                  <div class="modal-content" style="max-width: 500px;">
+                      <div class="modal-header">
+                          <h2><i class="fas fa-user-plus" style="margin-right: 8px;"></i>Nuevo Usuario</h2>
+                          <button class="close-btn" onclick="cerrarModalNuevoUsuario()">×</button>
+                      </div>
+                      <form id="formNuevoUsuario" onsubmit="guardarNuevoUsuario(event)">
+                          <div class="form-section">
+                              <div class="form-group full">
+                                  <label>Usuario: <span style="color: #d32f2f;">*</span></label>
+                                  <input type="text" id="nuevoUsuarioNombre" required minlength="3" placeholder="Nombre de usuario">
+                              </div>
+                              <div class="form-group full">
+                                  <label>Correo Electrónico: <span style="color: #d32f2f;">*</span></label>
+                                  <input type="email" id="nuevoUsuarioCorreo" required placeholder="correo@ejemplo.com">
+                              </div>
+                              <div class="form-group full">
+                                  <label>Contraseña: <span style="color: #d32f2f;">*</span></label>
+                                  <input type="password" id="nuevoUsuarioClave" required minlength="6" placeholder="Mínimo 6 caracteres">
+                              </div>
+                              <div class="form-group full">
+                                  <label>Rol:</label>
+                                  <select id="nuevoUsuarioRol">
+                                      <option value="usuario">Usuario</option>
+                                      <option value="admin">Administrador</option>
+                                  </select>
+                              </div>
+                          </div>
+                          <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                              <button type="button" class="btn-secondary" onclick="cerrarModalNuevoUsuario()">Cancelar</button>
+                              <button type="submit" class="btn-primary">
+                                  <i class="fas fa-save"></i> Guardar Usuario
+                              </button>
+                          </div>
+                      </form>
+                  </div>
+              </div>
+
+                         <script src="reporte.js"></script>
+              </body>
+              </html>

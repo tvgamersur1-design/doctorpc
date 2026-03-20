@@ -2,7 +2,7 @@
 function verificarSesion() {
     const token = localStorage.getItem('token');
     if (!token) {
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
         return false;
     }
     return true;
@@ -11,7 +11,7 @@ function verificarSesion() {
 function cerrarSesion() {
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
-    window.location.href = 'login.html';
+    window.location.href = 'index.html';
 }
 
 function getToken() {
@@ -27,7 +27,7 @@ function getUsuarioActual() {
 }
 
 // Verificar sesión al cargar
-if (!window.location.pathname.includes('login.html')) {
+if (!window.location.pathname.includes('index.html') && window.location.pathname !== '/') {
     verificarSesion();
 }
 
@@ -66,7 +66,7 @@ window.fetch = function(url, options = {}) {
             if (!url.includes('/api/auth/')) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('usuario');
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
             }
         }
         return response;
