@@ -2,7 +2,8 @@ const { MongoClient, ObjectId } = require('mongodb');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'doctorpc_secretkey_2024_s3cur3!';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) throw new Error('JWT_SECRET no configurado en variables de entorno');
 
 const headers = {
   'Content-Type': 'application/json',

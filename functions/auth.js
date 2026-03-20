@@ -2,7 +2,8 @@ const { MongoClient, ObjectId } = require('mongodb');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'doctorpc_secretkey_2024_s3cur3!';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) throw new Error('JWT_SECRET no configurado en variables de entorno');
 
 const headers = {
   'Content-Type': 'application/json',
@@ -44,8 +45,13 @@ function verificarToken(event) {
 async function seedAdmin(db) {
   const adminExists = await db.collection('usuarios').findOne({ usuario: 'admin' });
   if (!adminExists) {
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    if (!adminPassword) {
+      console.error('[auth] ADMIN_PASSWORD no configurado, no se creó el admin');
+      return;
+    }
     const salt = await bcrypt.genSalt(12);
-    const claveHash = await bcrypt.hash('123456', salt);
+    const claveHash = await bcrypt.hash(adminPassword, salt);
     await db.collection('usuarios').insertOne({
       usuario: 'admin',
       correo: 'tvgamersur7@gmail.com',

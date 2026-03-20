@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 const axios = require('axios');
 require('dotenv').config();
 const { MongoClient, ObjectId } = require('mongodb');
@@ -12,7 +13,12 @@ const PORT = process.env.PORT || 3000;
 // Configuración de MongoDB
 const MONGODB_URI = process.env.MONGODB_URI;
 const DB_NAME = 'doctorpc';
-const JWT_SECRET = process.env.JWT_SECRET || 'doctorpc_secretkey_2024_s3cur3!';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error('❌ ERROR: JWT_SECRET no está configurado en .env');
+  process.exit(1);
+}
 
 if (!MONGODB_URI) {
   console.error('❌ ERROR: MONGODB_URI no está configurado en .env');
@@ -23,9 +29,41 @@ let db;
 const mongoClient = new MongoClient(MONGODB_URI);
 
 // Middleware
-app.use(cors());
-app.use(express.json());
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000').split(',').map(o => o.trim());
+app.use(cors({
+  origin: (origin, callback) => {
+    // Permitir requests sin origin (ej: Postman, apps móviles) o si está en la lista
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('No permitido por CORS'));
+    }
+  },
+  credentials: true
+}));
+app.use(express.json({ limit: '2mb' }));
 app.use(express.static('public'));
+
+// Rate limiting para login (máx 10 intentos por 15 minutos por IP)
+const MAX_LOGIN_INTENTOS = 10;
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: MAX_LOGIN_INTENTOS,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) => {
+    const resetTime = req.rateLimit.resetTime
+      ? new Date(req.rateLimit.resetTime).toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' })
+      : '15 minutos';
+    res.status(429).json({
+      error: 'Demasiados intentos fallidos. Acceso bloqueado.',
+      intentos_usados: req.rateLimit.used,
+      limite: req.rateLimit.limit,
+      intentos_restantes: 0,
+      disponible_a_las: resetTime
+    });
+  }
+});
 
 // Middleware de autenticación JWT
 function autenticarToken(req, res, next) {
@@ -115,8 +153,13 @@ async function seedAdminUser() {
     try {
         const adminExists = await db.collection('usuarios').findOne({ usuario: 'admin' });
         if (!adminExists) {
+            const adminPassword = process.env.ADMIN_PASSWORD;
+            if (!adminPassword) {
+                console.error('❌ ERROR: ADMIN_PASSWORD no está configurado en .env');
+                return;
+            }
             const salt = await bcrypt.genSalt(12);
-            const claveHash = await bcrypt.hash('123456', salt);
+            const claveHash = await bcrypt.hash(adminPassword, salt);
             await db.collection('usuarios').insertOne({
                 usuario: 'admin',
                 correo: 'tvgamersur7@gmail.com',
@@ -230,7 +273,7 @@ function validarServicio(data, esActualizacion = false) {
 // ==================== AUTENTICACIÓN ====================
 
 // POST login
-app.post('/api/auth/login', async (req, res) => {
+app.post('/api/auth/login', loginLimiter, async (req, res) => {
     try {
         const { usuario, clave } = req.body;
         
@@ -240,14 +283,26 @@ app.post('/api/auth/login', async (req, res) => {
         
         const user = await db.collection('usuarios').findOne({ usuario: usuario });
         
+        // Calcular intentos restantes (el middleware ya contó este intento)
+        const intentosUsados = req.rateLimit ? req.rateLimit.used : 1;
+        const intentosRestantes = req.rateLimit ? req.rateLimit.remaining : MAX_LOGIN_INTENTOS - 1;
+
         if (!user) {
-            return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
+            return res.status(401).json({
+                error: 'Usuario o contraseña incorrectos',
+                intentos_restantes: intentosRestantes,
+                limite: MAX_LOGIN_INTENTOS
+            });
         }
         
         const claveValida = await bcrypt.compare(clave, user.clave);
         
         if (!claveValida) {
-            return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
+            return res.status(401).json({
+                error: 'Usuario o contraseña incorrectos',
+                intentos_restantes: intentosRestantes,
+                limite: MAX_LOGIN_INTENTOS
+            });
         }
         
         const token = jwt.sign(

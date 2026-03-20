@@ -132,8 +132,63 @@
 
         .error-message.visible {
             display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            flex-direction: column;
+        }
+
+        .error-message .error-main {
+            display: flex;
             align-items: center;
             gap: 8px;
+        }
+
+        .intentos-bar-wrap {
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .intentos-label {
+            font-size: 12px;
+            color: #b91c1c;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .intentos-bar {
+            width: 100%;
+            height: 6px;
+            background: #fecaca;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .intentos-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            transition: width 0.4s ease, background 0.4s ease;
+        }
+
+        .intentos-bloqueado {
+            background: #fef2f2;
+            color: #7f1d1d;
+            font-size: 13px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            display: none;
+            border: 1px solid #fca5a5;
+            text-align: center;
+        }
+
+        .intentos-bloqueado.visible {
+            display: block;
+        }
+
+        .intentos-bloqueado strong {
+            display: block;
+            font-size: 15px;
+            margin-bottom: 4px;
         }
 
         .btn-login {
@@ -216,8 +271,20 @@
                     </div>
                 </div>
                 <div class="error-message" id="errorMessage">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span id="errorText"></span>
+                    <div class="error-main">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="errorText"></span>
+                    </div>
+                    <div class="intentos-bar-wrap" id="intentosWrap" style="display:none">
+                        <div class="intentos-label" id="intentosLabel"></div>
+                        <div class="intentos-bar">
+                            <div class="intentos-bar-fill" id="intentosBarFill"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="intentos-bloqueado" id="bloqueadoMessage">
+                    <strong><i class="fas fa-lock"></i> Acceso bloqueado temporalmente</strong>
+                    <span id="bloqueadoText"></span>
                 </div>
                 <button type="submit" class="btn-login" id="btnLogin">
                     <span class="btn-text">Iniciar Sesión</span>
@@ -232,8 +299,16 @@
         const btnLogin = document.getElementById('btnLogin');
         const errorMessage = document.getElementById('errorMessage');
         const errorText = document.getElementById('errorText');
+        const bloqueadoMessage = document.getElementById('bloqueadoMessage');
+        const bloqueadoText = document.getElementById('bloqueadoText');
+        const intentosWrap = document.getElementById('intentosWrap');
+        const intentosLabel = document.getElementById('intentosLabel');
+        const intentosBarFill = document.getElementById('intentosBarFill');
         const toggleBtn = document.querySelector('.toggle-password');
         const claveInput = document.getElementById('clave');
+
+        const LIMITE_INTENTOS = 10;
+        const UMBRAL_AVISO = 5; // mostrar barra cuando queden 5 o menos
 
         toggleBtn.addEventListener('click', function () {
             const isPassword = claveInput.type === 'password';
@@ -242,13 +317,49 @@
             this.querySelector('i').classList.toggle('fa-eye-slash');
         });
 
-        function showError(message) {
+        function showError(message, intentosRestantes) {
+            // Ocultar bloqueo si estaba visible
+            bloqueadoMessage.classList.remove('visible');
+
             errorText.textContent = message;
             errorMessage.classList.add('visible');
+
+            // Mostrar barra solo si quedan 5 o menos intentos
+            if (intentosRestantes !== undefined && intentosRestantes <= UMBRAL_AVISO) {
+                const porcentaje = (intentosRestantes / LIMITE_INTENTOS) * 100;
+
+                // Color según urgencia
+                let color;
+                if (intentosRestantes <= 1) color = '#dc2626';       // rojo fuerte
+                else if (intentosRestantes <= 3) color = '#ea580c';   // naranja
+                else color = '#f59e0b';                               // amarillo
+
+                intentosLabel.innerHTML = intentosRestantes === 1
+                    ? '<i class="fas fa-exclamation-triangle"></i> ¡Último intento antes de bloqueo!'
+                    : `<i class="fas fa-exclamation-triangle"></i> Te quedan ${intentosRestantes} intento${intentosRestantes > 1 ? 's' : ''}`;
+
+                intentosBarFill.style.width = porcentaje + '%';
+                intentosBarFill.style.background = color;
+                intentosWrap.style.display = 'block';
+            } else {
+                intentosWrap.style.display = 'none';
+            }
+        }
+
+        function showBloqueado(disponibleALas) {
+            errorMessage.classList.remove('visible');
+            intentosWrap.style.display = 'none';
+            bloqueadoText.textContent = disponibleALas
+                ? `Demasiados intentos fallidos. Podrás intentarlo de nuevo a las ${disponibleALas}.`
+                : 'Demasiados intentos fallidos. Intenta de nuevo en 15 minutos.';
+            bloqueadoMessage.classList.add('visible');
+            btnLogin.disabled = true;
         }
 
         function hideError() {
             errorMessage.classList.remove('visible');
+            bloqueadoMessage.classList.remove('visible');
+            intentosWrap.style.display = 'none';
         }
 
         function setLoading(loading) {
@@ -286,8 +397,14 @@
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('usuario', JSON.stringify(data.usuario));
                     window.location.href = 'index.html';
+                } else if (response.status === 429) {
+                    // Bloqueado por rate limit
+                    showBloqueado(data.disponible_a_las);
                 } else {
-                    showError(data.error || data.mensaje || 'Credenciales incorrectas.');
+                    showError(
+                        data.error || 'Credenciales incorrectas.',
+                        data.intentos_restantes
+                    );
                 }
             } catch (err) {
                 showError('Error de conexión. Intente nuevamente.');
