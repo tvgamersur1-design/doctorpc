@@ -2,9 +2,6 @@ const { MongoClient, ObjectId } = require('mongodb');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) throw new Error('JWT_SECRET no configurado en variables de entorno');
-
 const headers = {
   'Content-Type': 'application/json',
   'Access-Control-Allow-Origin': '*',
@@ -32,6 +29,9 @@ async function getMongoClient() {
 }
 
 function verificarToken(event) {
+  const JWT_SECRET = process.env.JWT_SECRET;
+  if (!JWT_SECRET) return null;
+  
   const authHeader = event.headers['authorization'] || event.headers['Authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) return null;
@@ -72,6 +72,17 @@ exports.handler = async (event, context) => {
   }
 
   try {
+    // Verificar variables de entorno críticas
+    const JWT_SECRET = process.env.JWT_SECRET;
+    if (!JWT_SECRET) {
+      console.error('[auth] JWT_SECRET no configurado');
+      return { 
+        statusCode: 500, 
+        headers, 
+        body: JSON.stringify({ error: 'Configuración del servidor incompleta. Contacte al administrador.' }) 
+      };
+    }
+
     const client = await getMongoClient();
     const db = client.db('doctorpc');
 
