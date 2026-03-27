@@ -93,6 +93,28 @@ exports.handler = async (event, context) => {
       equipo = await db.collection('equipos').findOne({ _id: new ObjectId(servicio.equipo_id) });
     }
     
+    // Parsear diagnóstico (puede ser JSON string o array)
+    let diagnosticoData = servicio.diagnostico || servicio.diagnostico_tecnico || '';
+    if (typeof diagnosticoData === 'string' && diagnosticoData.startsWith('[')) {
+      try {
+        diagnosticoData = JSON.parse(diagnosticoData);
+      } catch (e) {
+        // Si falla el parse, dejar como string
+      }
+    }
+
+    // Calcular costo de repuestos desde diagnóstico si existe
+    let costoRepuestos = parseFloat(servicio.costo_repuestos || 0);
+    if (costoRepuestos === 0 && Array.isArray(diagnosticoData) && diagnosticoData.length > 0) {
+      costoRepuestos = diagnosticoData.reduce((sum, d) => sum + parseFloat(d.costo || 0), 0);
+    }
+
+    // Extraer descripción del problema desde múltiples fuentes
+    let descripcionProblema = servicio.descripcion_problema || servicio.problemas || '';
+    if (Array.isArray(servicio.servicios) && servicio.servicios.length > 0 && !descripcionProblema) {
+      descripcionProblema = servicio.servicios.map(s => s.nombre || s).join(', ');
+    }
+
     // Preparar datos del reporte
     const reporteData = {
       numero_orden: servicio.numero_orden || servicio.numero_servicio || 'SN',
@@ -112,18 +134,19 @@ exports.handler = async (event, context) => {
         numero_serie: equipo?.numero_serie || ''
       },
       servicio: {
-        descripcion_problema: servicio.problemas || servicio.descripcion_problema || '',
-        diagnostico: servicio.diagnostico || servicio.diagnostico_tecnico || '',
+        descripcion_problema: descripcionProblema,
+        diagnostico: diagnosticoData,
+        tecnico_diagnosticador: servicio.tecnico || '',
         solucion_aplicada: servicio.solucion_aplicada || servicio.trabajo_realizado || ''
       },
       costos: {
-        costo_base: parseFloat(servicio.monto || 0),
-        repuestos: parseFloat(servicio.costo_repuestos || 0),
+        costo_base: parseFloat(servicio.monto || servicio.costo_total || 0),
+        repuestos: costoRepuestos,
         costo_adicional: parseFloat(servicio.costo_adicional || 0),
-        total: parseFloat(servicio.monto || 0)
+        total: parseFloat(servicio.monto || servicio.costo_total || 0)
       },
       datos_tecnicos: {
-        tecnico_asignado: servicio.tecnico_asignado || 'No asignado',
+        tecnico_asignado: servicio.tecnico || servicio.tecnico_asignado || 'No asignado',
         estado: servicio.estado || 'Pendiente',
         prioridad: servicio.prioridad || 'Normal'
       }
