@@ -264,6 +264,17 @@ button {
     background: #45a049;
 }
 
+.btn-success {
+    background: #28a745;
+    color: white;
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.btn-success:hover {
+    background: #218838;
+}
+
 .btn-danger {
     background: #f44336;
     color: white;
@@ -367,6 +378,8 @@ button {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
 }
 
 .modal.show {
@@ -444,6 +457,8 @@ button {
     margin-top: 0;
 }
 
+/* ==================== RESPONSIVE DESIGN ==================== */
+
 /* Responsive para tablets y pantallas pequeñas */
 @media (max-width: 1024px) {
     .sidebar {
@@ -471,7 +486,7 @@ button {
     display: block;
 }
 
-/* Responsive para tablets pequeñas */
+/* ==================== TABLET (481px - 768px) ==================== */
 @media (max-width: 768px) {
     .sidebar {
         position: fixed;
@@ -580,8 +595,9 @@ button {
     }
 }
 
-/* Responsive para smartphones */
+/* ==================== MÓVIL (<480px) ==================== */
 @media (max-width: 480px) {
+    /* Fuente base */
     * {
         font-size: 13px;
     }
@@ -590,6 +606,7 @@ button {
         background: #f5f7fa;
     }
     
+    /* ========== HEADER ========== */
     .header {
         padding: 12px 10px;
         border-bottom: 2px solid #2192B8;
@@ -615,6 +632,7 @@ button {
         order: 3;
     }
     
+    /* ========== CONTENEDORES ========== */
     .container {
         padding: 10px;
     }
@@ -635,6 +653,7 @@ button {
         margin: 10px 0;
     }
     
+    /* ========== FORMULARIOS ========== */
     .form-group {
         grid-template-columns: 1fr;
         gap: 10px;
@@ -663,6 +682,7 @@ button {
         min-height: 60px;
     }
     
+    /* ========== MODALES ========== */
     .modal-content {
         width: 95%;
         padding: 15px;
@@ -696,15 +716,18 @@ button {
         max-height: 95vh;
     }
     
+    /* ========== TABLAS RESPONSIVE - DISEÑO DE TARJETAS ========== */
     .records-table {
         font-size: 11px;
         margin-top: 10px;
     }
     
+    /* Ocultar headers en móvil */
     .records-table thead {
         display: none;
     }
     
+    /* Convertir tabla en bloques */
     .records-table,
     .records-table tbody,
     .records-table tr,
@@ -713,13 +736,17 @@ button {
         width: 100%;
     }
     
+    /* Cada fila es una tarjeta */
     .records-table tr {
         margin-bottom: 15px;
         border: 1px solid #ddd;
         border-radius: 6px;
         overflow: hidden;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     
+    /* Celdas con layout flex */
     .records-table td {
         display: flex;
         justify-content: space-between;
@@ -727,31 +754,46 @@ button {
         padding: 10px;
         text-align: right;
         border-bottom: 1px solid #f0f0f0;
+        min-height: 40px;
     }
     
+    .records-table td:last-child {
+        border-bottom: none;
+    }
+    
+    /* Labels a la izquierda usando data-label */
     .records-table td:before {
         content: attr(data-label);
         font-weight: bold;
         text-align: left;
         margin-right: 10px;
+        color: #2192B8;
+        flex-shrink: 0;
+        font-size: 11px;
     }
     
+    /* Botones de acción */
     .records-table .actions {
         flex-direction: row;
         gap: 5px;
         display: flex;
         justify-content: flex-end;
         margin-top: 10px;
+        flex-wrap: wrap;
     }
     
     .records-table .btn-edit,
-    .records-table .btn-danger {
+    .records-table .btn-danger,
+    .records-table .btn-success {
         width: auto;
         padding: 6px 10px;
         font-size: 11px;
         white-space: nowrap;
+        flex: 1;
+        min-width: 80px;
     }
     
+    /* ========== BOTONES ========== */
     button {
         padding: 10px 12px;
         font-size: 12px;
@@ -763,11 +805,13 @@ button {
         width: 100%;
     }
     
+    /* ========== BÚSQUEDA ========== */
     .search-box input {
         width: 100%;
         max-width: 100%;
     }
     
+    /* ========== MENSAJES ========== */
     .success-message {
         padding: 10px;
         font-size: 12px;
@@ -779,6 +823,7 @@ button {
         font-size: 14px;
     }
     
+    /* ========== UTILIDADES ========== */
     div[style*="display: flex; gap: 10px"] {
         flex-direction: column;
         gap: 8px;

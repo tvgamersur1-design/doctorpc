@@ -1,0 +1,140 @@
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg" font-family="Arial">
+  <!-- Title -->
+  <text x="600" y="30" text-anchor="middle" font-size="20" font-weight="bold" fill="#1976D2">
+    Diagrama de Base de Datos - Sistema DoctorPC
+  </text>
+
+  <!-- CLIENTES -->
+  <rect x="50" y="80" width="280" height="260" rx="10" fill="#E3F2FD" stroke="#1E88E5" stroke-width="2"/>
+  <text x="190" y="110" text-anchor="middle" font-size="16" font-weight="bold" fill="#1565C0">CLIENTES</text>
+  
+  <text x="70" y="140" font-size="12" font-weight="bold">_id (PK)</text>
+  <text x="70" y="160" font-size="12">nombre</text>
+  <text x="70" y="180" font-size="12">apellido_paterno</text>
+  <text x="70" y="200" font-size="12">apellido_materno</text>
+  <text x="70" y="220" font-size="12">dni</text>
+  <text x="70" y="240" font-size="12">telefono</text>
+  <text x="70" y="260" font-size="12">email</text>
+  <text x="70" y="280" font-size="12">direccion</text>
+  <text x="70" y="300" font-size="12">fecha_registro</text>
+  <text x="70" y="320" font-size="12">activo</text>
+
+  <!-- EQUIPOS -->
+  <rect x="460" y="80" width="280" height="280" rx="10" fill="#E8F5E9" stroke="#43A047" stroke-width="2"/>
+  <text x="600" y="110" text-anchor="middle" font-size="16" font-weight="bold" fill="#2E7D32">EQUIPOS</text>
+  
+  <text x="480" y="140" font-size="12" font-weight="bold">_id (PK)</text>
+  <text x="480" y="160" font-size="12" fill="#D32F2F">cliente_id (FK)</text>
+  <text x="480" y="180" font-size="12">tipo_equipo</text>
+  <text x="480" y="200" font-size="12">marca</text>
+  <text x="480" y="220" font-size="12">modelo</text>
+  <text x="480" y="240" font-size="12">numero_serie</text>
+  <text x="480" y="260" font-size="12">color</text>
+  <text x="480" y="280" font-size="12">accesorios</text>
+  <text x="480" y="300" font-size="12">fecha_ingreso</text>
+  <text x="480" y="320" font-size="12">estado</text>
+  <text x="480" y="340" font-size="12">observaciones</text>
+
+  <!-- Relationship CLIENTES -> EQUIPOS -->
+  <line x1="330" y1="200" x2="460" y2="200" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="340" y="185" font-size="11" font-weight="bold">1</text>
+  <text x="440" y="185" font-size="11" font-weight="bold">N</text>
+  <text x="365" y="220" font-size="10" fill="#666">posee</text>
+
+  <!-- SERVICIOS / SERVICIO_EQUIPO -->
+  <rect x="870" y="80" width="280" height="340" rx="10" fill="#FFF3E0" stroke="#F57C00" stroke-width="2"/>
+  <text x="1010" y="110" text-anchor="middle" font-size="16" font-weight="bold" fill="#E65100">SERVICIO_EQUIPO</text>
+  
+  <text x="890" y="140" font-size="12" font-weight="bold">_id (PK)</text>
+  <text x="890" y="160" font-size="12" fill="#D32F2F">cliente_id (FK)</text>
+  <text x="890" y="180" font-size="12" fill="#D32F2F">equipo_id (FK)</text>
+  <text x="890" y="200" font-size="12">numero_orden</text>
+  <text x="890" y="220" font-size="12">fecha_ingreso</text>
+  <text x="890" y="240" font-size="12">fecha_entrega_estimada</text>
+  <text x="890" y="260" font-size="12">fecha_entrega_real</text>
+  <text x="890" y="280" font-size="12">descripcion_problema</text>
+  <text x="890" y="300" font-size="12">diagnostico</text>
+  <text x="890" y="320" font-size="12">solucion_aplicada</text>
+  <text x="890" y="340" font-size="12">costo_servicio</text>
+  <text x="890" y="360" font-size="12">costo_repuestos</text>
+  <text x="890" y="380" font-size="12">estado</text>
+  <text x="890" y="400" font-size="12">tecnico_asignado</text>
+
+  <!-- Relationship EQUIPOS -> SERVICIOS -->
+  <line x1="740" y1="220" x2="870" y2="220" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="750" y="205" font-size="11" font-weight="bold">1</text>
+  <text x="850" y="205" font-size="11" font-weight="bold">N</text>
+  <text x="780" y="240" font-size="10" fill="#666">tiene</text>
+
+  <!-- Relationship CLIENTES -> SERVICIOS -->
+  <path d="M 190 340 L 190 480 L 1010 480 L 1010 420" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <text x="200" y="360" font-size="11" font-weight="bold">1</text>
+  <text x="1020" y="440" font-size="11" font-weight="bold">N</text>
+  <text x="580" y="495" font-size="10" fill="#666">solicita</text>
+
+  <!-- USUARIOS -->
+  <rect x="50" y="450" width="280" height="220" rx="10" fill="#F3E5F5" stroke="#8E24AA" stroke-width="2"/>
+  <text x="190" y="480" text-anchor="middle" font-size="16" font-weight="bold" fill="#6A1B9A">USUARIOS</text>
+  
+  <text x="70" y="510" font-size="12" font-weight="bold">_id (PK)</text>
+  <text x="70" y="530" font-size="12">nombre</text>
+  <text x="70" y="550" font-size="12">email</text>
+  <text x="70" y="570" font-size="12">password (hash)</text>
+  <text x="70" y="590" font-size="12">rol</text>
+  <text x="70" y="610" font-size="12">fecha_creacion</text>
+  <text x="70" y="630" font-size="12">ultimo_acceso</text>
+  <text x="70" y="650" font-size="12">activo</text>
+
+  <!-- Relationship USUARIOS -> SERVICIOS (tecnico_asignado) -->
+  <path d="M 330 560 L 800 560 L 800 400 L 870 400" stroke="#999" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#arrow-dashed)"/>
+  <text x="550" y="575" font-size="10" fill="#666">asignado a</text>
+
+  <!-- Legend -->
+  <rect x="460" y="450" width="280" height="220" rx="10" fill="#FAFAFA" stroke="#999" stroke-width="1"/>
+  <text x="600" y="475" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">LEYENDA</text>
+  
+  <text x="480" y="505" font-size="11" font-weight="bold">PK</text>
+  <text x="510" y="505" font-size="11">= Primary Key (Clave Primaria)</text>
+  
+  <text x="480" y="525" font-size="11" font-weight="bold" fill="#D32F2F">FK</text>
+  <text x="510" y="525" font-size="11">= Foreign Key (Clave Foránea)</text>
+  
+  <line x1="480" y1="540" x2="530" y2="540" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="540" y="545" font-size="11">= Relación directa</text>
+  
+  <line x1="480" y1="560" x2="530" y2="560" stroke="#999" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#arrow-dashed)"/>
+  <text x="540" y="565" font-size="11">= Relación indirecta</text>
+  
+  <text x="480" y="590" font-size="11" font-weight="bold">Cardinalidad:</text>
+  <text x="480" y="610" font-size="11">1 = Uno</text>
+  <text x="480" y="630" font-size="11">N = Muchos</text>
+
+  <!-- Notes -->
+  <rect x="870" y="450" width="280" height="220" rx="10" fill="#E8EAF6" stroke="#3F51B5" stroke-width="2"/>
+  <text x="1010" y="475" text-anchor="middle" font-size="14" font-weight="bold" fill="#283593">NOTAS</text>
+  
+  <text x="890" y="500" font-size="10" fill="#333">• Base de datos: MongoDB</text>
+  <text x="890" y="520" font-size="10" fill="#333">• _id: ObjectId generado por MongoDB</text>
+  <text x="890" y="540" font-size="10" fill="#333">• Todas las fechas en formato ISO</text>
+  <text x="890" y="560" font-size="10" fill="#333">• Estados: Pendiente, En Proceso,</text>
+  <text x="900" y="575" font-size="10" fill="#333">  Completado, Entregado</text>
+  <text x="890" y="595" font-size="10" fill="#333">• Roles: admin, tecnico, recepcion</text>
+  <text x="890" y="615" font-size="10" fill="#333">• Password: bcrypt hash</text>
+  <text x="890" y="635" font-size="10" fill="#333">• Validación DNI: API RENIEC</text>
+  <text x="890" y="655" font-size="10" fill="#333">• Reportes: PDF + WhatsApp</text>
+
+  <!-- Arrow markers -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333"/>
+    </marker>
+    <marker id="arrow-dashed" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#999"/>
+    </marker>
+  </defs>
+
+  <!-- Footer -->
+  <text x="600" y="750" text-anchor="middle" font-size="10" fill="#999" font-style="italic">
+    Sistema de Gestión DoctorPC - Diagrama Entidad-Relación
+  </text>
+</svg>

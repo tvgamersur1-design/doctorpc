@@ -1,0 +1,147 @@
+<svg width="1000" height="900" xmlns="http://www.w3.org/2000/svg" font-family="Consolas, monospace">
+  <!-- Title -->
+  <text x="500" y="30" text-anchor="middle" font-size="20" font-weight="bold" fill="#1976D2">
+    Estructura de Archivos del Proyecto
+  </text>
+
+  <!-- Root folder -->
+  <text x="50" y="70" font-size="14" font-weight="bold" fill="#333">📁 doctorpc/</text>
+  <line x1="50" y1="75" x2="50" y2="850" stroke="#CCC" stroke-width="1"/>
+
+  <!-- functions/ -->
+  <text x="70" y="100" font-size="13" fill="#F57C00">📁 functions/</text>
+  <text x="250" y="100" font-size="11" fill="#666">Netlify Functions (Serverless)</text>
+  <line x1="70" y1="105" x2="70" y2="320" stroke="#CCC" stroke-width="1"/>
+
+  <text x="90" y="125" font-size="12" fill="#4CAF50">⭐ whatsapp-sender.js</text>
+  <text x="300" y="125" font-size="10" fill="#666">Módulo de envío por WhatsApp</text>
+
+  <text x="90" y="150" font-size="12" fill="#4CAF50">⭐ enviar-whatsapp-pdf.js</text>
+  <text x="300" y="150" font-size="10" fill="#666">Endpoint de generación y envío</text>
+
+  <text x="90" y="175" font-size="12" fill="#666">📄 clientes.js</text>
+  <text x="300" y="175" font-size="10" fill="#999">CRUD de clientes</text>
+
+  <text x="90" y="200" font-size="12" fill="#666">📄 equipos.js</text>
+  <text x="300" y="200" font-size="10" fill="#999">CRUD de equipos</text>
+
+  <text x="90" y="225" font-size="12" fill="#666">📄 servicios.js</text>
+  <text x="300" y="225" font-size="10" fill="#999">CRUD de servicios</text>
+
+  <text x="90" y="250" font-size="12" fill="#666">📄 servicio-equipo.js</text>
+  <text x="300" y="250" font-size="10" fill="#999">Gestión de servicios de equipos</text>
+
+  <text x="90" y="275" font-size="12" fill="#666">📄 auth.js</text>
+  <text x="300" y="275" font-size="10" fill="#999">Autenticación y autorización</text>
+
+  <text x="90" y="300" font-size="12" fill="#666">📄 usuarios.js</text>
+  <text x="300" y="300" font-size="10" fill="#999">Gestión de usuarios</text>
+
+  <!-- public/ -->
+  <text x="70" y="350" font-size="13" fill="#2196F3">📁 public/</text>
+  <text x="250" y="350" font-size="11" fill="#666">Frontend estático</text>
+  <line x1="70" y1="355" x2="70" y2="530" stroke="#CCC" stroke-width="1"/>
+
+  <text x="90" y="375" font-size="12" fill="#4CAF50">⭐ reporte.js</text>
+  <text x="300" y="375" font-size="10" fill="#666">Lógica de reportes y envío WhatsApp</text>
+
+  <text x="90" y="400" font-size="12" fill="#666">📄 app.js</text>
+  <text x="300" y="400" font-size="10" fill="#999">Lógica principal de la aplicación</text>
+
+  <text x="90" y="425" font-size="12" fill="#666">📄 dashboard.html</text>
+  <text x="300" y="425" font-size="10" fill="#999">Interfaz principal</text>
+
+  <text x="90" y="450" font-size="12" fill="#666">📄 style.css</text>
+  <text x="300" y="450" font-size="10" fill="#999">Estilos generales</text>
+
+  <text x="90" y="475" font-size="12" fill="#4CAF50">⭐ reporte.css</text>
+  <text x="300" y="475" font-size="10" fill="#666">Estilos del modal de reporte</text>
+
+  <text x="90" y="500" font-size="12" fill="#9C27B0">📁 images/</text>
+  <text x="110" y="520" font-size="11" fill="#666">📄 logo-doctorpc.png</text>
+  <text x="300" y="520" font-size="10" fill="#999">Logo corporativo</text>
+
+  <!-- Configuration files -->
+  <text x="70" y="565" font-size="12" fill="#4CAF50">⭐ .env</text>
+  <text x="250" y="565" font-size="10" fill="#666">Variables de entorno (no en Git)</text>
+
+  <text x="70" y="590" font-size="12" fill="#4CAF50">⭐ .env.example</text>
+  <text x="250" y="590" font-size="10" fill="#666">Plantilla de variables</text>
+
+  <text x="70" y="615" font-size="12" fill="#666">📄 .gitignore</text>
+  <text x="250" y="615" font-size="10" fill="#999">Archivos ignorados por Git</text>
+
+  <text x="70" y="640" font-size="12" fill="#4CAF50">⭐ netlify.toml</text>
+  <text x="250" y="640" font-size="10" fill="#666">Configuración de Netlify + redirects</text>
+
+  <text x="70" y="665" font-size="12" fill="#4CAF50">⭐ package.json</text>
+  <text x="250" y="665" font-size="10" fill="#666">Dependencias (axios, jspdf, form-data)</text>
+
+  <text x="70" y="690" font-size="12" fill="#666">📄 package-lock.json</text>
+  <text x="250" y="690" font-size="10" fill="#999">Lockfile de dependencias</text>
+
+  <text x="70" y="715" font-size="12" fill="#666">📄 server.js</text>
+  <text x="250" y="715" font-size="10" fill="#999">Servidor Express (desarrollo local)</text>
+
+  <!-- Documentation -->
+  <text x="70" y="750" font-size="12" fill="#4CAF50">⭐ WHATSAPP_SETUP.md</text>
+  <text x="250" y="750" font-size="10" fill="#666">Guía de configuración detallada</text>
+
+  <text x="70" y="775" font-size="12" fill="#4CAF50">⭐ RESUMEN_WHATSAPP.md</text>
+  <text x="250" y="775" font-size="10" fill="#666">Resumen ejecutivo de funcionalidades</text>
+
+  <text x="70" y="800" font-size="12" fill="#4CAF50">⭐ INFORME_PRACTICA_SEMANA_3-4.md</text>
+  <text x="250" y="800" font-size="10" fill="#666">Informe de práctica</text>
+
+  <text x="70" y="825" font-size="12" fill="#666">📄 README.md</text>
+  <text x="250" y="825" font-size="10" fill="#999">Documentación general del proyecto</text>
+
+  <!-- Legend -->
+  <rect x="600" y="80" width="350" height="180" rx="10" fill="#F5F5F5" stroke="#999" stroke-width="1"/>
+  <text x="775" y="105" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">Leyenda</text>
+
+  <text x="620" y="135" font-size="12" fill="#4CAF50">⭐</text>
+  <text x="645" y="135" font-size="11" fill="#333">Archivos nuevos o modificados</text>
+  <text x="645" y="150" font-size="11" fill="#666">(últimas 2 semanas)</text>
+
+  <text x="620" y="180" font-size="12" fill="#666">📄</text>
+  <text x="645" y="180" font-size="11" fill="#333">Archivos existentes sin cambios</text>
+
+  <text x="620" y="210" font-size="12" fill="#F57C00">📁</text>
+  <text x="645" y="210" font-size="11" fill="#333">Carpetas del proyecto</text>
+
+  <text x="620" y="240" font-size="11" fill="#999" font-style="italic">Total: 8 archivos nuevos/modificados</text>
+
+  <!-- Key features box -->
+  <rect x="600" y="280" width="350" height="220" rx="10" fill="#E3F2FD" stroke="#1976D2" stroke-width="2"/>
+  <text x="775" y="305" text-anchor="middle" font-size="14" font-weight="bold" fill="#1976D2">
+    Funcionalidades Implementadas
+  </text>
+
+  <text x="620" y="335" font-size="11" fill="#333">✅ Integración WhatsApp Cloud API</text>
+  <text x="620" y="355" font-size="11" fill="#333">✅ Generación automática de PDF</text>
+  <text x="620" y="375" font-size="11" fill="#333">✅ Envío automático de reportes</text>
+  <text x="620" y="395" font-size="11" fill="#333">✅ Sistema de fallback manual</text>
+  <text x="620" y="415" font-size="11" fill="#333">✅ Validación de números telefónicos</text>
+  <text x="620" y="435" font-size="11" fill="#333">✅ Notificaciones visuales</text>
+  <text x="620" y="455" font-size="11" fill="#333">✅ Documentación completa</text>
+  <text x="620" y="475" font-size="11" fill="#333">✅ Despliegue en Netlify</text>
+
+  <!-- Technologies box -->
+  <rect x="600" y="520" width="350" height="180" rx="10" fill="#FFF3E0" stroke="#F57C00" stroke-width="2"/>
+  <text x="775" y="545" text-anchor="middle" font-size="14" font-weight="bold" fill="#F57C00">
+    Tecnologías Utilizadas
+  </text>
+
+  <text x="620" y="575" font-size="11" fill="#333">• Node.js v18.x + Express.js</text>
+  <text x="620" y="595" font-size="11" fill="#333">• MongoDB (Base de datos)</text>
+  <text x="620" y="615" font-size="11" fill="#333">• WhatsApp Cloud API (Meta)</text>
+  <text x="620" y="635" font-size="11" fill="#333">• jsPDF (Generación de PDF)</text>
+  <text x="620" y="655" font-size="11" fill="#333">• Axios (Peticiones HTTP)</text>
+  <text x="620" y="675" font-size="11" fill="#333">• Netlify Functions (Serverless)</text>
+
+  <!-- Footer -->
+  <text x="500" y="880" text-anchor="middle" font-size="10" fill="#999" font-style="italic">
+    Proyecto: Sistema de Gestión DoctorPC | Período: 02/03/26 - 19/03/26
+  </text>
+</svg>

@@ -6,7 +6,9 @@
     <title>Sistema de Administración - Doctor PC</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="reporte.css">
+    <link rel="stylesheet" href="reporte.css?v=2">
+    <link rel="stylesheet" href="cancelacion.css">
+    <link rel="stylesheet" href="diagnostico.css">
     <!-- Librería para generar PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
@@ -69,10 +71,19 @@
                         <!-- ✅ REMOVIDO: Mensaje verde reemplazado por notificación centrada -->
 
                         <h3 style="margin-top: 30px; margin-bottom: 15px;">Clientes Registrados</h3>
-                        <div class="search-box" style="margin-bottom: 20px; position: relative;">
-                            <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #2192B8; font-size: 14px; pointer-events: none;"></i>
-                            <input type="text" id="searchClientes" placeholder="Buscar por nombre, teléfono, email o DNI..." onkeyup="filtrarClientes()" style="max-width: 100%; padding: 12px 15px 12px 40px; font-size: 14px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                        
+                        <!-- Toggle para mostrar clientes eliminados (solo admin) -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 15px;">
+                            <div class="search-box" style="flex: 1; position: relative; margin: 0;">
+                                <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #2192B8; font-size: 14px; pointer-events: none;"></i>
+                                <input type="text" id="searchClientes" placeholder="Buscar por nombre, teléfono, email o DNI..." onkeyup="filtrarClientes()" style="width: 100%; padding: 12px 15px 12px 40px; font-size: 14px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                            </div>
+                            <label id="toggleEliminadosContainer" style="display: none; align-items: center; gap: 8px; cursor: pointer; white-space: nowrap; user-select: none;">
+                                <input type="checkbox" id="toggleClientesEliminados" onchange="cargarClientes()" style="cursor: pointer; width: 18px; height: 18px;">
+                                <span style="font-size: 14px; color: #666;">Mostrar eliminados</span>
+                            </label>
                         </div>
+                        
                         <div id="clientesContainer" style="overflow-x: auto;"></div>
                     </div>
                 </div>
@@ -90,6 +101,15 @@
                         <!-- ✅ REMOVIDO: Mensaje verde reemplazado por notificación centrada -->
 
                         <h3 style="margin-top: 30px; margin-bottom: 15px;">Servicios Registrados</h3>
+                        
+                        <!-- Checkbox para mostrar cancelados (fuera del contenedor dinámico) -->
+                        <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="mostrarCancelados" onchange="cargarServicios()" style="cursor: pointer;">
+                            <label for="mostrarCancelados" style="cursor: pointer; user-select: none; font-size: 14px; color: #666;">
+                                <i class="fas fa-eye"></i> Mostrar servicios cancelados
+                            </label>
+                        </div>
+                        
                         <div id="serviciosContainer"></div>
                     </div>
                 </div>
@@ -107,10 +127,19 @@
                         <!-- ✅ REMOVIDO: Mensaje verde reemplazado por notificación centrada -->
 
                         <h3 style="margin-top: 30px; margin-bottom: 15px;">Equipos Registrados</h3>
-                        <div class="search-box" style="margin-bottom: 20px; position: relative;">
-                            <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #2192B8; font-size: 14px; pointer-events: none;"></i>
-                            <input type="text" id="searchEquipos" placeholder="Buscar equipo..." onkeyup="filtrarEquipos()" style="padding: 12px 15px 12px 40px; font-size: 14px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                        
+                        <!-- Toggle para mostrar equipos eliminados (solo admin) -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 15px;">
+                            <div class="search-box" style="flex: 1; position: relative; margin: 0;">
+                                <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #2192B8; font-size: 14px; pointer-events: none;"></i>
+                                <input type="text" id="searchEquipos" placeholder="Buscar equipo..." onkeyup="filtrarEquipos()" style="width: 100%; padding: 12px 15px 12px 40px; font-size: 14px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                            </div>
+                            <label id="toggleEliminadosEquiposContainer" style="display: none; align-items: center; gap: 8px; cursor: pointer; white-space: nowrap; user-select: none;">
+                                <input type="checkbox" id="toggleEquiposEliminados" onchange="cargarEquipos()" style="cursor: pointer; width: 18px; height: 18px;">
+                                <span style="font-size: 14px; color: #666;">Mostrar eliminados</span>
+                            </label>
                         </div>
+                        
                         <div id="equiposContainer"></div>
                     </div>
                 </div>
@@ -409,82 +438,76 @@
             </div>
             <div class="form-section">
                 <!-- Grid de Información: 3 Columnas -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                <div class="diagnostico-info-grid">
                     
                     <!-- Datos del Servicio -->
-                    <div style="padding: 12px; background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%); border-radius: 8px; border-left: 4px solid #FF9800;">
-                        <h4 style="color: #FF9800; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px; font-size: 13px;">
+                    <div class="diagnostico-info-card" style="border-left-color: #FF9800;">
+                        <h4 style="color: #FF9800;">
                             <i class="fas fa-file-alt"></i> Servicio
                         </h4>
-                        <div style="font-size: 11px; line-height: 1.7;">
-                            <p style="margin: 3px 0; display: flex; gap: 4px;"><span style="color: #999; font-weight: 600; min-width: 65px;">Número:</span><strong style="color: #333; font-size: 12px;" id="numeroServicioDiagnostico">-</strong></p>
-                            <p style="margin: 3px 0; display: flex; gap: 4px;"><span style="color: #999; font-weight: 600; min-width: 65px;">Cliente:</span><strong style="color: #333; font-size: 12px;" id="clienteDiagnostico">-</strong></p>
-                            <p style="margin: 3px 0; display: flex; gap: 4px;"><span style="color: #999; font-weight: 600; min-width: 65px;">Teléfono:</span><strong style="color: #333; font-size: 12px;" id="telefonoDiagnostico">-</strong></p>
-                        </div>
+                        <p><strong>Número:</strong> <span id="numeroServicioDiagnostico">-</span></p>
+                        <p><strong>Cliente:</strong> <span id="clienteDiagnostico">-</span></p>
+                        <p><strong>Teléfono:</strong> <span id="telefonoDiagnostico">-</span></p>
                     </div>
 
                     <!-- Datos del Equipo -->
-                    <div style="padding: 12px; background: linear-gradient(135deg, #e3f2fd 0%, #f3f7ff 100%); border-radius: 8px; border-left: 4px solid #2196F3;">
-                        <h4 style="color: #2196F3; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px; font-size: 13px;">
+                    <div class="diagnostico-info-card" style="border-left-color: #2196F3;">
+                        <h4 style="color: #2196F3;">
                             <i class="fas fa-laptop"></i> Equipo
                         </h4>
-                        <div style="font-size: 11px; line-height: 1.7;">
-                            <p style="margin: 3px 0; display: flex; gap: 4px;"><span style="color: #999; font-weight: 600; min-width: 75px;">Tipo:</span><strong style="color: #333; font-size: 12px;" id="equipoTipoDiagnostico">-</strong></p>
-                            <p style="margin: 3px 0; display: flex; gap: 4px;"><span style="color: #999; font-weight: 600; min-width: 75px;">Marca/Modelo:</span><strong style="color: #333; font-size: 12px;"><span id="equipoMarcaDiagnostico">-</span> <span id="equipoModeloDiagnostico">-</span></strong></p>
-                            <p style="margin: 3px 0; display: flex; gap: 4px;"><span style="color: #999; font-weight: 600; min-width: 75px;">Serie:</span><strong style="color: #333; font-family: monospace; font-size: 12px;" id="equipoSerieDiagnostico">-</strong></p>
-                        </div>
+                        <p><strong>Tipo:</strong> <span id="equipoTipoDiagnostico">-</span></p>
+                        <p><strong>Marca/Modelo:</strong> <span id="equipoMarcaDiagnostico">-</span> <span id="equipoModeloDiagnostico">-</span></p>
+                        <p><strong>Serie:</strong> <span id="equipoSerieDiagnostico" style="font-family: monospace;">-</span></p>
                     </div>
 
                     <!-- Descripción del Servicio -->
-                    <div style="padding: 12px; background: #fff8e1; border-radius: 8px; border-left: 4px solid #FBC02D;">
-                        <h4 style="color: #F57F17; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px; font-size: 13px;">
+                    <div class="diagnostico-info-card" style="border-left-color: #FBC02D; background: #fff8e1;">
+                        <h4 style="color: #F57F17;">
                             <i class="fas fa-file-lines"></i> Descripción
                         </h4>
-                        <p id="descripcionServicioDiagnostico" style="margin: 0; color: #333; font-size: 11px; line-height: 1.5; background: white; padding: 8px; border-radius: 4px; max-height: 85px; overflow-y: auto;">-</p>
+                        <p id="descripcionServicioDiagnostico" style="background: white; padding: 8px; border-radius: 4px; max-height: 85px; overflow-y: auto;">-</p>
                     </div>
                 </div>
 
-                <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, #ddd, transparent); margin-bottom: 15px;">
+                <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, #ddd, transparent); margin: 15px 0;">
 
                 <!-- Título de Problemas y Técnico en una fila -->
-                <div style="margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; gap: 20px;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <h3 style="color: #333; margin: 0; display: flex; align-items: center; gap: 8px; font-size: 16px;">
-                            <i class="fas fa-list-check" style="color: #999; font-size: 16px;"></i> Problemas Encontrados
+                <div class="diagnostico-header-row">
+                    <div class="diagnostico-title-section">
+                        <h3>
+                            <i class="fas fa-list-check"></i> Problemas Encontrados
                         </h3>
-                        <button type="button" class="btn-primary" onclick="agregarProblemaFila()" style="padding: 8px 14px; font-size: 13px; display: flex; align-items: center; gap: 6px; background: #2196F3; border-color: #2196F3; font-weight: 600;">
+                        <button type="button" class="btn-primary" onclick="agregarProblemaFila()">
                             <i class="fas fa-plus-circle"></i> Agregar
                         </button>
                     </div>
                     
                     <!-- Técnico Diagnosticador -->
-                    <div style="padding: 10px 12px; background: #f0f0f0; border-radius: 6px; border-left: 3px solid #757575; display: flex; align-items: center; gap: 8px;">
-                        <label style="margin: 0; font-size: 12px; font-weight: 600; color: #333;">Técnico <span style="color: #d32f2f;">*</span></label>
-                        <input type="text" id="nombreTecnicoDiagnostico" placeholder="Nombre" style="width: 150px; padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; transition: all 0.3s ease;" onFocus="this.style.borderColor='#2192B8'; this.style.boxShadow='0 0 6px rgba(33,146,184,0.2)';" onBlur="this.style.borderColor='#ddd'; this.style.boxShadow='none';">
+                    <div class="diagnostico-tecnico-container">
+                        <label>Técnico <span style="color: #d32f2f;">*</span></label>
+                        <input type="text" id="nombreTecnicoDiagnostico" placeholder="Nombre" class="diagnostico-tecnico-input">
                     </div>
                 </div>
 
-                <div id="problemasContainer" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px; border: 1px solid #f0f0f0; border-radius: 6px;"></div>
+                <div id="problemasContainer" class="diagnostico-problemas-container"></div>
 
-                <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, #ddd, transparent); margin-bottom: 20px;">
-
-                <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, #ddd, transparent); margin-bottom: 20px;">
+                <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, #ddd, transparent); margin: 15px 0;">
 
                 <!-- Monto Total -->
-                <div style="padding: 15px; background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%); border-radius: 8px; border-left: 4px solid #4CAF50; margin-bottom: 20px;">
-                    <p style="margin: 0 0 8px 0; color: #666; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600;">Monto Total del Diagnóstico</p>
-                    <h2 style="color: #2E7D32; margin: 0; font-size: 28px; font-weight: 700;">$ <span id="montoTotalDiagnostico">0.00</span></h2>
+                <div class="diagnostico-monto-total">
+                    <p>Monto Total del Diagnóstico</p>
+                    <h2>$ <span id="montoTotalDiagnostico">0.00</span></h2>
                 </div>
 
                 <!-- Botones de Acción -->
-                <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                    <button type="button" class="btn-secondary" onclick="cerrarModalDiagnostico()" style="padding: 10px 18px; display: flex; align-items: center; gap: 6px; background: #f0f0f0; border-color: #e0e0e0; color: #666; font-weight: 600; font-size: 13px;">
+                <div class="diagnostico-actions">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalDiagnostico()">
                         <i class="fas fa-times"></i> Cancelar
                     </button>
-                    <button type="button" class="btn-primary" onclick="guardarProcesoDiagnostico()" style="padding: 10px 18px; background: #2196F3; border-color: #2196F3; display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 13px;" title="Guarda el progreso pero continúa en diagnóstico">
+                    <button type="button" class="btn-primary" onclick="guardarProcesoDiagnostico()" title="Guarda el progreso pero continúa en diagnóstico">
                         <i class="fas fa-save"></i> Guardar
                     </button>
-                    <button type="button" class="btn-primary" onclick="finalizarDiagnostico()" style="padding: 10px 18px; background: #4CAF50; border-color: #4CAF50; display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 13px;" title="Finaliza el diagnóstico y pasa a reparación">
+                    <button type="button" class="btn-success" onclick="finalizarDiagnostico()" title="Finaliza el diagnóstico y pasa a reparación">
                         <i class="fas fa-check-circle"></i> Finalizar
                     </button>
                 </div>
@@ -763,6 +786,29 @@
             <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
                 <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
                 <button id="confirmBtn" class="btn-danger">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cancelar Servicio -->
+    <div id="modalCancelarServicio" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-ban"></i> Cancelar Servicio</h2>
+                <button class="close-btn" onclick="cerrarModalCancelarServicio()">×</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 15px; color: #666;">¿Estás seguro de que deseas cancelar este servicio?</p>
+                <div class="form-group">
+                    <label for="motivoCancelacion">Motivo de cancelación <span style="color: red;">*</span></label>
+                    <textarea id="motivoCancelacion" rows="4" placeholder="Describe el motivo de la cancelación..." required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;"></textarea>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button class="btn-secondary" onclick="cerrarModalCancelarServicio()">Volver</button>
+                <button id="btnConfirmarCancelacion" class="btn-danger" onclick="confirmarCancelacionServicio()">
+                    <i class="fas fa-ban"></i> Cancelar Servicio
+                </button>
             </div>
         </div>
     </div>
@@ -1088,7 +1134,8 @@
     </div>
 
     <script src="animations.js"></script>
-    <script src="app.js"></script>
+    <script src="reporte.js?v=2"></script>
+    <script src="app.js?v=5"></script>
     <script>
         // Incluir modales en el cierre al hacer clic fuera
          const originalWindowOnclick = window.onclick;
@@ -1249,6 +1296,5 @@
                   </div>
               </div>
 
-                         <script src="reporte.js"></script>
               </body>
               </html>

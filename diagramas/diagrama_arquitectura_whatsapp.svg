@@ -1,0 +1,75 @@
+<svg width="1000" height="800" xmlns="http://www.w3.org/2000/svg" font-family="Arial">
+  <!-- Title -->
+  <text x="500" y="30" text-anchor="middle" font-size="20" font-weight="bold" fill="#1976D2">
+    Arquitectura del Sistema de Envío por WhatsApp
+  </text>
+
+  <!-- FRONTEND -->
+  <rect x="50" y="60" width="900" height="120" rx="10" fill="#E3F2FD" stroke="#1976D2" stroke-width="2"/>
+  <text x="500" y="85" text-anchor="middle" font-size="16" font-weight="bold" fill="#1976D2">FRONTEND (public/)</text>
+  
+  <rect x="100" y="100" width="800" height="60" rx="5" fill="#BBDEFB" stroke="#1565C0" stroke-width="1"/>
+  <text x="120" y="120" font-size="13" font-weight="bold">reporte.js</text>
+  <text x="120" y="138" font-size="11">• mostrarModal()</text>
+  <text x="300" y="138" font-size="11">• enviarWhatsApp()</text>
+  <text x="480" y="138" font-size="11">• intentarEnvioAutomatico()</text>
+  <text x="700" y="138" font-size="11">• envioManualFallback()</text>
+
+  <!-- Arrow down -->
+  <line x1="500" y1="180" x2="500" y2="220" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="520" y="205" font-size="12" fill="#666">Usuario hace clic en "Enviar WhatsApp"</text>
+
+  <!-- NETLIFY FUNCTION -->
+  <rect x="50" y="220" width="900" height="140" rx="10" fill="#FFF3E0" stroke="#F57C00" stroke-width="2"/>
+  <text x="500" y="245" text-anchor="middle" font-size="16" font-weight="bold" fill="#F57C00">NETLIFY FUNCTION (Serverless)</text>
+  
+  <rect x="100" y="260" width="800" height="80" rx="5" fill="#FFE0B2" stroke="#EF6C00" stroke-width="1"/>
+  <text x="120" y="280" font-size="13" font-weight="bold">enviar-whatsapp-pdf.js</text>
+  <text x="120" y="298" font-size="11">1. Recibe: servicioId, telefono</text>
+  <text x="120" y="313" font-size="11">2. Conecta a MongoDB</text>
+  <text x="350" y="298" font-size="11">3. Obtiene datos: servicio, cliente, equipo</text>
+  <text x="350" y="313" font-size="11">4. Genera PDF con jsPDF</text>
+  <text x="650" y="298" font-size="11">5. Invoca whatsapp-sender.js</text>
+
+  <!-- Arrow down -->
+  <line x1="500" y1="360" x2="500" y2="400" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- MÓDULO DE ENVÍO -->
+  <rect x="50" y="400" width="900" height="140" rx="10" fill="#E8F5E9" stroke="#43A047" stroke-width="2"/>
+  <text x="500" y="425" text-anchor="middle" font-size="16" font-weight="bold" fill="#43A047">MÓDULO DE ENVÍO (functions/)</text>
+  
+  <rect x="100" y="440" width="800" height="80" rx="5" fill="#C8E6C9" stroke="#388E3C" stroke-width="1"/>
+  <text x="120" y="460" font-size="13" font-weight="bold">whatsapp-sender.js</text>
+  <text x="120" y="478" font-size="11">• subirArchivo() → WhatsApp Cloud Storage</text>
+  <text x="120" y="493" font-size="11">• enviarDocumento() → Envía PDF al cliente</text>
+  <text x="120" y="508" font-size="11">• enviarMensajeTexto() → Mensaje personalizado</text>
+
+  <!-- Arrow down -->
+  <line x1="500" y1="540" x2="500" y2="580" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- WHATSAPP CLOUD API -->
+  <rect x="50" y="580" width="900" height="120" rx="10" fill="#F3E5F5" stroke="#8E24AA" stroke-width="2"/>
+  <text x="500" y="605" text-anchor="middle" font-size="16" font-weight="bold" fill="#8E24AA">WHATSAPP CLOUD API (Meta)</text>
+  
+  <rect x="100" y="620" width="800" height="60" rx="5" fill="#E1BEE7" stroke="#7B1FA2" stroke-width="1"/>
+  <text x="120" y="640" font-size="13" font-weight="bold">Graph API v18.0</text>
+  <text x="120" y="658" font-size="11">• POST /media (subir PDF)</text>
+  <text x="350" y="658" font-size="11">• POST /messages (enviar documento)</text>
+  <text x="650" y="658" font-size="11">• Retorna: message_id, status</text>
+
+  <!-- Arrow down -->
+  <line x1="500" y1="700" x2="500" y2="740" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- CLIENTE FINAL -->
+  <rect x="200" y="740" width="600" height="50" rx="10" fill="#4CAF50" stroke="#2E7D32" stroke-width="2"/>
+  <text x="500" y="770" text-anchor="middle" font-size="14" font-weight="bold" fill="white">
+    📱 CLIENTE FINAL (WhatsApp) - Recibe mensaje con PDF adjunto
+  </text>
+
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333"/>
+    </marker>
+  </defs>
+</svg>

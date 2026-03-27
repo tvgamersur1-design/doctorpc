@@ -76,8 +76,13 @@ exports.handler = async (event, context) => {
     // GET /servicio-equipo
     if (httpMethod === 'GET' && !id) {
       console.log('[servicio-equipo] Obteniendo lista de órdenes...');
-      const servicioEquipo = await db.collection('servicio_equipo').find({}).toArray();
-      console.log(`[servicio-equipo] ✓ Retornando ${servicioEquipo.length} órdenes`);
+      
+      // Por defecto, excluir órdenes canceladas
+      const incluirCanceladas = event.queryStringParameters?.incluir_canceladas === 'true';
+      const filter = incluirCanceladas ? {} : { estado: { $ne: 'Cancelado' } };
+      
+      const servicioEquipo = await db.collection('servicio_equipo').find(filter).toArray();
+      console.log(`[servicio-equipo] ✓ Retornando ${servicioEquipo.length} órdenes (canceladas: ${incluirCanceladas ? 'incluidas' : 'excluidas'})`);
       return {
         statusCode: 200,
         headers,
@@ -176,12 +181,29 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // DELETE /servicio-equipo/:id
+    // DELETE /servicio-equipo/:id (SOFT DELETE - Cambiar a Cancelado)
     if (httpMethod === 'DELETE' && id) {
-      console.log(`[servicio-equipo] DELETE: Eliminando orden ${id}`);
-      const result = await db.collection('servicio_equipo').deleteOne({ _id: new ObjectId(id) });
+      console.log(`[servicio-equipo] DELETE: Cancelando orden ${id} (soft delete)`);
+      
+      // Obtener datos del body para motivo de cancelación
+      const motivoCancelacion = body.motivo_cancelacion || 'Sin motivo especificado';
+      const canceladoPor = body.cancelado_por || 'Sistema';
+      
+      const result = await db.collection('servicio_equipo').findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { 
+          $set: { 
+            estado: 'Cancelado',
+            fecha_cancelacion: new Date().toISOString(),
+            motivo_cancelacion: motivoCancelacion,
+            cancelado_por: canceladoPor,
+            fecha_actualizacion: new Date().toISOString()
+          }
+        },
+        { returnDocument: 'after' }
+      );
 
-      if (result.deletedCount === 0) {
+      if (!result) {
         return {
           statusCode: 404,
           headers,
@@ -189,11 +211,15 @@ exports.handler = async (event, context) => {
         };
       }
 
-      console.log(`[servicio-equipo] ✓ Orden eliminada: ${id}`);
+      console.log(`[servicio-equipo] ✓ Orden cancelada (soft delete): ${id}`);
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({ success: true })
+        body: JSON.stringify({ 
+          success: true, 
+          message: 'Orden cancelada exitosamente',
+          orden: result
+        })
       };
     }
 

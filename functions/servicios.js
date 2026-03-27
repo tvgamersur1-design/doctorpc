@@ -76,8 +76,58 @@ exports.handler = async (event, context) => {
     // GET /servicios
     if (httpMethod === 'GET' && !id) {
       console.log('[servicios] Obteniendo lista de servicios...');
-      const servicios = await db.collection('servicios').find({}).toArray();
-      console.log(`[servicios] ✓ Retornando ${servicios.length} servicios`);
+      
+      // Por defecto, excluir servicios cancelados
+      let incluirCancelados = false;
+      
+      // Verificar múltiples formas de obtener query parameters
+      if (event.queryStringParameters) {
+        console.log('[servicios] queryStringParameters:', event.queryStringParameters);
+        incluirCancelados = event.queryStringParameters.incluir_cancelados === 'true';
+      }
+      
+      if (!incluirCancelados && event.rawUrl) {
+        // Parsear URL manualmente si queryStringParameters no funcionó
+        const url = new URL(event.rawUrl, 'http://localhost');
+        console.log('[servicios] URL params:', url.searchParams.toString());
+        incluirCancelados = url.searchParams.get('incluir_cancelados') === 'true';
+      }
+      
+      console.log(`[servicios] incluir_cancelados final: ${incluirCancelados}`);
+      
+      // Filtro simplificado: si no incluir cancelados, excluir estado "Cancelado"
+      const filter = incluirCancelados 
+        ? {} 
+        : { estado: { $ne: 'Cancelado' } };
+      
+      console.log('[servicios] Filtro aplicado:', JSON.stringify(filter));
+      
+      const servicios = await db.collection('servicios').find(filter).toArray();
+      
+      // Log detallado
+      console.log(`[servicios] Total encontrados: ${servicios.length}`);
+      
+      // Contar por estado
+      const estadosCount = {};
+      servicios.forEach(s => {
+        const estado = s.estado || 'Sin estado';
+        estadosCount[estado] = (estadosCount[estado] || 0) + 1;
+      });
+      console.log('[servicios] Estados en resultado:', estadosCount);
+      
+      // Si incluir cancelados, verificar cuántos hay
+      if (incluirCancelados) {
+        const canceladosEnBD = await db.collection('servicios').countDocuments({ estado: 'Cancelado' });
+        console.log(`[servicios] Cancelados en BD (verificación): ${canceladosEnBD}`);
+      }
+      
+      // Log detallado de estados
+      const estadosUnicos = [...new Set(servicios.map(s => s.estado))];
+      console.log('[servicios] Estados únicos en resultado:', estadosUnicos);
+      
+      const canceladosCount = servicios.filter(s => s.estado === 'Cancelado').length;
+      console.log(`[servicios] ✓ Retornando ${servicios.length} servicios (${canceladosCount} cancelados)`);
+      
       return {
         statusCode: 200,
         headers,
@@ -170,24 +220,78 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // DELETE /servicios/:id
+    // DELETE /servicios/:id (SOFT DELETE - Cambiar a Cancelado)
     if (httpMethod === 'DELETE' && id) {
-      console.log(`[servicios] DELETE: Eliminando servicio ${id}`);
-      const result = await db.collection('servicios').deleteOne({ _id: new ObjectId(id) });
-
-      if (result.deletedCount === 0) {
+      console.log(`[servicios] DELETE: Cancelando servicio ${id} (soft delete)`);
+      
+      // Validar que el ID es un ObjectId válido
+      if (!ObjectId.isValid(id)) {
+        console.log(`[servicios] ❌ ID no es válido: ${id}`);
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ error: 'ID inválido' })
+        };
+      }
+      
+      // Verificar que el servicio existe
+      const servicioExiste = await db.collection('servicios').findOne({ _id: new ObjectId(id) });
+      if (!servicioExiste) {
+        console.log(`[servicios] ❌ Servicio no encontrado: ${id}`);
         return {
           statusCode: 404,
           headers,
           body: JSON.stringify({ error: 'Servicio no encontrado' })
         };
       }
+      
+      console.log(`[servicios] ✓ Servicio encontrado: ${servicioExiste.numero_servicio || id}`);
+      console.log(`[servicios] Estado actual: ${servicioExiste.estado}`);
+      
+      // Obtener datos del body para motivo de cancelación
+      const motivoCancelacion = body.motivo_cancelacion || 'Sin motivo especificado';
+      const canceladoPor = body.cancelado_por || 'Sistema';
+      
+      console.log(`[servicios] Motivo: ${motivoCancelacion}`);
+      console.log(`[servicios] Cancelado por: ${canceladoPor}`);
+      
+      // SOFT DELETE: Usar updateOne en lugar de findOneAndUpdate
+      const result = await db.collection('servicios').updateOne(
+        { _id: new ObjectId(id) },
+        { 
+          $set: { 
+            estado: 'Cancelado',
+            fecha_cancelacion: new Date().toISOString(),
+            motivo_cancelacion: motivoCancelacion,
+            cancelado_por: canceladoPor,
+            fecha_actualizacion: new Date().toISOString()
+          }
+        }
+      );
 
-      console.log(`[servicios] ✓ Servicio eliminado: ${id}`);
+      if (result.modifiedCount === 0) {
+        console.log(`[servicios] ❌ No se pudo actualizar el servicio: ${id}`);
+        return {
+          statusCode: 500,
+          headers,
+          body: JSON.stringify({ error: 'No se pudo cancelar el servicio' })
+        };
+      }
+
+      // Obtener el servicio actualizado
+      const servicioActualizado = await db.collection('servicios').findOne({ _id: new ObjectId(id) });
+
+      console.log(`[servicios] ✓ Servicio cancelado exitosamente`);
+      console.log(`[servicios] Estado actualizado: ${servicioActualizado.estado}`);
+      
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({ success: true })
+        body: JSON.stringify({ 
+          success: true, 
+          message: 'Servicio cancelado exitosamente',
+          servicio: servicioActualizado
+        })
       };
     }
 

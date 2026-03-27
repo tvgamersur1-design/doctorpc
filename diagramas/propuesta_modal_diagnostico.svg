@@ -1,0 +1,147 @@
+<svg width="1000" height="550" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo del modal -->
+  <rect width="1000" height="550" fill="#f8f9fa" rx="12"/>
+  
+  <!-- Header con gradiente -->
+  <defs>
+    <linearGradient id="headerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#2192B8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e7a9a;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+  
+  <!-- Header -->
+  <rect width="1000" height="60" fill="url(#headerGradient)" rx="12" ry="0"/>
+  <text x="20" y="38" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="white">
+    <tspan>🩺</tspan> Diagnóstico del Equipo
+  </text>
+  <circle cx="970" cy="30" r="18" fill="rgba(255,255,255,0.2)" cursor="pointer"/>
+  <text x="970" y="38" font-family="Arial" font-size="24" font-weight="bold" fill="white" text-anchor="middle">×</text>
+  
+  <!-- Sección de información en cards horizontales -->
+  <g transform="translate(20, 80)">
+    <!-- Card Servicio -->
+    <rect width="300" height="110" fill="white" rx="8" filter="url(#shadow)"/>
+    <rect width="300" height="4" fill="#FF9800" rx="8"/>
+    <text x="15" y="28" font-family="Arial" font-size="13" font-weight="bold" fill="#FF9800">
+      📋 SERVICIO
+    </text>
+    <text x="15" y="50" font-family="Arial" font-size="11" fill="#666">Número:</text>
+    <text x="80" y="50" font-family="Arial" font-size="11" font-weight="600" fill="#333">SRV-2026-003</text>
+    <text x="15" y="70" font-family="Arial" font-size="11" fill="#666">Cliente:</text>
+    <text x="80" y="70" font-family="Arial" font-size="11" font-weight="600" fill="#333">OSWALDO BALTAZAR</text>
+    <text x="15" y="90" font-family="Arial" font-size="11" fill="#666">Teléfono:</text>
+    <text x="80" y="90" font-family="Arial" font-size="11" font-weight="600" fill="#333">975747105</text>
+  </g>
+  
+  <g transform="translate(340, 80)">
+    <!-- Card Equipo -->
+    <rect width="300" height="110" fill="white" rx="8" filter="url(#shadow)"/>
+    <rect width="300" height="4" fill="#2196F3" rx="8"/>
+    <text x="15" y="28" font-family="Arial" font-size="13" font-weight="bold" fill="#2196F3">
+      💻 EQUIPO
+    </text>
+    <text x="15" y="50" font-family="Arial" font-size="11" fill="#666">Tipo:</text>
+    <text x="80" y="50" font-family="Arial" font-size="11" font-weight="600" fill="#333">Otro</text>
+    <text x="15" y="70" font-family="Arial" font-size="11" fill="#666">Marca/Modelo:</text>
+    <text x="100" y="70" font-family="Arial" font-size="11" font-weight="600" fill="#333">patriot p210</text>
+    <text x="15" y="90" font-family="Arial" font-size="11" fill="#666">Serie:</text>
+    <text x="80" y="90" font-family="Arial" font-size="10" font-weight="600" fill="#333">072206223301560</text>
+  </g>
+  
+  <g transform="translate(660, 80)">
+    <!-- Card Descripción -->
+    <rect width="320" height="110" fill="#FFF9E6" rx="8" filter="url(#shadow)"/>
+    <rect width="320" height="4" fill="#FFC107" rx="8"/>
+    <text x="15" y="28" font-family="Arial" font-size="13" font-weight="bold" fill="#F57C00">
+      📝 DESCRIPCIÓN
+    </text>
+    <text x="15" y="50" font-family="Arial" font-size="11" fill="#555" style="line-height: 1.5;">
+      al equipo le cayo agua de
+    </text>
+    <text x="15" y="65" font-family="Arial" font-size="11" fill="#555">
+      lluvia, no prende
+    </text>
+  </g>
+  
+  <!-- Sección Problemas Encontrados -->
+  <g transform="translate(20, 210)">
+    <rect width="960" height="180" fill="white" rx="8" filter="url(#shadow)"/>
+    <rect x="0" y="0" width="960" height="40" fill="#f5f5f5" rx="8"/>
+    <text x="15" y="26" font-family="Arial" font-size="14" font-weight="bold" fill="#333">
+      🔍 Problemas Encontrados
+    </text>
+    <rect x="850" y="10" width="95" height="28" fill="#2196F3" rx="6" cursor="pointer"/>
+    <text x="897" y="30" font-family="Arial" font-size="12" font-weight="600" fill="white" text-anchor="middle">
+      + Agregar
+    </text>
+    
+    <!-- Tabla de problemas -->
+    <rect x="15" y="55" width="30" height="30" fill="#2196F3" rx="4"/>
+    <text x="30" y="76" font-family="Arial" font-size="14" font-weight="bold" fill="white" text-anchor="middle">1</text>
+    
+    <!-- Headers de columnas -->
+    <text x="60" y="65" font-family="Arial" font-size="11" font-weight="600" fill="#666">Descripción:</text>
+    <text x="380" y="65" font-family="Arial" font-size="11" font-weight="600" fill="#666">Solución:</text>
+    <text x="700" y="65" font-family="Arial" font-size="11" font-weight="600" fill="#666">Costo:</text>
+    
+    <!-- Campos de entrada simulados -->
+    <rect x="60" y="75" width="300" height="35" fill="#f9f9f9" stroke="#ddd" stroke-width="1" rx="4"/>
+    <text x="70" y="96" font-family="Arial" font-size="11" fill="#999">Pantalla rota, Batería dañada, etc.</text>
+    
+    <rect x="380" y="75" width="300" height="35" fill="#f9f9f9" stroke="#ddd" stroke-width="1" rx="4"/>
+    <text x="390" y="96" font-family="Arial" font-size="11" fill="#999">Pantalla nueva, Batería reemplazada, etc.</text>
+    
+    <rect x="700" y="75" width="180" height="35" fill="#f9f9f9" stroke="#ddd" stroke-width="1" rx="4"/>
+    <text x="710" y="96" font-family="Arial" font-size="11" fill="#999">$ 0.00</text>
+    
+    <!-- Botón eliminar -->
+    <rect x="895" y="78" width="50" height="30" fill="#f44336" rx="4" cursor="pointer"/>
+    <text x="920" y="98" font-family="Arial" font-size="11" font-weight="600" fill="white" text-anchor="middle">
+      🗑️
+    </text>
+    
+    <!-- Línea separadora -->
+    <line x1="15" y1="125" x2="945" y2="125" stroke="#e0e0e0" stroke-width="1"/>
+    
+    <!-- Espacio para más problemas -->
+    <text x="480" y="155" font-family="Arial" font-size="11" fill="#999" text-anchor="middle">
+      Haz clic en "+ Agregar" para añadir más problemas
+    </text>
+  </g>
+  
+  <!-- Monto Total -->
+  <g transform="translate(20, 410)">
+    <rect width="960" height="70" fill="#E8F5E9" rx="8" stroke="#4CAF50" stroke-width="2"/>
+    <text x="20" y="25" font-family="Arial" font-size="11" font-weight="600" fill="#2E7D32">
+      MONTO TOTAL DEL DIAGNÓSTICO
+    </text>
+    <text x="20" y="55" font-family="Arial" font-size="32" font-weight="bold" fill="#4CAF50">
+      $ 0.00
+    </text>
+  </g>
+  
+  <!-- Botones de acción -->
+  <g transform="translate(20, 500)">
+    <!-- Cancelar -->
+    <rect x="750" width="95" height="38" fill="#9E9E9E" rx="6" cursor="pointer"/>
+    <text x="797" y="25" font-family="Arial" font-size="13" font-weight="600" fill="white" text-anchor="middle">
+      ✕ Cancelar
+    </text>
+    
+    <!-- Guardar -->
+    <rect x="860" width="95" height="38" fill="#2196F3" rx="6" cursor="pointer" filter="url(#shadow)"/>
+    <text x="907" y="25" font-family="Arial" font-size="13" font-weight="600" fill="white" text-anchor="middle">
+      💾 Guardar
+    </text>
+    
+    <!-- Finalizar -->
+    <rect x="970" width="95" height="38" fill="#4CAF50" rx="6" cursor="pointer" filter="url(#shadow)"/>
+    <text x="1017" y="25" font-family="Arial" font-size="13" font-weight="600" fill="white" text-anchor="middle">
+      ✓ Finalizar
+    </text>
+  </g>
+</svg>

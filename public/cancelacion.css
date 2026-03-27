@@ -1,0 +1,205 @@
+/**
+ * Estilos para funcionalidad de cancelación de servicios
+ */
+
+/* Estilos para filas canceladas */
+.table-danger {
+    background-color: #f8d7da !important;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.table-danger:hover {
+    opacity: 1;
+}
+
+/* Animaciones para notificaciones */
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+/* Estilos para el badge de cancelado */
+.badge-cancelado {
+    background: #F8D7DA;
+    color: #721C24;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Estilos para el checkbox de mostrar cancelados */
+#toggleServiciosCancelados {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    accent-color: #dc3545;
+}
+
+#toggleServiciosCancelados:checked {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+/* Estilos para el modal de cancelación */
+#modalCancelarServicio .modal-header {
+    background: #dc3545;
+    color: white;
+}
+
+#modalCancelarServicio .close-btn {
+    color: white;
+}
+
+#modalCancelarServicio .close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Estilos para el textarea de motivo */
+#motivoCancelacion {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 100px;
+    transition: border-color 0.2s ease;
+}
+
+#motivoCancelacion:focus {
+    outline: none;
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+/* Estilos para el botón de cancelar */
+.btn-danger {
+    background: #dc3545;
+    color: white;
+    border: 1px solid #dc3545;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+    border-color: #bd2130;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.btn-danger:active {
+    transform: translateY(0);
+}
+
+.btn-danger:disabled {
+    background: #e9a0a8;
+    border-color: #e9a0a8;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Estilos para notificaciones */
+.notificacion-success,
+.notificacion-error {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    animation: slideInRight 0.3s ease;
+    z-index: 10000;
+    font-size: 14px;
+    font-weight: 500;
+    max-width: 400px;
+    color: white;
+}
+
+.notificacion-success {
+    background: #4CAF50;
+}
+
+.notificacion-error {
+    background: #f44336;
+}
+
+/* Estilos para el mensaje de advertencia */
+.alert-warning-cancelacion {
+    background: #fff3cd;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #ffc107;
+    color: #856404;
+}
+
+.alert-warning-cancelacion i {
+    color: #856404;
+    margin-right: 8px;
+}
+
+/* Estilos para información de cancelación en la tabla */
+.info-cancelacion {
+    margin-top: 5px;
+    font-size: 11px;
+    color: #721C24;
+    display: block;
+}
+
+.info-cancelacion i {
+    margin-right: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .notificacion-success,
+    .notificacion-error {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    #modalCancelarServicio .modal-content {
+        max-width: 95%;
+        margin: 20px auto;
+    }
+}

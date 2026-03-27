@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 900">
+  <defs>
+    <style>
+      .header { fill: #2192B8; }
+      .header-text { fill: white; font-size: 14px; font-weight: bold; }
+      .card { fill: white; stroke: #ddd; stroke-width: 1; }
+      .card-orange { fill: #FFF3E0; stroke: #FF9800; stroke-width: 2; }
+      .card-blue { fill: #E3F2FD; stroke: #2196F3; stroke-width: 2; }
+      .card-yellow { fill: #FFFDE7; stroke: #FFC107; stroke-width: 2; }
+      .card-green { fill: #E8F5E9; stroke: #4CAF50; stroke-width: 2; }
+      .text-title { font-size: 11px; font-weight: bold; fill: #333; }
+      .text-label { font-size: 9px; fill: #666; }
+      .text-value { font-size: 10px; fill: #333; }
+      .button { rx: 6; }
+      .btn-primary { fill: #2196F3; }
+      .btn-success { fill: #4CAF50; }
+      .btn-secondary { fill: #9E9E9E; }
+      .btn-danger { fill: #F44336; }
+      .btn-text { fill: white; font-size: 11px; font-weight: bold; }
+      .section-title { font-size: 10px; font-weight: bold; fill: #2192B8; }
+      .input-field { fill: white; stroke: #ddd; stroke-width: 1; rx: 4; }
+      .problema-card { fill: #F9F9F9; stroke: #E0E0E0; stroke-width: 2; rx: 8; }
+      .badge { fill: #2192B8; rx: 12; }
+      .badge-text { fill: white; font-size: 9px; font-weight: bold; }
+      .close-btn { fill: #666; }
+      .icon { font-size: 12px; }
+      .monto-text { font-size: 9px; fill: #666; text-transform: uppercase; }
+      .monto-value { font-size: 22px; fill: #2E7D32; font-weight: bold; }
+    </style>
+  </defs>
+  
+  <!-- Fondo del dispositivo móvil -->
+  <rect x="0" y="0" width="400" height="900" fill="#f5f5f5"/>
+  
+  <!-- Header Sticky -->
+  <rect x="0" y="0" width="400" height="45" class="header"/>
+  <text x="20" y="22" class="header-text">🔧 Diagnóstico del Equipo</text>
+  <circle cx="370" cy="22" r="12" class="close-btn"/>
+  <text x="366" y="28" style="fill: white; font-size: 16px; font-weight: bold;">×</text>
+  
+  <!-- Contenido con scroll -->
+  <g transform="translate(10, 55)">
+    
+    <!-- Tarjeta de Servicio -->
+    <rect x="0" y="0" width="380" height="75" class="card-orange"/>
+    <text x="10" y="15" class="text-title">📋 Servicio</text>
+    <text x="10" y="30" class="text-label">Número:</text>
+    <text x="70" y="30" class="text-value">SRV-2026-003</text>
+    <text x="10" y="45" class="text-label">Cliente:</text>
+    <text x="70" y="45" class="text-value">OSWALDO BALTAZAR</text>
+    <text x="10" y="60" class="text-label">Teléfono:</text>
+    <text x="70" y="60" class="text-value">975747105</text>
+    
+    <!-- Tarjeta de Equipo -->
+    <rect x="0" y="85" width="380" height="75" class="card-blue"/>
+    <text x="10" y="100" class="text-title">💻 Equipo</text>
+    <text x="10" y="115" class="text-label">Tipo:</text>
+    <text x="70" y="115" class="text-value">Otro</text>
+    <text x="10" y="130" class="text-label">Marca/Modelo:</text>
+    <text x="90" y="130" class="text-value">patrial p30</text>
+    <text x="10" y="145" class="text-label">Serie:</text>
+    <text x="70" y="145" class="text-value">-</text>
+    
+    <!-- Tarjeta de Descripción -->
+    <rect x="0" y="170" width="380" height="50" class="card-yellow"/>
+    <text x="10" y="185" class="text-title">📝 Descripción</text>
+    <text x="10" y="200" class="text-value">★ equipo ★ no ★ prende ★ no ★ carga</text>
+    <text x="10" y="213" class="text-value">★ bateria ★ inflada</text>
+    
+    <!-- Sección Técnico -->
+    <rect x="0" y="235" width="380" height="55" class="card" style="fill: #F0F0F0;"/>
+    <text x="10" y="250" class="text-label" style="text-align: center; font-weight: bold;">👤 TÉCNICO ASIGNADO</text>
+    <rect x="10" y="255" width="360" height="30" class="input-field"/>
+    <text x="190" y="275" class="text-value" style="text-anchor: middle;">Nombre del técnico</text>
+    
+    <!-- Sección Problemas Encontrados -->
+    <g transform="translate(0, 305)">
+      <rect x="0" y="0" width="380" height="35" style="fill: #F9F9F9; stroke: none;"/>
+      <text x="10" y="15" class="section-title">📋 Problemas Encontrados</text>
+      <rect x="250" y="3" width="120" height="28" class="button btn-primary"/>
+      <text x="310" y="22" class="btn-text" style="text-anchor: middle;">➕ Agregar</text>
+    </g>
+    
+    <!-- Contenedor de Problemas (scrollable) -->
+    <rect x="0" y="345" width="380" height="200" style="fill: white; stroke: #f0f0f0; stroke-width: 1; rx: 4;"/>
+    
+    <!-- Problema 1 -->
+    <g transform="translate(5, 350)">
+      <rect x="0" y="0" width="370" height="185" class="problema-card"/>
+      
+      <!-- Header del problema -->
+      <rect x="8" y="8" width="50" height="20" class="badge"/>
+      <text x="33" y="21" class="badge-text" style="text-anchor: middle;">1</text>
+      
+      <text x="65" y="21" class="text-label">Problema encontrado</text>
+      
+      <rect x="310" y="8" width="50" height="20" class="button btn-danger"/>
+      <text x="335" y="21" class="btn-text" style="text-anchor: middle; font-size: 9px;">🗑️</text>
+      
+      <!-- Campo Descripción -->
+      <g transform="translate(8, 35)">
+        <rect x="0" y="0" width="354" height="45" style="fill: white; stroke: #f0f0f0; stroke-width: 1; rx: 6;"/>
+        <rect x="5" y="3" width="100" height="16" style="fill: rgba(33, 146, 184, 0.08); rx: 4;"/>
+        <text x="10" y="14" class="text-label" style="font-weight: bold; fill: #2192B8; font-size: 8px;">DESCRIPCIÓN</text>
+        <text x="10" y="32" class="text-value" style="font-size: 11px;">Pantalla rota, batería inflada...</text>
+      </g>
+      
+      <!-- Campo Solución -->
+      <g transform="translate(8, 88)">
+        <rect x="0" y="0" width="354" height="45" style="fill: white; stroke: #f0f0f0; stroke-width: 1; rx: 6;"/>
+        <rect x="5" y="3" width="70" height="16" style="fill: rgba(33, 146, 184, 0.08); rx: 4;"/>
+        <text x="10" y="14" class="text-label" style="font-weight: bold; fill: #2192B8; font-size: 8px;">SOLUCIÓN</text>
+        <text x="10" y="32" class="text-value" style="font-size: 11px;">Pantalla nueva, batería nueva...</text>
+      </g>
+      
+      <!-- Campo Costo -->
+      <g transform="translate(8, 141)">
+        <rect x="0" y="0" width="354" height="38" style="fill: white; stroke: #f0f0f0; stroke-width: 1; rx: 6;"/>
+        <rect x="5" y="3" width="50" height="16" style="fill: rgba(33, 146, 184, 0.08); rx: 4;"/>
+        <text x="10" y="14" class="text-label" style="font-weight: bold; fill: #2192B8; font-size: 8px;">COSTO</text>
+        <text x="340" y="30" class="text-value" style="font-size: 13px; font-weight: bold; fill: #2E7D32; text-anchor: end;">$ 0.00</text>
+      </g>
+    </g>
+    
+    <!-- Monto Total -->
+    <g transform="translate(0, 555)">
+      <rect x="0" y="0" width="380" height="65" class="card-green"/>
+      <text x="190" y="20" class="monto-text" style="text-anchor: middle;">MONTO TOTAL DEL DIAGNÓSTICO</text>
+      <text x="190" y="50" class="monto-value" style="text-anchor: middle;">$ 0.00</text>
+    </g>
+    
+    <!-- Botones de Acción -->
+    <g transform="translate(0, 635)">
+      <!-- Botón Cancelar -->
+      <rect x="0" y="0" width="380" height="45" class="button btn-secondary"/>
+      <text x="190" y="28" class="btn-text" style="text-anchor: middle;">✕ Cancelar</text>
+      
+      <!-- Botón Guardar -->
+      <rect x="0" y="53" width="380" height="45" class="button btn-primary"/>
+      <text x="190" y="81" class="btn-text" style="text-anchor: middle;">💾 Guardar</text>
+      
+      <!-- Botón Finalizar -->
+      <rect x="0" y="106" width="380" height="45" class="button btn-success"/>
+      <text x="190" y="134" class="btn-text" style="text-anchor: middle;">✓ Finalizar</text>
+    </g>
+    
+  </g>
+  
+  <!-- Indicador de scroll -->
+  <rect x="395" y="55" width="3" height="150" fill="#2192B8" opacity="0.3" rx="1.5"/>
+  
+  <!-- Anotaciones -->
+  <text x="200" y="890" style="font-size: 10px; fill: #999; text-anchor: middle;">Diseño Responsive - Vista Móvil (368px)</text>
+  
+</svg>

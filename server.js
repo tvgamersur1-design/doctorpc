@@ -494,11 +494,35 @@ app.delete('/api/usuarios/:id', autenticarToken, soloAdmin, async (req, res) => 
 
 // ==================== CLIENTES ====================
 
-// GET all clientes
+// GET all clientes (con opción de incluir eliminados solo para admin)
 app.get('/api/clientes', async (req, res) => {
   try {
-    console.log('🔍 GET /api/clientes - Conectado a BD:', !!db);
-    const clientes = await db.collection('clientes').find({}).toArray();
+    const incluirEliminados = req.query.incluirEliminados === 'true';
+    
+    // Si se solicitan eliminados, verificar que sea admin
+    if (incluirEliminados) {
+      const authHeader = req.headers['authorization'];
+      const token = authHeader && authHeader.split(' ')[1];
+      
+      if (!token) {
+        return res.status(403).json({ error: 'No autorizado. Solo administradores pueden ver clientes eliminados.' });
+      }
+      
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (decoded.rol !== 'admin') {
+          return res.status(403).json({ error: 'No autorizado. Solo administradores pueden ver clientes eliminados.' });
+        }
+      } catch (error) {
+        return res.status(403).json({ error: 'Token inválido o expirado' });
+      }
+    }
+    
+    console.log(`🔍 GET /api/clientes (incluirEliminados: ${incluirEliminados}) - Conectado a BD:`, !!db);
+    
+    const filtro = incluirEliminados ? {} : { eliminado: { $ne: true } };
+    const clientes = await db.collection('clientes').find(filtro).toArray();
+    
     console.log(`📋 GET /api/clientes: Retornando ${clientes.length} clientes`);
     if (clientes.length > 0) {
       console.log(`   Primer cliente: _id=${clientes[0]._id}, nombre=${clientes[0].nombre}`);
@@ -577,6 +601,9 @@ app.post('/api/clientes', async (req, res) => {
       cargo: req.body.cargo?.trim() || '',
       estado: req.body.estado || 'activo',
       notas: req.body.notas?.trim() || '',
+      eliminado: false,
+      fecha_eliminacion: null,
+      motivo_eliminacion: null,
       fecha_creacion: new Date().toISOString(),
       fecha_actualizacion: new Date().toISOString()
     };
@@ -592,6 +619,62 @@ app.post('/api/clientes', async (req, res) => {
     } else {
       res.status(500).json({ error: error.message });
     }
+  }
+});
+
+// PUT restaurar cliente (SOLO ADMIN) - DEBE IR ANTES DEL PUT GENÉRICO
+app.put('/api/clientes/:id/restaurar', async (req, res) => {
+  try {
+    console.log(`🔄 PUT /api/clientes/${req.params.id}/restaurar`);
+    
+    // Verificar que sea admin
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    if (!token) {
+      return res.status(403).json({ error: 'No autorizado. Solo administradores pueden restaurar clientes.' });
+    }
+    
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      if (decoded.rol !== 'admin') {
+        return res.status(403).json({ error: 'No autorizado. Solo administradores pueden restaurar clientes.' });
+      }
+    } catch (error) {
+      return res.status(403).json({ error: 'Token inválido o expirado' });
+    }
+    
+    // Restaurar cliente
+    const updateData = {
+      eliminado: false,
+      estado: 'activo',
+      fecha_eliminacion: null,
+      motivo_eliminacion: null,
+      fecha_actualizacion: new Date().toISOString()
+    };
+    
+    const result = await db.collection('clientes').findOneAndUpdate(
+      { _id: new ObjectId(req.params.id) },
+      { $set: updateData },
+      { returnDocument: 'after' }
+    );
+    
+    if (!result) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Cliente no encontrado'
+      });
+    }
+    
+    console.log(`✓ Cliente restaurado: ${req.params.id}`);
+    res.json({ 
+      success: true, 
+      message: 'Cliente restaurado correctamente',
+      cliente: result
+    });
+  } catch (error) {
+    console.error('Error PUT /api/clientes/:id/restaurar:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -657,9 +740,11 @@ app.put('/api/clientes/:id', async (req, res) => {
   }
 });
 
-// DELETE cliente con confirmación
+// DELETE cliente (SOFT DELETE)
 app.delete('/api/clientes/:id', async (req, res) => {
   try {
+    console.log(`🗑️ SOFT DELETE /api/clientes/${req.params.id}`);
+    
     // Buscar por _id de MongoDB
     let query = {};
     if (ObjectId.isValid(req.params.id)) {
@@ -668,20 +753,33 @@ app.delete('/api/clientes/:id', async (req, res) => {
       query = { dni: req.params.id };
     }
     
-    const result = await db.collection('clientes').deleteOne(query);
+    // Soft delete: marcar como eliminado
+    const updateData = {
+      eliminado: true,
+      estado: 'inactivo',
+      fecha_eliminacion: new Date().toISOString(),
+      motivo_eliminacion: req.body.motivo || null,
+      fecha_actualizacion: new Date().toISOString()
+    };
     
-    if (result.deletedCount === 0) {
+    const result = await db.collection('clientes').findOneAndUpdate(
+      query,
+      { $set: updateData },
+      { returnDocument: 'after' }
+    );
+    
+    if (!result) {
       return res.status(404).json({ 
         success: false, 
-        error: 'Cliente no encontrado',
-        deletedCount: 0 
+        error: 'Cliente no encontrado'
       });
     }
     
+    console.log(`✓ Cliente marcado como eliminado: ${req.params.id}`);
     res.json({ 
       success: true, 
-      message: 'Cliente eliminado exitosamente',
-      deletedCount: result.deletedCount 
+      message: 'Cliente eliminado correctamente',
+      cliente: result
     });
   } catch (error) {
     console.error('Error DELETE /api/clientes/:id:', error);
@@ -718,9 +816,21 @@ app.get('/api/servicios/proximo-numero', async (req, res) => {
 // GET all servicios
 app.get('/api/servicios', async (req, res) => {
   try {
+    // Por defecto, excluir servicios cancelados
+    const incluirCancelados = req.query.incluir_cancelados === 'true';
+    
     console.log('🔍 GET /api/servicios - Conectado a BD:', !!db);
-    const servicios = await db.collection('servicios').find({}).toArray();
-    console.log(`📋 GET /api/servicios: Retornando ${servicios.length} servicios`);
+    console.log('🔍 Query params:', req.query);
+    console.log('🔍 incluir_cancelados:', incluirCancelados);
+    
+    const filter = incluirCancelados ? {} : { estado: { $ne: 'Cancelado' } };
+    console.log('🔍 Filtro aplicado:', JSON.stringify(filter));
+    
+    const servicios = await db.collection('servicios').find(filter).toArray();
+    
+    const canceladosCount = servicios.filter(s => s.estado === 'Cancelado').length;
+    console.log(`📋 GET /api/servicios: Retornando ${servicios.length} servicios (${canceladosCount} cancelados)`);
+    
     if (servicios.length > 0) {
       console.log(`   Primer servicio: _id=${servicios[0]._id}, nombre=${servicios[0].nombre_servicio}`);
     } else {
@@ -912,10 +1022,10 @@ app.put('/api/servicios/:id', async (req, res) => {
   }
 });
 
-// DELETE servicio con confirmación
+// DELETE servicio - SOFT DELETE (cambiar estado a Cancelado)
 app.delete('/api/servicios/:id', async (req, res) => {
   try {
-    console.log(`🗑️ DELETE /api/servicios/${req.params.id}`);
+    console.log(`🗑️ DELETE /api/servicios/${req.params.id} - SOFT DELETE`);
     
     // Buscar por _id de MongoDB
     let query = {};
@@ -927,22 +1037,57 @@ app.delete('/api/servicios/:id', async (req, res) => {
       return res.status(400).json({ error: 'ID inválido' });
     }
     
-    const result = await db.collection('servicios').deleteOne(query);
-    
-    if (result.deletedCount === 0) {
-      console.warn(`   ⚠️ Servicio NO encontrado`);
+    // Verificar que el servicio existe primero
+    const servicioExiste = await db.collection('servicios').findOne(query);
+    if (!servicioExiste) {
+      console.warn(`   ⚠️ Servicio NO encontrado con ID: ${req.params.id}`);
       return res.status(404).json({ 
         success: false, 
-        error: 'Servicio no encontrado',
-        deletedCount: 0 
+        error: 'Servicio no encontrado'
       });
     }
     
-    console.log(`   ✓ Servicio eliminado exitosamente`);
+    console.log(`   ✓ Servicio encontrado: ${servicioExiste.numero_servicio || req.params.id}`);
+    
+    // Obtener motivo de cancelación del body
+    const motivoCancelacion = req.body.motivo_cancelacion || 'Sin motivo especificado';
+    const canceladoPor = req.body.cancelado_por || 'Sistema';
+    
+    console.log(`   📝 Motivo: ${motivoCancelacion}`);
+    console.log(`   👤 Cancelado por: ${canceladoPor}`);
+    
+    // SOFT DELETE: Cambiar estado a "Cancelado" en lugar de eliminar
+    const result = await db.collection('servicios').updateOne(
+      query,
+      { 
+        $set: { 
+          estado: 'Cancelado',
+          fecha_cancelacion: new Date().toISOString(),
+          motivo_cancelacion: motivoCancelacion,
+          cancelado_por: canceladoPor,
+          fecha_actualizacion: new Date().toISOString()
+        }
+      }
+    );
+    
+    if (result.modifiedCount === 0) {
+      console.warn(`   ⚠️ No se pudo actualizar el servicio`);
+      return res.status(500).json({ 
+        success: false, 
+        error: 'No se pudo cancelar el servicio'
+      });
+    }
+    
+    // Obtener el servicio actualizado
+    const servicioActualizado = await db.collection('servicios').findOne(query);
+    
+    console.log(`   ✓ Servicio cancelado exitosamente (soft delete)`);
+    console.log(`   📊 Estado actualizado: ${servicioActualizado.estado}`);
+    
     res.json({ 
       success: true, 
-      message: 'Servicio eliminado exitosamente',
-      deletedCount: result.deletedCount 
+      message: 'Servicio cancelado exitosamente',
+      servicio: servicioActualizado
     });
   } catch (error) {
     console.error('❌ Error DELETE /api/servicios/:id:', error);
@@ -952,11 +1097,35 @@ app.delete('/api/servicios/:id', async (req, res) => {
 
 // ==================== EQUIPOS ====================
 
-// GET all equipos
+// GET all equipos (con opción de incluir eliminados solo para admin)
 app.get('/api/equipos', async (req, res) => {
   try {
-    console.log('🔍 GET /api/equipos - Conectado a BD:', !!db);
-    const equipos = await db.collection('equipos').find({}).toArray();
+    const incluirEliminados = req.query.incluirEliminados === 'true';
+    
+    // Si se solicitan eliminados, verificar que sea admin
+    if (incluirEliminados) {
+      const authHeader = req.headers['authorization'];
+      const token = authHeader && authHeader.split(' ')[1];
+      
+      if (!token) {
+        return res.status(403).json({ error: 'No autorizado. Solo administradores pueden ver equipos eliminados.' });
+      }
+      
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (decoded.rol !== 'admin') {
+          return res.status(403).json({ error: 'No autorizado. Solo administradores pueden ver equipos eliminados.' });
+        }
+      } catch (error) {
+        return res.status(403).json({ error: 'Token inválido o expirado' });
+      }
+    }
+    
+    console.log(`🔍 GET /api/equipos (incluirEliminados: ${incluirEliminados}) - Conectado a BD:`, !!db);
+    
+    const filtro = incluirEliminados ? {} : { eliminado: { $ne: true } };
+    const equipos = await db.collection('equipos').find(filtro).toArray();
+    
     console.log(`📋 GET /api/equipos: Retornando ${equipos.length} equipos`);
     if (equipos.length === 0) {
       console.warn('⚠️ No hay equipos en la base de datos');
@@ -1022,6 +1191,9 @@ app.post('/api/equipos', async (req, res) => {
       ubicacion: req.body.ubicacion?.trim() || '',
       responsable: req.body.responsable?.trim() || '',
       notas: req.body.notas?.trim() || '',
+      eliminado: false,
+      fecha_eliminacion: null,
+      motivo_eliminacion: null,
       fecha_creacion: new Date().toISOString(),
       fecha_actualizacion: new Date().toISOString()
     };
@@ -1036,6 +1208,62 @@ app.post('/api/equipos', async (req, res) => {
     } else {
       res.status(500).json({ error: error.message });
     }
+  }
+});
+
+// PUT restaurar equipo (SOLO ADMIN) - DEBE IR ANTES DEL PUT GENÉRICO
+app.put('/api/equipos/:id/restaurar', async (req, res) => {
+  try {
+    console.log(`🔄 PUT /api/equipos/${req.params.id}/restaurar`);
+    
+    // Verificar que sea admin
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    if (!token) {
+      return res.status(403).json({ error: 'No autorizado. Solo administradores pueden restaurar equipos.' });
+    }
+    
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      if (decoded.rol !== 'admin') {
+        return res.status(403).json({ error: 'No autorizado. Solo administradores pueden restaurar equipos.' });
+      }
+    } catch (error) {
+      return res.status(403).json({ error: 'Token inválido o expirado' });
+    }
+    
+    // Restaurar equipo
+    const updateData = {
+      eliminado: false,
+      estado: 'operativo',
+      fecha_eliminacion: null,
+      motivo_eliminacion: null,
+      fecha_actualizacion: new Date().toISOString()
+    };
+    
+    const result = await db.collection('equipos').findOneAndUpdate(
+      { _id: new ObjectId(req.params.id) },
+      { $set: updateData },
+      { returnDocument: 'after' }
+    );
+    
+    if (!result) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Equipo no encontrado'
+      });
+    }
+    
+    console.log(`✓ Equipo restaurado: ${req.params.id}`);
+    res.json({ 
+      success: true, 
+      message: 'Equipo restaurado correctamente',
+      equipo: result
+    });
+  } catch (error) {
+    console.error('Error PUT /api/equipos/:id/restaurar:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -1067,23 +1295,38 @@ app.put('/api/equipos/:id', async (req, res) => {
   }
 });
 
-// DELETE equipo
+// DELETE equipo (SOFT DELETE)
 app.delete('/api/equipos/:id', async (req, res) => {
   try {
-    const result = await db.collection('equipos').deleteOne({ _id: new ObjectId(req.params.id) });
+    console.log(`🗑️ SOFT DELETE /api/equipos/${req.params.id}`);
     
-    if (result.deletedCount === 0) {
+    // Soft delete: marcar como eliminado
+    const updateData = {
+      eliminado: true,
+      estado: 'retirado',
+      fecha_eliminacion: new Date().toISOString(),
+      motivo_eliminacion: req.body.motivo || null,
+      fecha_actualizacion: new Date().toISOString()
+    };
+    
+    const result = await db.collection('equipos').findOneAndUpdate(
+      { _id: new ObjectId(req.params.id) },
+      { $set: updateData },
+      { returnDocument: 'after' }
+    );
+    
+    if (!result) {
       return res.status(404).json({ 
         success: false, 
-        error: 'Equipo no encontrado',
-        deletedCount: 0 
+        error: 'Equipo no encontrado'
       });
     }
     
+    console.log(`✓ Equipo marcado como eliminado: ${req.params.id}`);
     res.json({ 
       success: true, 
-      message: 'Equipo eliminado exitosamente',
-      deletedCount: result.deletedCount 
+      message: 'Equipo eliminado correctamente',
+      equipo: result
     });
   } catch (error) {
     console.error('Error DELETE /api/equipos/:id:', error);
@@ -1284,6 +1527,10 @@ app.get('/api/status-db', async (req, res) => {
 
 // Iniciar servidor
 connectDB().then(() => {
+  // ==================== WHATSAPP ====================
+  // Registrar ruta después de conectar a DB para pasar la referencia
+  require('./routes/whatsapp')(app, db);
+
   app.listen(PORT, () => {
     console.log(`\n${'═'.repeat(50)}`);
     console.log(`✅ Servidor corriendo en puerto ${PORT}`);
@@ -1328,6 +1575,18 @@ app.get('/api/reporte/:servicioId', async (req, res) => {
       return res.status(404).json({ error: 'Servicio no encontrado' });
     }
     
+    // Debug: Ver qué campos tiene el servicio
+    console.log('🔍 Campos del servicio:', {
+      descripcion_problema: servicio.descripcion_problema,
+      problemas: servicio.problemas,
+      problema_reportado: servicio.problema_reportado,
+      diagnostico: servicio.diagnostico,
+      diagnostico_tecnico: servicio.diagnostico_tecnico,
+      solucion_aplicada: servicio.solucion_aplicada,
+      solucion: servicio.solucion,
+      trabajo_realizado: servicio.trabajo_realizado
+    });
+    
     // Obtener datos del cliente (buscar por _id si cliente_id es ObjectId, o por id)
     let cliente = null;
     if (ObjectId.isValid(servicio.cliente_id)) {
@@ -1370,45 +1629,66 @@ app.get('/api/reporte/:servicioId', async (req, res) => {
     }
     console.log(`🔧 Tipo de servicio encontrado:`, !!servicioInfo);
     
+    // Parsear diagnóstico
+    let diagArray = [];
+    const rawDiag = servicio.diagnostico || servicio.diagnostico_tecnico;
+    if (rawDiag) {
+      if (Array.isArray(rawDiag)) {
+        diagArray = rawDiag;
+      } else if (typeof rawDiag === 'string') {
+        try { diagArray = JSON.parse(rawDiag); } catch(e) { diagArray = []; }
+      }
+    }
+
+    // Calcular costos
+    const costoBase = parseFloat(servicio.costo_base || servicio.costo_servicio || 0);
+    let repuestos = 0;
+    if (servicio.repuestos_utilizados && Array.isArray(servicio.repuestos_utilizados)) {
+      repuestos = servicio.repuestos_utilizados.reduce((sum, r) => sum + parseFloat(r.costo || 0), 0);
+    }
+    if (repuestos === 0 && Array.isArray(diagArray) && diagArray.length > 0) {
+      repuestos = diagArray.reduce((sum, d) => sum + parseFloat(d.costo || 0), 0);
+    }
+    const costoAdicional = parseFloat(servicio.costo_adicional || 0);
+    const total = parseFloat(servicio.costo_final || servicio.costo_total || servicio.monto || 0) || (costoBase + repuestos + costoAdicional);
+
     // Construir reporte
     const reporte = {
       numero_orden: servicio.numero_orden || servicio.numero_servicio || `OS${servicio._id.toString().substring(0, 8).toUpperCase()}`,
       cliente: {
-        nombre: cliente?.nombre || 'N/A',
-        apellido_paterno: cliente?.apellido_paterno || '',
+        nombre: cliente?.nombre || '',
         apellido_paterno: cliente?.apellido_paterno || '',
         apellido_materno: cliente?.apellido_materno || '',
         dni: cliente?.dni || '',
         email: cliente?.email || '',
-        telefono: cliente?.telefono || ''
+        telefono: cliente?.telefono || '',
+        direccion: cliente?.direccion || ''
       },
       equipo: {
-        tipo_equipo: equipo?.tipo_equipo || 'N/A',
+        tipo_equipo: equipo?.tipo_equipo || '',
         marca: equipo?.marca || '',
         modelo: equipo?.modelo || '',
-        numero_serie: equipo?.numero_serie || ''
+        numero_serie: equipo?.numero_serie || equipo?.serie || ''
       },
       servicio: {
-        descripcion_problema: servicio.descripcion_problema || '',
-        observaciones_tecnicas: servicio.observaciones_tecnicas || '',
-        diagnostico: servicio.diagnostico ? (
-          typeof servicio.diagnostico === 'string' && servicio.diagnostico.startsWith('[')
-            ? JSON.parse(servicio.diagnostico)
-            : servicio.diagnostico
-        ) : [],
-        solucion_aplicada: servicio.solucion_aplicada || ''
+        descripcion_problema: servicio.problemas_reportados || servicio.descripcion_problema || servicio.problemas || servicio.problema_reportado || '',
+        observaciones: servicio.observaciones || servicio.observaciones_tecnicas || '',
+        diagnostico: diagArray,
+        tecnico_diagnosticador: servicio.tecnico || servicio.tecnico_diagnosticador || '',
+        solucion_aplicada: servicio.solucion_aplicada || servicio.solucion || servicio.trabajo_realizado || ''
       },
       costos: {
-        costo_base: servicio.costo_base || 0,
-        repuestos: servicio.repuestos_utilizados ? 
-          servicio.repuestos_utilizados.reduce((sum, r) => sum + (r.costo || 0), 0) : 0,
-        costo_adicional: servicio.costo_adicional || 0,
-        total: servicio.costo_final || 0
+        costo_base: costoBase,
+        repuestos: repuestos,
+        costo_adicional: costoAdicional,
+        total: total,
+        adelanto: parseFloat(servicio.adelanto || 0),
+        saldo_pendiente: total - parseFloat(servicio.adelanto || 0)
       },
       datos_tecnicos: {
-        tecnico_asignado: servicio.tecnico_asignado || '',
+        tecnico_asignado: servicio.tecnico_asignado || servicio.tecnico || '',
         estado: servicio.estado || '',
-        fecha_inicio: servicio.fecha_inicio || '',
+        fecha_inicio: servicio.fecha_inicio || servicio.fecha || '',
         fecha_cierre: servicio.fecha_cierre || '',
         prioridad: servicio.prioridad || '',
         calificacion: servicio.calificacion || 0
@@ -1422,166 +1702,8 @@ app.get('/api/reporte/:servicioId', async (req, res) => {
   }
 });
 
-// POST generar PDF del reporte
-app.post('/api/generar-pdf', async (req, res) => {
-  try {
-    const { servicioId } = req.body;
-    
-    // Obtener reporte
-    const reporteRes = await new Promise((resolve, reject) => {
-      res.on('error', reject);
-      // Reutilizar lógica de /api/reporte/:servicioId
-    });
-    
-    // Por ahora, retornar instrucción para que frontend genere PDF
-    res.json({ 
-      success: true, 
-      message: 'PDF generado correctamente',
-      filename: `reporte-${servicioId}.pdf`
-    });
-  } catch (error) {
-    console.error('Error POST /api/generar-pdf:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// POST enviar reporte por WhatsApp
-app.post('/api/enviar-whatsapp', async (req, res) => {
-  try {
-    const { servicioId } = req.body;
-    
-    // Buscar primero en servicio_equipo, luego en servicios
-    let servicio = await db.collection('servicio_equipo').findOne({ 
-      _id: new ObjectId(servicioId) 
-    });
-    if (!servicio) {
-      servicio = await db.collection('servicios').findOne({ 
-        _id: new ObjectId(servicioId) 
-      });
-    }
-    
-    if (!servicio) {
-      return res.status(404).json({ error: 'Servicio no encontrado' });
-    }
-    
-    // Obtener cliente con número de WhatsApp
-    let cliente = null;
-    if (ObjectId.isValid(servicio.cliente_id)) {
-      cliente = await db.collection('clientes').findOne({ 
-        _id: new ObjectId(servicio.cliente_id) 
-      });
-    }
-    if (!cliente && servicio.cliente_id) {
-      cliente = await db.collection('clientes').findOne({ 
-        id: servicio.cliente_id 
-      });
-    }
-    
-    if (!cliente || !cliente.telefono) {
-      return res.status(400).json({ error: 'Cliente sin número de WhatsApp' });
-    }
-    
-    // Obtener equipo
-    const equipo = await db.collection('equipos').findOne({ 
-      id: servicio.equipo_id 
-    });
-    
-    // Construir mensaje para WhatsApp (sin caracteres especiales que causen problemas)
-    const costoRepuestos = servicio.repuestos_utilizados ? 
-      servicio.repuestos_utilizados.reduce((sum, r) => sum + (r.costo || 0), 0) : 0;
-    
-    const mensaje = `
-📋 REPORTE DE SERVICIO
-
-Orden: ${servicio.numero_orden}
-Cliente: ${cliente.nombre} ${cliente.apellido_paterno} ${cliente.apellido_materno}
-
-EQUIPO:
-${equipo?.tipo_equipo || 'N/A'} - ${equipo?.marca || ''} ${equipo?.modelo || ''}
-
-PROBLEMA:
-${servicio.descripcion_problema || 'N/A'}
-
-DIAGNOSTICO:
-${servicio.diagnostico || 'N/A'}
-
-SOLUCION:
-${servicio.solucion_aplicada || 'N/A'}
-
-COSTOS:
-• Servicio: S/. ${(servicio.costo_base || 0).toFixed(2)}
-• Repuestos: S/. ${costoRepuestos.toFixed(2)}
-• Adicional: S/. ${(servicio.costo_adicional || 0).toFixed(2)}
-Total: S/. ${(servicio.costo_final || 0).toFixed(2)}
-
-Estado: ${servicio.estado}
-Tecnico: ${servicio.tecnico_asignado || 'N/A'}
-
-✅ Gracias por confiar en nosotros
-    `.trim();
-    
-    // Configuración de Twilio (opcional, comentado por ahora)
-    const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
-    const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
-    const twilioWhatsAppNumber = process.env.TWILIO_WHATSAPP_NUMBER;
-    
-    // Formatear teléfono (agregar +51 para Perú si es necesario)
-    let telefonoFormato = cliente.telefono.replace(/\D/g, '');
-    if (!telefonoFormato.startsWith('51')) {
-      telefonoFormato = '51' + telefonoFormato;
-    }
-    const numeroWhatsApp = '+' + telefonoFormato;
-    
-    console.log(`📱 Preparando envío WhatsApp a ${numeroWhatsApp}`);
-    console.log(`Orden: ${servicio.numero_orden}`);
-    
-    // Si está configurado Twilio, enviar mensaje real
-    if (twilioAccountSid && twilioAuthToken && twilioWhatsAppNumber) {
-      try {
-        const twilio = require('twilio');
-        const twilioClient = twilio(twilioAccountSid, twilioAuthToken);
-        
-        const result = await twilioClient.messages.create({
-          body: mensaje,
-          from: twilioWhatsAppNumber,
-          to: `whatsapp:${numeroWhatsApp}`
-        });
-        
-        console.log(`✅ WhatsApp enviado exitosamente. SID: ${result.sid}`);
-        
-        res.json({ 
-          success: true, 
-          message: 'Mensaje enviado a WhatsApp correctamente',
-          telefono: cliente.telefono,
-          orden: servicio.numero_orden,
-          messageSid: result.sid
-        });
-      } catch (twilioError) {
-        console.error('❌ Error al enviar con Twilio:', twilioError.message);
-        // Si falla Twilio, retornar error pero informativo
-        res.status(500).json({ 
-          error: 'Error al enviar WhatsApp: ' + twilioError.message,
-          configurar: 'Configura TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN y TWILIO_WHATSAPP_NUMBER en .env'
-        });
-      }
-    } else {
-      // Modo desarrollo: simular envío
-      console.log(`⚠️ MODO SIMULACION (configura Twilio en .env para envío real)`);
-      console.log(`Mensaje que se enviaría:\n${mensaje}`);
-      
-      res.json({ 
-        success: true, 
-        message: 'Mensaje simulado (configura Twilio en .env para envío real)',
-        telefono: cliente.telefono,
-        orden: servicio.numero_orden,
-        modo: 'simulacion'
-      });
-    }
-  } catch (error) {
-    console.error('❌ Error POST /api/enviar-whatsapp:', error.message);
-    res.status(500).json({ error: error.message });
-  }
-});
+// NOTA: El endpoint /api/enviar-whatsapp-pdf está en routes/whatsapp.js
+// Se registra después de conectar a la DB (ver connectDB().then(...))
 
 // Manejar cierre graceful
 process.on('SIGINT', async () => {

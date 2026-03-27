@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1100">
+  <defs>
+    <style>
+      .title { font-family: Arial, sans-serif; font-size: 20px; font-weight: bold; }
+      .subtitle { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; }
+      .text { font-family: Arial, sans-serif; font-size: 12px; }
+      .small { font-family: Arial, sans-serif; font-size: 11px; }
+      .tiny { font-family: Arial, sans-serif; font-size: 10px; }
+    </style>
+  </defs>
+  
+  <!-- Fondo del modal -->
+  <rect width="1000" height="1100" fill="#f8f9fa" rx="8"/>
+  
+  <!-- Header del modal -->
+  <rect width="1000" height="70" fill="#2196F3" rx="8 8 0 0"/>
+  <text x="20" y="45" class="title" fill="white">Detalles del Servicio SRV-2026-002</text>
+  <circle cx="970" cy="35" r="15" fill="white" opacity="0.3"/>
+  <text x="965" y="42" font-size="20" fill="white">x</text>
+  
+  <!-- Sección 1: Información Principal (Grid 3 columnas) -->
+  <rect x="20" y="90" width="960" height="120" fill="white" rx="6" stroke="#e0e0e0" stroke-width="1"/>
+  
+  <!-- Columna 1: Orden -->
+  <rect x="30" y="100" width="300" height="100" fill="#f5f5f5" rx="4"/>
+  <text x="40" y="125" class="subtitle" fill="#2196F3">Orden de Servicio</text>
+  <text x="40" y="145" class="text" fill="#666">Fecha: 2026-03-24 | Hora: 12:41</text>
+  <text x="40" y="165" class="text" fill="#666">Local: Chiclayo</text>
+  <rect x="40" y="175" width="80" height="20" fill="#FF9800" rx="3"/>
+  <text x="50" y="189" class="small" fill="white">Entregado</text>
+  
+  <!-- Columna 2: Cliente -->
+  <rect x="340" y="100" width="300" height="100" fill="#E3F2FD" rx="4"/>
+  <text x="350" y="125" class="subtitle" fill="#2196F3">JESUS FERNANDO</text>
+  <text x="350" y="145" class="text" fill="#666">DNI: 60160048</text>
+  <text x="350" y="165" class="text" fill="#666">Tel: 921709774</text>
+  
+  <!-- Columna 3: Equipo -->
+  <rect x="650" y="100" width="310" height="100" fill="#FFF3E0" rx="4"/>
+  <text x="660" y="125" class="subtitle" fill="#FF9800">Equipo Ingresado</text>
+  <text x="660" y="145" class="text" fill="#666">Tipo: Otro</text>
+  <text x="660" y="165" class="text" fill="#666">Marca: patriot | Modelo: p210</text>
+  <text x="660" y="185" class="small" fill="#999">Serie: 072206223301560</text>
+  
+  <!-- Sección 2: Grid 3 columnas (Problemas, Resumen, Observaciones) -->
+  <rect x="20" y="230" width="310" height="140" fill="white" rx="6" stroke="#e0e0e0" stroke-width="1"/>
+  <rect x="340" y="230" width="310" height="140" fill="white" rx="6" stroke="#e0e0e0" stroke-width="1"/>
+  <rect x="660" y="230" width="320" height="140" fill="white" rx="6" stroke="#e0e0e0" stroke-width="1"/>
+  
+  <!-- Problemas Reportados -->
+  <text x="30" y="255" class="subtitle" fill="#FF5722">Problemas Reportados</text>
+  <rect x="30" y="265" width="290" height="95" fill="#FFF8E1" rx="4"/>
+  <text x="40" y="285" class="small" fill="#666">- Teclado danado</text>
+  <text x="40" y="305" class="small" fill="#666">- Pantalla rota</text>
+  <text x="40" y="325" class="small" fill="#666">- No enciende</text>
+  <text x="40" y="345" class="small" fill="#666">- Sin internet - Virus/Malware</text>
+  
+  <!-- Resumen Financiero -->
+  <text x="350" y="255" class="subtitle" fill="#2196F3">Resumen Financiero</text>
+  <rect x="350" y="265" width="290" height="95" fill="#E8F5E9" rx="4"/>
+  <text x="360" y="285" class="small" fill="#666">Adelanto:</text>
+  <text x="480" y="285" class="text" fill="#4CAF50">$0.00</text>
+  <text x="360" y="310" class="small" fill="#666">Monto Total:</text>
+  <text x="480" y="310" class="text" fill="#2196F3">$336.00</text>
+  <text x="360" y="335" class="small" fill="#666">Saldo Pendiente:</text>
+  <text x="480" y="335" class="subtitle" fill="#f44336">$336.00</text>
+  
+  <!-- Observaciones -->
+  <text x="670" y="255" class="subtitle" fill="#9C27B0">Observaciones</text>
+  <rect x="670" y="265" width="300" height="95" fill="#F3E5F5" rx="4"/>
+  <text x="820" y="310" class="text" fill="#999" text-anchor="middle">NINGUNA</text>
+  
+  <!-- Sección 3: Grid 3 columnas (Diagnóstico, Reparación, Entrega) -->
+  <rect x="20" y="390" width="310" height="200" fill="white" rx="6" stroke="#e0e0e0" stroke-width="1"/>
+  <rect x="340" y="390" width="310" height="200" fill="white" rx="6" stroke="#e0e0e0" stroke-width="1"/>
+  <rect x="660" y="390" width="320" height="200" fill="white" rx="6" stroke="#e0e0e0" stroke-width="1"/>
+  
+  <!-- Diagnóstico -->
+  <text x="30" y="415" class="subtitle" fill="#2196F3">Diagnostico Realizado</text>
+  <text x="30" y="435" class="small" fill="#666">Tecnico: Jesus</text>
+  <rect x="30" y="445" width="290" height="135" fill="#E3F2FD" rx="4"/>
+  <text x="40" y="465" class="small" fill="#1976D2">PROBLEMAS Y SOLUCIONES</text>
+  <text x="40" y="485" class="tiny" fill="#666">Pant</text>
+  <text x="250" y="485" class="small" fill="#2196F3">$336.00</text>
+  <text x="40" y="505" class="tiny" fill="#4CAF50">Solucion: Vahhw</text>
+  <rect x="40" y="525" width="270" height="40" fill="#BBDEFB" rx="3"/>
+  <text x="50" y="550" class="text" fill="#1565C0">Costo Total: $336.00</text>
+  
+  <!-- Reparación -->
+  <text x="350" y="415" class="subtitle" fill="#4CAF50">Reparacion Completada</text>
+  <rect x="350" y="425" width="290" height="155" fill="#E8F5E9" rx="4"/>
+  <text x="360" y="450" class="small" fill="#666">Estado: Reparacion completada</text>
+  <text x="360" y="475" class="small" fill="#666">Fecha Completacion:</text>
+  <text x="360" y="495" class="small" fill="#4CAF50">25/3/2026, 7:55:37 p.m.</text>
+  
+  <!-- Entrega -->
+  <text x="670" y="415" class="subtitle" fill="#4CAF50">Datos de Entrega</text>
+  <rect x="670" y="425" width="300" height="155" fill="#E8F5E9" rx="4"/>
+  <text x="680" y="450" class="small" fill="#666">Fecha: 2026-03-26</text>
+  <text x="680" y="470" class="small" fill="#666">Hora: 19:55</text>
+  <text x="680" y="495" class="small" fill="#666">Encargado:</text>
+  <text x="680" y="515" class="small" fill="#333">Jesus Fernando Lucero p</text>
+  <text x="680" y="540" class="small" fill="#666">Monto Cobrado: $336.00</text>
+  <text x="680" y="560" class="small" fill="#666">Metodo: Tarjeta</text>
+  
+  <!-- Sección 4: Botones de Acción (Horizontal) -->
+  <rect x="20" y="610" width="960" height="80" fill="white" rx="6" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="30" y="635" class="subtitle" fill="#2196F3">Opciones de Reporte al Cliente</text>
+  
+  <!-- Botones en fila -->
+  <rect x="30" y="650" width="300" height="30" fill="#FF6B6B" rx="6"/>
+  <text x="180" y="672" class="subtitle" fill="white" text-anchor="middle">Generar PDF</text>
+  
+  <rect x="340" y="650" width="300" height="30" fill="#9C27B0" rx="6"/>
+  <text x="490" y="672" class="subtitle" fill="white" text-anchor="middle">Imprimir Reporte</text>
+  
+  <rect x="650" y="650" width="310" height="30" fill="#25D366" rx="6"/>
+  <text x="805" y="672" class="subtitle" fill="white" text-anchor="middle">Enviar WhatsApp</text>
+  
+  <!-- Anotaciones de mejoras -->
+  <text x="20" y="730" class="title" fill="#FF5722">MEJORAS PROPUESTAS:</text>
+  
+  <text x="30" y="760" class="text" fill="#333">1. Layout en Grid de 3 columnas para mejor aprovechamiento del espacio</text>
+  <text x="30" y="785" class="text" fill="#333">2. Informacion agrupada por contexto (Orden, Cliente, Equipo en la misma fila)</text>
+  <text x="30" y="810" class="text" fill="#333">3. Colores de fondo suaves para diferenciar secciones sin saturar</text>
+  <text x="30" y="835" class="text" fill="#333">4. Botones de accion en horizontal para mejor accesibilidad</text>
+  <text x="30" y="860" class="text" fill="#333">5. Altura reducida del modal (de aprox 1000px a aprox 700px)</text>
+  <text x="30" y="885" class="text" fill="#333">6. Iconos consistentes y jerarquia visual clara</text>
+  <text x="30" y="910" class="text" fill="#333">7. Espaciado uniforme y bordes redondeados para diseno moderno</text>
+  <text x="30" y="935" class="text" fill="#333">8. Resumen financiero mas visible con colores semanticos</text>
+  
+  <!-- Comparación de altura -->
+  <rect x="30" y="960" width="200" height="100" fill="#FFEBEE" rx="4" stroke="#f44336" stroke-width="2"/>
+  <text x="130" y="985" class="text" fill="#f44336" text-anchor="middle">ANTES</text>
+  <text x="130" y="1005" class="small" fill="#666" text-anchor="middle">Altura: aprox 1000px</text>
+  <text x="130" y="1025" class="small" fill="#666" text-anchor="middle">Layout vertical</text>
+  <text x="130" y="1045" class="small" fill="#666" text-anchor="middle">Mucho scroll</text>
+  
+  <text x="330" y="1010" font-size="24" fill="#4CAF50">-&gt;</text>
+  
+  <rect x="380" y="960" width="200" height="100" fill="#E8F5E9" rx="4" stroke="#4CAF50" stroke-width="2"/>
+  <text x="480" y="985" class="text" fill="#4CAF50" text-anchor="middle">DESPUES</text>
+  <text x="480" y="1005" class="small" fill="#666" text-anchor="middle">Altura: aprox 700px</text>
+  <text x="480" y="1025" class="small" fill="#666" text-anchor="middle">Layout grid 3 cols</text>
+  <text x="480" y="1045" class="small" fill="#666" text-anchor="middle">Menos scroll</text>
+  
+  <!-- Beneficios -->
+  <rect x="620" y="960" width="360" height="100" fill="#FFF3E0" rx="4" stroke="#FF9800" stroke-width="2"/>
+  <text x="800" y="985" class="text" fill="#FF9800" text-anchor="middle">BENEFICIOS</text>
+  <text x="630" y="1005" class="tiny" fill="#666">- Reduccion de 30% en altura del modal</text>
+  <text x="630" y="1025" class="tiny" fill="#666">- Mejor UX: menos scroll, mas informacion visible</text>
+  <text x="630" y="1045" class="tiny" fill="#666">- Diseno mas profesional y moderno</text>
+</svg>

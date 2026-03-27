@@ -1,0 +1,177 @@
+<svg width="800" height="1000" xmlns="http://www.w3.org/2000/svg" font-family="Arial">
+  <!-- Title -->
+  <text x="400" y="30" text-anchor="middle" font-size="20" font-weight="bold" fill="#1976D2">
+    Formato del PDF Generado
+  </text>
+
+  <!-- PDF Container -->
+  <rect x="100" y="60" width="600" height="900" rx="5" fill="white" stroke="#333" stroke-width="2"/>
+
+  <!-- Header - Blue bar -->
+  <rect x="100" y="60" width="600" height="80" fill="#2196F3"/>
+  
+  <!-- Logo placeholder -->
+  <rect x="120" y="75" width="50" height="50" rx="5" fill="#1565C0" stroke="white" stroke-width="2"/>
+  <text x="145" y="105" text-anchor="middle" font-size="10" fill="white" font-weight="bold">LOGO</text>
+
+  <!-- Company name -->
+  <text x="185" y="90" font-size="18" font-weight="bold" fill="white">DOCTOR PC</text>
+  <text x="185" y="108" font-size="9" fill="white">Soluciones Informáticas Profesionales</text>
+  <text x="185" y="122" font-size="8" fill="white">Tel: 961 509 9414 | Email: contacto@gmail.com</text>
+
+  <!-- Order number box -->
+  <rect x="580" y="70" width="100" height="60" rx="5" fill="white" stroke="#1565C0" stroke-width="2"/>
+  <text x="630" y="88" text-anchor="middle" font-size="9" font-weight="bold" fill="#2196F3">ORDEN N°</text>
+  <text x="630" y="110" text-anchor="middle" font-size="16" font-weight="bold" fill="#2196F3">12345</text>
+
+  <!-- Date -->
+  <text x="680" y="155" text-anchor="end" font-size="8" fill="#666">Fecha de emisión: 19 de marzo de 2026</text>
+
+  <!-- Cliente y Equipo - Two columns -->
+  <!-- Cliente header -->
+  <rect x="120" y="170" width="270" height="25" rx="3" fill="#2196F3"/>
+  <text x="255" y="188" text-anchor="middle" font-size="11" font-weight="bold" fill="white">
+    INFORMACIÓN DEL CLIENTE
+  </text>
+
+  <!-- Equipo header -->
+  <rect x="410" y="170" width="270" height="25" rx="3" fill="#2196F3"/>
+  <text x="545" y="188" text-anchor="middle" font-size="11" font-weight="bold" fill="white">
+    EQUIPO RECIBIDO
+  </text>
+
+  <!-- Cliente content -->
+  <rect x="120" y="195" width="270" height="110" rx="3" fill="#F5F5F5" stroke="#CCC" stroke-width="1"/>
+  <text x="130" y="213" font-size="9" font-weight="bold" fill="#1565C0">Cliente:</text>
+  <text x="175" y="213" font-size="9" fill="#333">JUAN PÉREZ GARCÍA</text>
+  
+  <text x="130" y="230" font-size="9" font-weight="bold" fill="#1565C0">DNI:</text>
+  <text x="175" y="230" font-size="9" fill="#333">12345678</text>
+  
+  <text x="130" y="247" font-size="9" font-weight="bold" fill="#1565C0">Teléfono:</text>
+  <text x="175" y="247" font-size="9" fill="#333">987654321</text>
+  
+  <text x="130" y="264" font-size="9" font-weight="bold" fill="#1565C0">Email:</text>
+  <text x="175" y="264" font-size="9" fill="#333">juan@email.com</text>
+  
+  <text x="130" y="281" font-size="9" font-weight="bold" fill="#1565C0">Dirección:</text>
+  <text x="175" y="281" font-size="9" fill="#333">Av. Principal 123</text>
+
+  <!-- Equipo content -->
+  <rect x="410" y="195" width="270" height="110" rx="3" fill="#F5F5F5" stroke="#CCC" stroke-width="1"/>
+  <text x="420" y="213" font-size="9" font-weight="bold" fill="#1565C0">Tipo:</text>
+  <text x="465" y="213" font-size="9" fill="#333">Laptop</text>
+  
+  <text x="420" y="230" font-size="9" font-weight="bold" fill="#1565C0">Marca:</text>
+  <text x="465" y="230" font-size="9" fill="#333">HP</text>
+  
+  <text x="420" y="247" font-size="9" font-weight="bold" fill="#1565C0">Modelo:</text>
+  <text x="465" y="247" font-size="9" fill="#333">Pavilion 15</text>
+  
+  <text x="420" y="264" font-size="9" font-weight="bold" fill="#1565C0">N° Serie:</text>
+  <text x="465" y="264" font-size="9" fill="#333">ABC123XYZ</text>
+
+  <!-- Servicio y Técnico - Two columns -->
+  <!-- Servicio header -->
+  <rect x="120" y="320" width="270" height="25" rx="3" fill="#2196F3"/>
+  <text x="255" y="338" text-anchor="middle" font-size="11" font-weight="bold" fill="white">
+    DETALLES DEL SERVICIO
+  </text>
+
+  <!-- Técnico header -->
+  <rect x="410" y="320" width="270" height="25" rx="3" fill="#2196F3"/>
+  <text x="545" y="338" text-anchor="middle" font-size="11" font-weight="bold" fill="white">
+    INFORMACIÓN TÉCNICA
+  </text>
+
+  <!-- Servicio content -->
+  <rect x="120" y="345" width="270" height="110" rx="3" fill="#F5F5F5" stroke="#CCC" stroke-width="1"/>
+  <text x="130" y="363" font-size="9" font-weight="bold" fill="#1565C0">Problema Reportado:</text>
+  <text x="130" y="378" font-size="8" fill="#333">No enciende, pantalla negra</text>
+  <text x="130" y="390" font-size="8" fill="#333">al iniciar el sistema</text>
+
+  <!-- Técnico content -->
+  <rect x="410" y="345" width="270" height="110" rx="3" fill="#F5F5F5" stroke="#CCC" stroke-width="1"/>
+  <text x="420" y="363" font-size="9" font-weight="bold" fill="#1565C0">Técnico:</text>
+  <text x="465" y="363" font-size="9" fill="#333">Carlos Ruiz</text>
+  
+  <text x="420" y="380" font-size="9" font-weight="bold" fill="#1565C0">Estado:</text>
+  <rect x="465" y="370" width="70" height="15" rx="3" fill="#4CAF50"/>
+  <text x="500" y="381" text-anchor="middle" font-size="8" font-weight="bold" fill="white">Completado</text>
+  
+  <text x="420" y="397" font-size="9" font-weight="bold" fill="#1565C0">Prioridad:</text>
+  <text x="465" y="397" font-size="9" fill="#333">Alta</text>
+  
+  <text x="420" y="414" font-size="9" font-weight="bold" fill="#1565C0">Calificación:</text>
+  <text x="480" y="414" font-size="11" fill="#FFC107">⭐⭐⭐⭐⭐</text>
+
+  <!-- Costos section -->
+  <rect x="120" y="470" width="560" height="25" rx="3" fill="#2196F3"/>
+  <text x="400" y="488" text-anchor="middle" font-size="11" font-weight="bold" fill="white">
+    COSTOS
+  </text>
+
+  <!-- Costos table -->
+  <rect x="120" y="495" width="560" height="140" rx="3" fill="white" stroke="#CCC" stroke-width="1"/>
+  
+  <!-- Table rows -->
+  <line x1="120" y1="520" x2="680" y2="520" stroke="#E0E0E0" stroke-width="1"/>
+  <line x1="120" y1="545" x2="680" y2="545" stroke="#E0E0E0" stroke-width="1"/>
+  <line x1="120" y1="570" x2="680" y2="570" stroke="#E0E0E0" stroke-width="1"/>
+  <line x1="120" y1="595" x2="680" y2="595" stroke="#E0E0E0" stroke-width="1"/>
+  
+  <!-- Vertical line -->
+  <line x1="480" y1="495" x2="480" y2="635" stroke="#E0E0E0" stroke-width="1"/>
+  
+  <!-- Table content -->
+  <text x="130" y="513" font-size="9" fill="#333">Servicio</text>
+  <text x="670" y="513" text-anchor="end" font-size="9" fill="#333">S/. 50.00</text>
+  
+  <text x="130" y="538" font-size="9" fill="#333">Repuestos</text>
+  <text x="670" y="538" text-anchor="end" font-size="9" fill="#333">S/. 120.00</text>
+  
+  <text x="130" y="563" font-size="9" fill="#333">Adicional</text>
+  <text x="670" y="563" text-anchor="end" font-size="9" fill="#333">S/. 0.00</text>
+  
+  <text x="130" y="588" font-size="9" fill="#333">Subtotal</text>
+  <text x="670" y="588" text-anchor="end" font-size="9" fill="#333">S/. 144.07</text>
+  
+  <text x="130" y="613" font-size="9" fill="#333">I.G.V. (18%)</text>
+  <text x="670" y="613" text-anchor="end" font-size="9" fill="#333">S/. 25.93</text>
+  
+  <!-- Total row -->
+  <rect x="120" y="620" width="560" height="15" fill="#333"/>
+  <text x="130" y="631" font-size="10" font-weight="bold" fill="white">TOTAL</text>
+  <text x="670" y="631" text-anchor="end" font-size="10" font-weight="bold" fill="white">S/. 170.00</text>
+
+  <!-- Diagnóstico y Solución -->
+  <rect x="120" y="650" width="560" height="25" rx="3" fill="#2196F3"/>
+  <text x="400" y="668" text-anchor="middle" font-size="11" font-weight="bold" fill="white">
+    DIAGNÓSTICO Y SOLUCIÓN
+  </text>
+
+  <rect x="120" y="675" width="560" height="180" rx="3" fill="#F5F5F5" stroke="#CCC" stroke-width="1"/>
+  
+  <text x="130" y="695" font-size="9" font-weight="bold" fill="#1565C0">Diagnóstico:</text>
+  <text x="140" y="713" font-size="8" fill="#333">• Disco duro dañado con sectores defectuosos</text>
+  <text x="140" y="728" font-size="8" fill="#333">• Memoria RAM insuficiente (4GB)</text>
+  <text x="140" y="743" font-size="8" fill="#333">• Sistema operativo corrupto</text>
+  
+  <text x="130" y="768" font-size="9" font-weight="bold" fill="#1565C0">Solución Aplicada:</text>
+  <text x="140" y="786" font-size="8" fill="#333">• Reemplazo de HDD por SSD 240GB Kingston</text>
+  <text x="140" y="801" font-size="8" fill="#333">• Upgrade de memoria RAM a 8GB DDR4</text>
+  <text x="140" y="816" font-size="8" fill="#333">• Instalación de Windows 11 Pro + drivers</text>
+  <text x="140" y="831" font-size="8" fill="#333">• Optimización del sistema y pruebas de rendimiento</text>
+
+  <!-- Footer -->
+  <line x1="120" y1="870" x2="680" y2="870" stroke="#CCC" stroke-width="1"/>
+  <text x="400" y="895" text-anchor="middle" font-size="9" fill="#666">
+    Gracias por confiar en DOCTOR PC
+  </text>
+  <text x="400" y="915" text-anchor="middle" font-size="8" fill="#999">
+    www.doctorpc.com | contacto@doctorpc.com
+  </text>
+
+  <!-- Page border shadow -->
+  <rect x="105" y="65" width="600" height="900" rx="5" fill="none" stroke="#999" stroke-width="1" opacity="0.3"/>
+</svg>

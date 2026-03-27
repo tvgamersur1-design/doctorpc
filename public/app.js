@@ -75,6 +75,10 @@ window.fetch = function(url, options = {}) {
 
 let reniecData = null;
 
+// ==================== INTEGRACIÓN CON REPORTE.JS ====================
+// La instancia global reporteServicio se crea en reporte.js
+// No es necesario inicializarla aquí
+
 // ==================== UTILIDADES ====================
 
 // ✅ Validar ID antes de hacer requests
@@ -317,7 +321,12 @@ async function cargarClientes() {
             <p class="loading-spinner-text">Cargando clientes...</p>
         </div>`;
     try {
-        const response = await fetch(`${API_CLIENTES}`);
+        // Verificar si se deben incluir eliminados
+        const toggleEliminados = document.getElementById('toggleClientesEliminados');
+        const incluirEliminados = toggleEliminados && toggleEliminados.checked;
+        
+        const url = incluirEliminados ? `${API_CLIENTES}?incluirEliminados=true` : `${API_CLIENTES}`;
+        const response = await fetch(url);
         const clientes = await response.json();
 
         // Check if response is an error
@@ -347,19 +356,28 @@ async function cargarClientes() {
         `;
 
         clientes.forEach(cliente => {
+            const esEliminado = cliente.eliminado === true;
+            const rowStyle = esEliminado ? 'style="background-color: #ffebee; opacity: 0.7;"' : '';
+            
             html += `
-                <tr>
-                    <td><strong>${cliente.nombre}</strong></td>
-                    <td>${cliente.telefono || 'N/A'}</td>
-                    <td>${cliente.email || 'N/A'}</td>
-                    <td>${cliente.dni || 'N/A'}</td>
-                    <td class="actions">
+                <tr ${rowStyle}>
+                    <td data-label="Nombre"><strong>${cliente.nombre}</strong>${esEliminado ? ' <span style="color: #d32f2f; font-size: 11px;">(ELIMINADO)</span>' : ''}</td>
+                    <td data-label="Teléfono">${cliente.telefono || 'N/A'}</td>
+                    <td data-label="Email">${cliente.email || 'N/A'}</td>
+                    <td data-label="DNI">${cliente.dni || 'N/A'}</td>
+                    <td data-label="Acciones" class="actions">
+                         ${!esEliminado ? `
                          <button class="btn-edit" onclick="abrirModalVerCliente('${cliente._id}')">
                              <i class="fas fa-eye"></i> Ver
                          </button>
                          <button class="btn-danger" onclick="confirmarEliminarCliente('${cliente._id}')">
                             <i class="fas fa-trash"></i> Eliminar
                         </button>
+                         ` : `
+                         <button class="btn-primary" onclick="restaurarCliente('${cliente._id}')">
+                            <i class="fas fa-undo"></i> Restaurar
+                        </button>
+                         `}
                     </td>
                 </tr>
             `;
@@ -376,7 +394,12 @@ async function cargarClientes() {
 async function filtrarClientes() {
     const busqueda = document.getElementById('searchClientes').value.toLowerCase();
     try {
-        const response = await fetch(`${API_CLIENTES}`);
+        // Verificar si se deben incluir eliminados
+        const toggleEliminados = document.getElementById('toggleClientesEliminados');
+        const incluirEliminados = toggleEliminados && toggleEliminados.checked;
+        
+        const url = incluirEliminados ? `${API_CLIENTES}?incluirEliminados=true` : `${API_CLIENTES}`;
+        const response = await fetch(url);
         const clientes = await response.json();
         
         // Check if response is an error
@@ -414,19 +437,28 @@ async function filtrarClientes() {
         `;
 
         filtrados.forEach(cliente => {
+            const esEliminado = cliente.eliminado === true;
+            const rowStyle = esEliminado ? 'style="background-color: #ffebee; opacity: 0.7;"' : '';
+            
             html += `
-                <tr>
-                    <td><strong>${cliente.nombre}</strong></td>
-                    <td>${cliente.telefono || 'N/A'}</td>
-                    <td>${cliente.email || 'N/A'}</td>
-                    <td>${cliente.dni || 'N/A'}</td>
-                    <td class="actions">
+                <tr ${rowStyle}>
+                    <td data-label="Nombre"><strong>${cliente.nombre}</strong>${esEliminado ? ' <span style="color: #d32f2f; font-size: 11px;">(ELIMINADO)</span>' : ''}</td>
+                    <td data-label="Teléfono">${cliente.telefono || 'N/A'}</td>
+                    <td data-label="Email">${cliente.email || 'N/A'}</td>
+                    <td data-label="DNI">${cliente.dni || 'N/A'}</td>
+                    <td data-label="Acciones" class="actions">
+                         ${!esEliminado ? `
                          <button class="btn-edit" onclick="abrirModalVerCliente('${cliente._id}')">
                             <i class="fas fa-eye"></i> Ver
                         </button>
                         <button class="btn-danger" onclick="confirmarEliminarCliente('${cliente._id}')">
                             <i class="fas fa-trash"></i> Eliminar
                         </button>
+                         ` : `
+                         <button class="btn-primary" onclick="restaurarCliente('${cliente._id}')">
+                            <i class="fas fa-undo"></i> Restaurar
+                        </button>
+                         `}
                     </td>
                 </tr>
             `;
@@ -703,8 +735,11 @@ async function eliminarCliente(id) {
         // ✅ MEJORA: Mostrar modal de carga
         mostrarModalCarga('Eliminando...');
         
+        // Soft delete: marcar como eliminado
         const response = await fetch(`${API_CLIENTES}/${id}`, {
-            method: 'DELETE'
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ eliminado: true })
         });
 
         if (!response.ok) {
@@ -723,6 +758,29 @@ async function eliminarCliente(id) {
     } catch (error) {
         console.error('Error:', error);
         alert('Error al eliminar cliente');
+    }
+}
+
+// Restaurar cliente eliminado (solo admin)
+async function restaurarCliente(id) {
+    try {
+        mostrarModalCarga('Restaurando...');
+        
+        const response = await fetch(`${API_CLIENTES}/${id}/restaurar`, {
+            method: 'PUT'
+        });
+
+        if (!response.ok) {
+            cerrarModalCarga();
+            throw new Error('Error al restaurar');
+        }
+
+        cerrarModalCarga();
+        cargarClientes();
+        mostrarNotificacionExito('Cliente restaurado');
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al restaurar cliente');
     }
 }
 
@@ -1932,8 +1990,31 @@ async function cargarServicios() {
         const equiposRes = await fetch(`${API_EQUIPOS}`);
         const equipos = await equiposRes.json();
 
-        const serviciosRes = await fetch(`${API_SERVICIOS}`);
+        // Verificar si se deben incluir servicios cancelados
+        const checkbox = document.getElementById('mostrarCancelados');
+        const mostrarCancelados = checkbox ? checkbox.checked : false;
+        
+        console.log('🔍 Checkbox element:', checkbox);
+        console.log('🔍 Checkbox checked:', mostrarCancelados);
+        
+        const urlServicios = mostrarCancelados 
+            ? `${API_SERVICIOS}?incluir_cancelados=true` 
+            : API_SERVICIOS;
+        
+        console.log('🔗 URL de servicios:', urlServicios);
+        
+        const serviciosRes = await fetch(urlServicios);
         const servicios = await serviciosRes.json();
+        
+        console.log('📊 Servicios recibidos:', servicios.length);
+        console.log('📊 Servicios completos:', servicios);
+        
+        // Contar cancelados
+        const cancelados = servicios.filter(s => s.estado === 'Cancelado');
+        console.log('❌ Servicios cancelados en respuesta:', cancelados.length);
+        if (cancelados.length > 0) {
+            console.log('❌ Cancelados:', cancelados.map(s => s.numero_servicio || s._id));
+        }
 
         const servicioEquipoRes = await fetch(`${API_SERVICIO_EQUIPO}`);
         const serviciosEquipo = await servicioEquipoRes.json();
@@ -2007,6 +2088,10 @@ async function cargarServicios() {
                     estadoBadge += '<i class="fas fa-box-open" style="color: #6A1B9A;"></i> Entregado</span>';
                     estadoBadge = '<span style="background: #F3E5F5; color: #6A1B9A;' + estadoBadge.slice(6);
                     break;
+                case 'Cancelado':
+                    estadoBadge += '<i class="fas fa-ban" style="color: #721C24;"></i> Cancelado</span>';
+                    estadoBadge = '<span style="background: #F8D7DA; color: #721C24;' + estadoBadge.slice(6);
+                    break;
                 case 'Diagnosticado':
                     // Para datos antiguos
                     estadoBadge += '<i class="fas fa-check-circle" style="color: #155724;"></i> Diagnosticado</span>';
@@ -2032,41 +2117,47 @@ async function cargarServicios() {
             const problemasRaw = srv.problemas_reportados || srv.problemas || '';
             const problemasTexto = Array.isArray(problemasRaw) ? problemasRaw.join(', ') : String(problemasRaw);
             const descripcionStr = problemasTexto ? problemasTexto.substring(0, 40) + (problemasTexto.length > 40 ? '...' : '') : 'N/A';
+            
+            // Normalizar el estado para comparaciones
+            const estadoNormalizado = (srv.estado || '').trim();
 
             html += `
                 <tr class="row-servicio" data-numero="${srv.numero_servicio}" data-cliente="${cliente ? cliente.nombre.toLowerCase() : ''}" 
                     data-estado="${srv.estado.toLowerCase()}" data-equipo="${equipoStr.toLowerCase()}" data-problemas="${problemasTexto.toLowerCase()}" data-local="${(srv.local || '').toLowerCase()}">
-                    <td><strong>${srv.numero_servicio || 'N/A'}</strong></td>
-                    <td>${new Date(srv.fecha).toLocaleDateString('es-PE')}</td>
-                    <td><span style="padding: 4px 8px; border-radius: 4px; font-weight: 600; ${srv.local === 'Ferreñafe' ? 'background: #C8E6C9; color: #2E7D32;' : 'background: #BBDEFB; color: #1565C0;'}">${srv.local || 'N/A'}</span></td>
-                    <td>${cliente ? cliente.nombre : 'N/A'}</td>
-                    <td>${equipoStr}</td>
-                    <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${problemasTexto}">${descripcionStr}</td>
-                    <td>${estadoBadge}</td>
-                    <td><strong>${costoTotal > 0 ? '$' + costoTotal.toFixed(2) : '-'}</strong></td>
-                    <td class="actions">
+                    <td data-label="Número"><strong>${srv.numero_servicio || 'N/A'}</strong></td>
+                    <td data-label="Fecha">${new Date(srv.fecha).toLocaleDateString('es-PE')}</td>
+                    <td data-label="Local"><span style="padding: 4px 8px; border-radius: 4px; font-weight: 600; ${srv.local === 'Ferreñafe' ? 'background: #C8E6C9; color: #2E7D32;' : 'background: #BBDEFB; color: #1565C0;'}">${srv.local || 'N/A'}</span></td>
+                    <td data-label="Cliente">${cliente ? cliente.nombre : 'N/A'}</td>
+                    <td data-label="Equipo">${equipoStr}</td>
+                    <td data-label="Descripción" style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${problemasTexto}">${descripcionStr}</td>
+                    <td data-label="Estado">${estadoBadge}</td>
+                    <td data-label="Costo Total"><strong>${costoTotal > 0 ? '$' + costoTotal.toFixed(2) : '-'}</strong></td>
+                    <td data-label="Acciones" class="actions">
                         <button class="btn-edit" onclick="abrirModalDetallesServicio('${srv._id}')" style="padding: 6px 12px; font-size: 12px;" title="Ver todos los detalles">
                             <i class="fas fa-info-circle"></i>
                         </button>
-                        ${srv.estado === 'Pendiente' || srv.estado === 'Pendiente de evaluación' ?
+                        ${estadoNormalizado === 'Pendiente' || estadoNormalizado === 'Pendiente de evaluación' ?
                     `<button class="btn-primary" onclick="abrirModalDiagnostico('${srv._id}', '${cliente ? cliente.nombre : 'N/A'}')" style="padding: 6px 12px; font-size: 12px;" title="Diagnosticar">
                                 <i class="fas fa-stethoscope"></i>
                             </button>` :
-                    srv.estado === 'En diagnóstico' ?
+                    estadoNormalizado === 'En diagnóstico' ?
                     `<button class="btn-success" onclick="abrirModalDiagnostico('${srv._id}', '${cliente ? cliente.nombre : 'N/A'}')" style="padding: 6px 12px; font-size: 12px; background: #4CAF50; border-color: #4CAF50;" title="Continuar diagnóstico">
                                 <i class="fas fa-stethoscope"></i>
                             </button>` :
-                    srv.estado === 'Diagnosticado' ?
+                    estadoNormalizado === 'Diagnosticado' ?
                     `<button class="btn-info" onclick="verDiagnostico('${srv._id}')" style="padding: 6px 12px; font-size: 12px; background: #2196F3; border-color: #2196F3;" title="Ver diagnóstico">
                                 <i class="fas fa-eye"></i>
                             </button>` :
+                    estadoNormalizado !== 'Cancelado' && estadoNormalizado !== 'Entregado' ?
                     `<button class="btn-warning" onclick="abrirModalCambiarEstado('${srv._id}')" style="padding: 6px 12px; font-size: 12px; background: #FF9800; border-color: #FF9800; color: white;" title="Cambiar estado">
                                 <i class="fas fa-arrow-right"></i>
-                            </button>`
+                            </button>` : ''
                     }
-                        <button class="btn-danger" onclick="confirmarEliminarServicio('${srv._id}')" style="padding: 6px 12px; font-size: 12px;" title="Eliminar servicio">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        ${estadoNormalizado !== 'Cancelado' && estadoNormalizado !== 'Entregado' ?
+                    `<button class="btn-danger" onclick="abrirModalCancelarServicio('${srv._id}')" style="padding: 6px 12px; font-size: 12px;" title="Cancelar servicio">
+                                <i class="fas fa-ban"></i>
+                            </button>` : ''
+                    }
                     </td>
                 </tr>
             `;
@@ -2851,55 +2942,38 @@ function agregarProblemaFila() {
 
     const fila = document.createElement('div');
     fila.id = `problema-${id}`;
-    fila.style.cssText = 'padding: 12px; border: 2px solid #e0e0e0; border-radius: 6px; margin-bottom: 12px; background: #f9f9f9; transition: all 0.3s ease;';
+    fila.className = 'problema-fila';
 
     fila.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
-            <span style="background: #2192B8; color: white; padding: 4px 10px; border-radius: 4px; font-size: 13px; font-weight: bold;">${numeroFila}</span>
-            <span style="font-size: 12px; color: #666;">Problema encontrado</span>
+        <div class="problema-header">
+            <span class="problema-numero">${numeroFila}</span>
+            <span class="problema-label">Problema encontrado</span>
+            <button type="button" class="btn-eliminar-problema" onclick="eliminarProblemaFila('${id}')" title="Eliminar problema">
+                <i class="fas fa-trash"></i> Eliminar
+            </button>
         </div>
         
-        <!-- Fila 1: Descripción, Solución, Costo y Botón -->
-        <div style="display: grid; grid-template-columns: 2fr 2fr 0.8fr auto; gap: 10px; align-items: flex-end; margin-bottom: 0;">
+        <!-- Campos del problema -->
+        <div class="problema-campos">
             <!-- Descripción del problema -->
-            <div>
-                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 13px;">Descripción:</label>
-                <input type="text" class="problemaInput" placeholder="Pantalla rota. Batería dañada. etc." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;" onchange="calcularMontoTotal()" oninput="this.style.borderColor='#2192B8'; this.style.backgroundColor='';">
+            <div class="campo-grupo">
+                <label>Descripción:</label>
+                <input type="text" class="problemaInput" placeholder="Pantalla rota, batería dañada, etc." onchange="calcularMontoTotal()">
             </div>
             
             <!-- Solución -->
-            <div>
-                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 13px;">Solución:</label>
-                <input type="text" class="solucionInput" placeholder="Pantalla nueva. Batería reemplazada. etc." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;" oninput="this.style.borderColor='#2192B8'; this.style.backgroundColor='';">
+            <div class="campo-grupo">
+                <label>Solución:</label>
+                <input type="text" class="solucionInput" placeholder="Pantalla nueva, batería reemplazada, etc.">
             </div>
             
             <!-- Costo -->
-            <div>
-                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 13px;">Costo:</label>
-                <div style="display: flex; align-items: center; gap: 3px;">
-                    <span style="color: #666; font-weight: bold; font-size: 13px;">$</span>
-                    <input type="number" class="costoInput" placeholder="0.00" step="0.01" min="0" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;" onchange="calcularMontoTotal()" oninput="this.style.borderColor='#2192B8'; this.style.backgroundColor='';">
-                </div>
-            </div>
-            
-            <!-- Botón Eliminar -->
-            <div>
-                <button type="button" class="btn-danger" onclick="eliminarProblemaFila('${id}')" style="padding: 8px 10px; font-size: 12px; display: flex; align-items: center; gap: 5px; white-space: nowrap;" title="Eliminar problema">
-                    <i class="fas fa-trash"></i> Eliminar
-                </button>
+            <div class="campo-grupo">
+                <label>Costo:</label>
+                <input type="number" class="costoInput" placeholder="0.00" step="0.01" min="0" onchange="calcularMontoTotal()">
             </div>
         </div>
     `;
-
-    fila.addEventListener('mouseover', () => {
-        fila.style.borderColor = '#2192B8';
-        fila.style.boxShadow = '0 2px 8px rgba(33, 146, 184, 0.2)';
-    });
-
-    fila.addEventListener('mouseout', () => {
-        fila.style.borderColor = '#e0e0e0';
-        fila.style.boxShadow = 'none';
-    });
 
     container.appendChild(fila);
 }
@@ -3149,11 +3223,14 @@ function generarMensajeWhatsApp(problemas, montoTotal, nombreTecnico) {
 async function abrirModalDetallesServicio(servicioId) {
     try {
         mostrarModalCarga('Cargando detalles...');
-        const serviciosRes = await fetch(`${API_SERVICIOS}`);
+        
+        // Obtener TODOS los servicios (incluidos cancelados) para poder ver detalles
+        const serviciosRes = await fetch(`${API_SERVICIOS}?incluir_cancelados=true`);
         const servicios = await serviciosRes.json();
         const servicio = servicios.find(s => s._id === servicioId);
 
         if (!servicio) {
+            cerrarModalCarga();
             alert('Servicio no encontrado');
             return;
         }
@@ -3488,20 +3565,32 @@ async function abrirModalDetallesServicio(servicioId) {
                      </div>
                  ` : ''}
 
-                 <!-- Acciones de Reporte (PDF y WhatsApp) -->
-                 <div style="padding: 16px 0; border-top: 2px solid #2192B8; margin-top: 20px;">
-                     <h3 style="margin: 0 0 15px 0; font-size: 14px; color: #2192B8; font-weight: 600;">
-                         <i class="fas fa-share-alt" style="margin-right: 6px;"></i>Opciones de Reporte al Cliente
-                     </h3>
-                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                         <button class="btn-primary" onclick="reporteServicio.descargarPDF('${servicio._id}')" style="padding: 12px; background: #FF6B6B; border: 2px solid #FF6B6B; color: white; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s;">
-                             <i class="fas fa-file-pdf" style="margin-right: 8px;"></i> Generar PDF
-                         </button>
-                         <button class="btn-primary" onclick="reporteServicio.enviarWhatsAppDesdeMotal('${servicio._id}', '${cliente && cliente.telefono ? cliente.telefono : ''}')" style="padding: 12px; background: #25D366; border: 2px solid #25D366; color: white; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s;">
-                             <i class="fab fa-whatsapp" style="margin-right: 8px;"></i> Enviar WhatsApp
-                         </button>
+                 <!-- Información de Cancelación (si está cancelado) -->
+                 ${servicio.estado === 'Cancelado' ? `
+                     <div style="padding: 16px 0; border-bottom: 1px solid #e0e0e0;">
+                         <h3 style="margin: 0 0 10px 0; font-size: 14px; color: #d32f2f; font-weight: 600;">
+                             <i class="fas fa-ban" style="margin-right: 6px;"></i>Información de Cancelación
+                         </h3>
+                         <div style="background: #ffebee; padding: 12px; border-radius: 4px; border-left: 3px solid #d32f2f;">
+                             <p style="margin: 0 0 8px 0; font-size: 13px; line-height: 1.6; color: #333;">
+                                 <strong style="color: #c62828;"><i class="fas fa-exclamation-triangle" style="margin-right: 6px;"></i>Motivo de Cancelación:</strong><br/>
+                                 <span style="display: block; margin-top: 6px; padding: 8px; background: white; border-radius: 3px; font-style: italic;">
+                                     ${servicio.motivo_cancelacion || 'No especificado'}
+                                 </span>
+                             </p>
+                             ${servicio.cancelado_por ? `
+                                 <p style="margin: 8px 0 0 0; font-size: 12px; color: #666;">
+                                     <i class="fas fa-user" style="margin-right: 4px;"></i>Cancelado por: <strong>${servicio.cancelado_por}</strong>
+                                 </p>
+                             ` : ''}
+                             ${servicio.fecha_cancelacion ? `
+                                 <p style="margin: 4px 0 0 0; font-size: 12px; color: #666;">
+                                     <i class="fas fa-calendar-times" style="margin-right: 4px;"></i>Fecha de cancelación: <strong>${new Date(servicio.fecha_cancelacion).toLocaleString('es-PE')}</strong>
+                                 </p>
+                             ` : ''}
+                         </div>
                      </div>
-                 </div>
+                 ` : ''}
                  `;
 
         // Agregar estilos responsivos dinámicamente
@@ -3566,9 +3655,80 @@ async function abrirModalDetallesServicio(servicioId) {
                  background: white;
                  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
              ">
-                 <div class="modal-header" style="position: sticky; top: 0; background: white; z-index: 10; border-bottom: 2px solid #2192B8; padding: 20px;">
-                     <h2 style="color: #2192B8; margin: 0;"><i class="fas fa-search"></i> Detalles del Servicio ${servicio.numero_servicio}</h2>
-                     <button class="close-btn" onclick="cerrarModalDetallesServicio()" style="position: absolute; right: 20px; top: 20px;">×</button>
+                 <div class="modal-header" style="position: sticky; top: 0; background: white; z-index: 10; border-bottom: 2px solid #2192B8; padding: 20px; display: flex; align-items: center; justify-content: space-between;">
+                     <h2 style="color: #2192B8; margin: 0; flex-shrink: 0;"><i class="fas fa-search"></i> Detalles del Servicio ${servicio.numero_servicio}</h2>
+                     <div style="display: flex; align-items: center; gap: 8px;">
+                         <button class="btn-reporte-pdf" onclick="reporteServicio.descargarPDF('${servicio._id}')" title="Generar PDF" style="
+                             padding: 10px 16px;
+                             background: linear-gradient(135deg, #FF6B6B 0%, #EE5A52 100%);
+                             border: none;
+                             color: white;
+                             border-radius: 6px;
+                             cursor: pointer;
+                             font-size: 13px;
+                             font-weight: 600;
+                             transition: all 0.3s ease;
+                             box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+                             display: flex;
+                             align-items: center;
+                             gap: 6px;
+                             white-space: nowrap;
+                         " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(255, 107, 107, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(255, 107, 107, 0.3)';">
+                             <i class="fas fa-file-pdf"></i>
+                             <span>PDF</span>
+                         </button>
+                         <button class="btn-reporte-imprimir" onclick="reporteServicio.imprimirReporte('${servicio._id}')" title="Imprimir Reporte" style="
+                             padding: 10px 16px;
+                             background: linear-gradient(135deg, #9C5FD8 0%, #8B4FD8 100%);
+                             border: none;
+                             color: white;
+                             border-radius: 6px;
+                             cursor: pointer;
+                             font-size: 13px;
+                             font-weight: 600;
+                             transition: all 0.3s ease;
+                             box-shadow: 0 2px 8px rgba(156, 95, 216, 0.3);
+                             display: flex;
+                             align-items: center;
+                             gap: 6px;
+                             white-space: nowrap;
+                         " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(156, 95, 216, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(156, 95, 216, 0.3)';">
+                             <i class="fas fa-print"></i>
+                             <span>Imprimir</span>
+                         </button>
+                         <button class="btn-reporte-whatsapp" onclick="reporteServicio.enviarWhatsAppDesdeMotal('${servicio._id}', '${cliente && cliente.telefono ? cliente.telefono : ''}')" title="Enviar WhatsApp" style="
+                             padding: 10px 16px;
+                             background: linear-gradient(135deg, #25D366 0%, #1EBE57 100%);
+                             border: none;
+                             color: white;
+                             border-radius: 6px;
+                             cursor: pointer;
+                             font-size: 13px;
+                             font-weight: 600;
+                             transition: all 0.3s ease;
+                             box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+                             display: flex;
+                             align-items: center;
+                             gap: 6px;
+                             white-space: nowrap;
+                         " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(37, 211, 102, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(37, 211, 102, 0.3)';">
+                             <i class="fab fa-whatsapp"></i>
+                             <span>WhatsApp</span>
+                         </button>
+                         <button class="close-btn" onclick="cerrarModalDetallesServicio()" title="Cerrar" style="
+                             padding: 8px 12px;
+                             background: #f44336;
+                             border: none;
+                             color: white;
+                             border-radius: 6px;
+                             cursor: pointer;
+                             font-size: 20px;
+                             font-weight: bold;
+                             transition: all 0.3s ease;
+                             margin-left: 8px;
+                             line-height: 1;
+                         " onmouseover="this.style.background='#d32f2f';" onmouseout="this.style.background='#f44336';">×</button>
+                     </div>
                  </div>
                  <div class="detalles-grid" style="
                      padding: 20px;
@@ -3601,6 +3761,66 @@ function cerrarModalDetallesServicio() {
 
 // Ver diagnóstico guardado
 
+
+// Variable global para almacenar el ID del servicio a cancelar
+let servicioIdACancelar = null;
+
+async function abrirModalCancelarServicio(id) {
+    servicioIdACancelar = id;
+    document.getElementById('motivoCancelacion').value = '';
+    document.getElementById('modalCancelarServicio').classList.add('show');
+}
+
+function cerrarModalCancelarServicio() {
+    servicioIdACancelar = null;
+    document.getElementById('modalCancelarServicio').classList.remove('show');
+}
+
+async function confirmarCancelacionServicio() {
+    const motivo = document.getElementById('motivoCancelacion').value.trim();
+    
+    if (!motivo) {
+        alert('Por favor, ingresa el motivo de la cancelación');
+        return;
+    }
+    
+    if (!servicioIdACancelar) {
+        alert('Error: No se ha seleccionado un servicio');
+        return;
+    }
+    
+    try {
+        mostrarModalCarga('Cancelando servicio...');
+        
+        const usuarioActual = getUsuarioActual();
+        
+        const response = await fetch(`${API_SERVICIOS}/${servicioIdACancelar}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                motivo_cancelacion: motivo,
+                cancelado_por: usuarioActual ? usuarioActual.usuario : 'Sistema'
+            })
+        });
+
+        if (!response.ok) {
+            cerrarModalCarga();
+            throw new Error('Error al cancelar el servicio');
+        }
+
+        cerrarModalCarga();
+        cerrarModalCancelarServicio();
+        cargarServicios();
+        
+        mostrarNotificacionExito('Servicio cancelado exitosamente');
+    } catch (error) {
+        console.error('Error:', error);
+        cerrarModalCarga();
+        alert('Error al cancelar servicio: ' + error.message);
+    }
+}
 
 async function confirmarEliminarServicio(id) {
     document.getElementById('confirmMsg').textContent = '¿Estás seguro de que deseas eliminar este servicio?';
@@ -4105,7 +4325,12 @@ async function cargarEquipos() {
         const clientesRes = await fetch(`${API_URL}/clientes`);
         const clientes = await clientesRes.json();
 
-        const equiposRes = await fetch(`${API_EQUIPOS}`);
+        // Verificar si se deben incluir eliminados
+        const toggleEliminados = document.getElementById('toggleEquiposEliminados');
+        const incluirEliminados = toggleEliminados && toggleEliminados.checked;
+        
+        const url = incluirEliminados ? `${API_EQUIPOS}?incluirEliminados=true` : `${API_EQUIPOS}`;
+        const equiposRes = await fetch(url);
         const equipos = await equiposRes.json();
 
         if (equipos.length === 0) {
@@ -4129,15 +4354,24 @@ async function cargarEquipos() {
 
         equipos.forEach(eq => {
             const iconoTipo = getIconoEquipo(eq.tipo_equipo);
+            const esEliminado = eq.eliminado === true;
+            const rowStyle = esEliminado ? 'style="background-color: #ffebee; opacity: 0.7;"' : '';
+            
             html += `
-                <tr>
-                    <td><i class="${iconoTipo}" style="margin-right: 8px;"></i>${eq.tipo_equipo}</td>
-                    <td>${eq.marca || 'N/A'}</td>
-                    <td>${eq.modelo || 'N/A'}</td>
-                    <td>${eq.numero_serie || 'N/A'}</td>
-                    <td class="actions">
+                <tr ${rowStyle}>
+                    <td data-label="Tipo"><i class="${iconoTipo}" style="margin-right: 8px;"></i>${eq.tipo_equipo}${esEliminado ? ' <span style="color: #d32f2f; font-size: 11px;">(ELIMINADO)</span>' : ''}</td>
+                    <td data-label="Marca">${eq.marca || 'N/A'}</td>
+                    <td data-label="Modelo">${eq.modelo || 'N/A'}</td>
+                    <td data-label="Serie">${eq.numero_serie || 'N/A'}</td>
+                    <td data-label="Acciones" class="actions">
+                         ${!esEliminado ? `
                          <button class="btn-edit" onclick="abrirModalEditarEquipo('${eq._id}')">Editar</button>
                          <button class="btn-danger" onclick="confirmarEliminarEquipo('${eq._id}')">Eliminar</button>
+                         ` : `
+                         <button class="btn-primary" onclick="restaurarEquipo('${eq._id}')">
+                            <i class="fas fa-undo"></i> Restaurar
+                        </button>
+                         `}
                       </td>
                  </tr>
              `;
@@ -4154,7 +4388,12 @@ async function cargarEquipos() {
 async function filtrarEquipos() {
     const busqueda = document.getElementById('searchEquipos').value.toLowerCase();
     try {
-        const equiposRes = await fetch(`${API_EQUIPOS}`);
+        // Verificar si se deben incluir eliminados
+        const toggleEliminados = document.getElementById('toggleEquiposEliminados');
+        const incluirEliminados = toggleEliminados && toggleEliminados.checked;
+        
+        const url = incluirEliminados ? `${API_EQUIPOS}?incluirEliminados=true` : `${API_EQUIPOS}`;
+        const equiposRes = await fetch(url);
         const equipos = await equiposRes.json();
         const filtrados = equipos.filter(eq =>
             eq.tipo_equipo.toLowerCase().includes(busqueda) ||
@@ -4186,15 +4425,24 @@ async function filtrarEquipos() {
 
         filtrados.forEach(eq => {
             const iconoTipo = getIconoEquipo(eq.tipo_equipo);
+            const esEliminado = eq.eliminado === true;
+            const rowStyle = esEliminado ? 'style="background-color: #ffebee; opacity: 0.7;"' : '';
+            
             html += `
-                <tr>
-                    <td><i class="${iconoTipo}" style="margin-right: 8px;"></i>${eq.tipo_equipo}</td>
-                    <td>${eq.marca || 'N/A'}</td>
-                    <td>${eq.modelo || 'N/A'}</td>
-                    <td>${eq.numero_serie || 'N/A'}</td>
-                    <td class="actions">
+                <tr ${rowStyle}>
+                    <td data-label="Tipo"><i class="${iconoTipo}" style="margin-right: 8px;"></i>${eq.tipo_equipo}${esEliminado ? ' <span style="color: #d32f2f; font-size: 11px;">(ELIMINADO)</span>' : ''}</td>
+                    <td data-label="Marca">${eq.marca || 'N/A'}</td>
+                    <td data-label="Modelo">${eq.modelo || 'N/A'}</td>
+                    <td data-label="Serie">${eq.numero_serie || 'N/A'}</td>
+                    <td data-label="Acciones" class="actions">
+                         ${!esEliminado ? `
                          <button class="btn-edit" onclick="abrirModalEditarEquipo('${eq._id}')">Editar</button>
                          <button class="btn-danger" onclick="confirmarEliminarEquipo('${eq._id}')">Eliminar</button>
+                         ` : `
+                         <button class="btn-primary" onclick="restaurarEquipo('${eq._id}')">
+                            <i class="fas fa-undo"></i> Restaurar
+                        </button>
+                         `}
                      </td>
                     </tr>
                     `;
@@ -4319,8 +4567,11 @@ async function eliminarEquipo(id) {
         // ✅ MEJORA: Mostrar modal de carga
         mostrarModalCarga('Eliminando...');
         
+        // Soft delete: marcar como eliminado
         const response = await fetch(`${API_EQUIPOS}/${id}`, {
-            method: 'DELETE'
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ eliminado: true })
         });
 
         if (!response.ok) {
@@ -4339,6 +4590,29 @@ async function eliminarEquipo(id) {
     } catch (error) {
         console.error('Error:', error);
         alert('Error al eliminar equipo');
+    }
+}
+
+// Restaurar equipo eliminado (solo admin)
+async function restaurarEquipo(id) {
+    try {
+        mostrarModalCarga('Restaurando...');
+        
+        const response = await fetch(`${API_EQUIPOS}/${id}/restaurar`, {
+            method: 'PUT'
+        });
+
+        if (!response.ok) {
+            cerrarModalCarga();
+            throw new Error('Error al restaurar');
+        }
+
+        cerrarModalCarga();
+        cargarEquipos();
+        mostrarNotificacionExito('Equipo restaurado');
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al restaurar equipo');
     }
 }
 
@@ -4842,6 +5116,13 @@ function inicializarUI() {
         if (usuario.rol === 'admin') {
             const tabUsuarios = document.getElementById('tabUsuarios');
             if (tabUsuarios) tabUsuarios.style.display = 'flex';
+            
+            // Mostrar toggles para ver eliminados (solo admin)
+            const toggleClientesContainer = document.getElementById('toggleEliminadosContainer');
+            if (toggleClientesContainer) toggleClientesContainer.style.display = 'flex';
+            
+            const toggleEquiposContainer = document.getElementById('toggleEliminadosEquiposContainer');
+            if (toggleEquiposContainer) toggleEquiposContainer.style.display = 'flex';
         }
     }
 }

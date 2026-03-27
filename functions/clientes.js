@@ -1,4 +1,5 @@
 const { MongoClient, ObjectId } = require('mongodb');
+const jwt = require('jsonwebtoken');
 
 const headers = {
   'Content-Type': 'application/json',
@@ -8,6 +9,22 @@ const headers = {
 };
 
 let cachedClient = null;
+
+// Función para verificar token JWT
+function verificarToken(event) {
+  const JWT_SECRET = process.env.JWT_SECRET;
+  if (!JWT_SECRET) return null;
+  
+  const authHeader = event.headers['authorization'] || event.headers['Authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return null;
+  
+  try {
+    return jwt.verify(token, JWT_SECRET);
+  } catch {
+    return null;
+  }
+}
 
 async function getMongoClient() {
   if (cachedClient) {
@@ -78,10 +95,31 @@ exports.handler = async (event, context) => {
 
     console.log(`[clientes] ${httpMethod} path=${rawPath} ID=${id || 'none'}`);
 
-    // GET /clientes (list all)
+    // GET /clientes?incluirEliminados=true (list all with optional deleted - SOLO ADMIN)
     if (httpMethod === 'GET' && !id) {
-      console.log('[clientes] Obteniendo lista de clientes...');
-      const clientes = await db.collection('clientes').find({}).toArray();
+      const queryParams = event.queryStringParameters || {};
+      const incluirEliminados = queryParams.incluirEliminados === 'true';
+      
+      // Si se solicitan eliminados, verificar que sea admin
+      if (incluirEliminados) {
+        const usuario = verificarToken(event);
+        if (!usuario || usuario.rol !== 'admin') {
+          console.log('[clientes] Acceso denegado: solo admin puede ver eliminados');
+          return {
+            statusCode: 403,
+            headers,
+            body: JSON.stringify({ error: 'No autorizado. Solo administradores pueden ver clientes eliminados.' })
+          };
+        }
+      }
+      
+      console.log(`[clientes] Obteniendo lista de clientes (incluirEliminados: ${incluirEliminados})...`);
+      
+      const filtro = incluirEliminados ? {} : { eliminado: { $ne: true } };
+      const clientes = await db.collection('clientes')
+        .find(filtro)
+        .toArray();
+      
       console.log(`[clientes] ✓ Retornando ${clientes.length} clientes`);
       
       return {
@@ -138,6 +176,9 @@ exports.handler = async (event, context) => {
         cargo: body.cargo?.trim() || '',
         estado: body.estado || 'activo',
         notas: body.notas?.trim() || '',
+        eliminado: false,
+        fecha_eliminacion: null,
+        motivo_eliminacion: null,
         fecha_creacion: new Date().toISOString(),
         fecha_actualizacion: new Date().toISOString()
       };
@@ -149,6 +190,57 @@ exports.handler = async (event, context) => {
         statusCode: 201,
         headers,
         body: JSON.stringify({ ...nuevoCliente, _id: result.insertedId })
+      };
+    }
+
+    // PUT /clientes/:id/restaurar (RESTORE - SOLO ADMIN) - DEBE IR ANTES DEL PUT GENÉRICO
+    if (httpMethod === 'PUT' && id && rawPath.includes('/restaurar')) {
+      console.log(`[clientes] RESTAURAR: Verificando permisos para ${id}`);
+      
+      // Verificar que sea admin
+      const usuario = verificarToken(event);
+      if (!usuario || usuario.rol !== 'admin') {
+        console.log('[clientes] Acceso denegado: solo admin puede restaurar');
+        return {
+          statusCode: 403,
+          headers,
+          body: JSON.stringify({ error: 'No autorizado. Solo administradores pueden restaurar clientes.' })
+        };
+      }
+      
+      console.log(`[clientes] RESTAURAR: Reactivando cliente ${id}`);
+      
+      const updateData = {
+        eliminado: false,
+        estado: 'activo',
+        fecha_eliminacion: null,
+        motivo_eliminacion: null,
+        fecha_actualizacion: new Date().toISOString()
+      };
+
+      const result = await db.collection('clientes').findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: updateData },
+        { returnDocument: 'after' }
+      );
+
+      if (!result) {
+        return {
+          statusCode: 404,
+          headers,
+          body: JSON.stringify({ error: 'Cliente no encontrado' })
+        };
+      }
+
+      console.log(`[clientes] ✓ Cliente restaurado: ${id}`);
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ 
+          success: true,
+          message: 'Cliente restaurado correctamente',
+          cliente: result
+        })
       };
     }
 
@@ -183,12 +275,25 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // DELETE /clientes/:id
+    // DELETE /clientes/:id (SOFT DELETE)
     if (httpMethod === 'DELETE' && id) {
-      console.log(`[clientes] DELETE: Eliminando cliente ${id}`);
-      const result = await db.collection('clientes').deleteOne({ _id: new ObjectId(id) });
+      console.log(`[clientes] SOFT DELETE: Marcando cliente como eliminado ${id}`);
+      
+      const updateData = {
+        eliminado: true,
+        estado: 'inactivo',
+        fecha_eliminacion: new Date().toISOString(),
+        motivo_eliminacion: body.motivo || null,
+        fecha_actualizacion: new Date().toISOString()
+      };
 
-      if (result.deletedCount === 0) {
+      const result = await db.collection('clientes').findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: updateData },
+        { returnDocument: 'after' }
+      );
+
+      if (!result) {
         return {
           statusCode: 404,
           headers,
@@ -196,11 +301,15 @@ exports.handler = async (event, context) => {
         };
       }
 
-      console.log(`[clientes] ✓ Cliente eliminado: ${id}`);
+      console.log(`[clientes] ✓ Cliente marcado como eliminado: ${id}`);
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({ success: true })
+        body: JSON.stringify({ 
+          success: true,
+          message: 'Cliente eliminado correctamente',
+          cliente: result
+        })
       };
     }
 

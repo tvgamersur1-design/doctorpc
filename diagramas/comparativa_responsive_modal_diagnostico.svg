@@ -1,0 +1,246 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 800">
+  <defs>
+    <style>
+      .title { font-size: 20px; font-weight: bold; fill: #2192B8; }
+      .subtitle { font-size: 12px; fill: #666; }
+      .device-label { font-size: 14px; font-weight: bold; fill: #333; }
+      .header { fill: #2192B8; }
+      .card { fill: white; stroke: #ddd; stroke-width: 1; }
+      .card-orange { fill: #FFF3E0; stroke: #FF9800; stroke-width: 1.5; }
+      .card-blue { fill: #E3F2FD; stroke: #2196F3; stroke-width: 1.5; }
+      .card-yellow { fill: #FFFDE7; stroke: #FFC107; stroke-width: 1.5; }
+      .card-green { fill: #E8F5E9; stroke: #4CAF50; stroke-width: 1.5; }
+      .text { font-size: 8px; fill: #333; }
+      .button { rx: 4; }
+      .btn-primary { fill: #2196F3; }
+      .btn-success { fill: #4CAF50; }
+      .btn-secondary { fill: #9E9E9E; }
+      .problema { fill: #F9F9F9; stroke: #E0E0E0; stroke-width: 1; rx: 4; }
+      .annotation { font-size: 10px; fill: #FF5722; font-weight: bold; }
+      .arrow { stroke: #FF5722; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#FF5722" />
+    </marker>
+  </defs>
+  
+  <!-- Titulo Principal -->
+  <text x="700" y="30" class="title" text-anchor="middle">Comparativa Responsive - Modal Diagnostico</text>
+  <text x="700" y="50" class="subtitle" text-anchor="middle">Adaptacion de diseno segun tamano de pantalla</text>
+  
+  <!-- ESCRITORIO Desktop -->
+  <g transform="translate(50, 80)">
+    <text x="200" y="-10" class="device-label" text-anchor="middle">ESCRITORIO (&gt;768px)</text>
+    <rect x="0" y="0" width="400" height="600" fill="#f5f5f5" stroke="#333" stroke-width="2" rx="8"/>
+    
+    <!-- Header -->
+    <rect x="10" y="10" width="380" height="30" class="header" rx="4"/>
+    <text x="200" y="30" style="fill: white; font-size: 12px; font-weight: bold;" text-anchor="middle">Diagnostico del Equipo</text>
+    
+    <!-- Grid 3 columnas -->
+    <rect x="10" y="50" width="120" height="60" class="card-orange"/>
+    <text x="70" y="70" class="text" text-anchor="middle">Servicio</text>
+    <text x="70" y="82" class="text" text-anchor="middle" style="font-size: 7px;">SRV-2026-003</text>
+    <text x="70" y="92" class="text" text-anchor="middle" style="font-size: 7px;">OSWALDO</text>
+    
+    <rect x="140" y="50" width="120" height="60" class="card-blue"/>
+    <text x="200" y="70" class="text" text-anchor="middle">Equipo</text>
+    <text x="200" y="82" class="text" text-anchor="middle" style="font-size: 7px;">Otro</text>
+    <text x="200" y="92" class="text" text-anchor="middle" style="font-size: 7px;">patrial p30</text>
+    
+    <rect x="270" y="50" width="120" height="60" class="card-yellow"/>
+    <text x="330" y="70" class="text" text-anchor="middle">Descripcion</text>
+    <text x="330" y="82" class="text" text-anchor="middle" style="font-size: 6px;">equipo no prende</text>
+    
+    <!-- Tecnico horizontal -->
+    <rect x="10" y="120" width="380" height="30" class="card" style="fill: #f0f0f0;"/>
+    <text x="20" y="138" class="text">Tecnico:</text>
+    <rect x="80" y="127" width="300" height="16" fill="white" stroke="#ddd" rx="2"/>
+    
+    <!-- Problemas en 3 columnas -->
+    <text x="20" y="168" style="font-size: 10px; font-weight: bold; fill: #2192B8;">Problemas Encontrados</text>
+    <rect x="280" y="156" width="110" height="20" class="button btn-primary"/>
+    <text x="335" y="170" style="fill: white; font-size: 8px; font-weight: bold;" text-anchor="middle">+ Agregar</text>
+    
+    <rect x="10" y="185" width="380" height="280" style="fill: white; stroke: #f0f0f0; rx: 4;"/>
+    
+    <!-- Problema 1 -->
+    <rect x="15" y="190" width="370" height="60" class="problema"/>
+    <text x="20" y="203" class="text" style="font-weight: bold;">Problema 1</text>
+    <rect x="20" y="208" width="110" height="35" fill="white" stroke="#ddd" rx="2"/>
+    <text x="25" y="218" style="font-size: 6px; fill: #666;">Descripcion</text>
+    
+    <rect x="138" y="208" width="110" height="35" fill="white" stroke="#ddd" rx="2"/>
+    <text x="143" y="218" style="font-size: 6px; fill: #666;">Solucion</text>
+    
+    <rect x="256" y="208" width="120" height="35" fill="white" stroke="#ddd" rx="2"/>
+    <text x="261" y="218" style="font-size: 6px; fill: #666;">Costo: $ 0.00</text>
+    
+    <!-- Monto Total -->
+    <rect x="10" y="475" width="380" height="50" class="card-green"/>
+    <text x="200" y="495" style="font-size: 8px; fill: #666;" text-anchor="middle">MONTO TOTAL</text>
+    <text x="200" y="515" style="font-size: 16px; fill: #2E7D32; font-weight: bold;" text-anchor="middle">$ 0.00</text>
+    
+    <!-- Botones horizontales -->
+    <rect x="10" y="540" width="110" height="30" class="button btn-secondary"/>
+    <rect x="130" y="540" width="110" height="30" class="button btn-primary"/>
+    <rect x="250" y="540" width="140" height="30" class="button btn-success"/>
+    
+    <!-- Anotación -->
+    <text x="200" y="620" class="annotation" text-anchor="middle">Grid 3 columnas</text>
+  </g>
+  
+  <!-- TABLET -->
+  <g transform="translate(500, 80)">
+    <text x="175" y="-10" class="device-label" text-anchor="middle">TABLET (480-768px)</text>
+    <rect x="0" y="0" width="350" height="600" fill="#f5f5f5" stroke="#333" stroke-width="2" rx="8"/>
+    
+    <!-- Header -->
+    <rect x="10" y="10" width="330" height="30" class="header" rx="4"/>
+    <text x="175" y="30" style="fill: white; font-size: 12px; font-weight: bold;" text-anchor="middle">Diagnostico del Equipo</text>
+    
+    <!-- Grid 2 columnas -->
+    <rect x="10" y="50" width="155" height="60" class="card-orange"/>
+    <text x="87" y="70" class="text" text-anchor="middle">Servicio</text>
+    <text x="87" y="82" class="text" text-anchor="middle" style="font-size: 7px;">SRV-2026-003</text>
+    
+    <rect x="175" y="50" width="165" height="60" class="card-blue"/>
+    <text x="257" y="70" class="text" text-anchor="middle">Equipo</text>
+    <text x="257" y="82" class="text" text-anchor="middle" style="font-size: 7px;">Otro - patrial p30</text>
+    
+    <rect x="10" y="120" width="330" height="50" class="card-yellow"/>
+    <text x="175" y="140" class="text" text-anchor="middle">Descripcion</text>
+    <text x="175" y="152" class="text" text-anchor="middle" style="font-size: 7px;">equipo no prende no carga</text>
+    
+    <!-- Tecnico -->
+    <rect x="10" y="180" width="330" height="30" class="card" style="fill: #f0f0f0;"/>
+    <text x="20" y="198" class="text">Tecnico:</text>
+    <rect x="70" y="187" width="260" height="16" fill="white" stroke="#ddd" rx="2"/>
+    
+    <!-- Problemas en 2 columnas -->
+    <text x="20" y="228" style="font-size: 10px; font-weight: bold; fill: #2192B8;">Problemas</text>
+    <rect x="230" y="216" width="110" height="20" class="button btn-primary"/>
+    
+    <rect x="10" y="245" width="330" height="200" style="fill: white; stroke: #f0f0f0; rx: 4;"/>
+    
+    <!-- Problema 1 en 2 columnas -->
+    <rect x="15" y="250" width="320" height="80" class="problema"/>
+    <text x="20" y="263" class="text" style="font-weight: bold;">Problema 1</text>
+    
+    <rect x="20" y="268" width="145" height="30" fill="white" stroke="#ddd" rx="2"/>
+    <text x="25" y="278" style="font-size: 6px; fill: #666;">Descripcion</text>
+    
+    <rect x="175" y="268" width="150" height="30" fill="white" stroke="#ddd" rx="2"/>
+    <text x="180" y="278" style="font-size: 6px; fill: #666;">Costo</text>
+    
+    <rect x="20" y="303" width="305" height="20" fill="white" stroke="#ddd" rx="2"/>
+    <text x="25" y="313" style="font-size: 6px; fill: #666;">Solucion (ancho completo)</text>
+    
+    <!-- Monto Total -->
+    <rect x="10" y="455" width="330" height="50" class="card-green"/>
+    <text x="175" y="475" style="font-size: 8px; fill: #666;" text-anchor="middle">MONTO TOTAL</text>
+    <text x="175" y="495" style="font-size: 16px; fill: #2E7D32; font-weight: bold;" text-anchor="middle">$ 0.00</text>
+    
+    <!-- Botones horizontales -->
+    <rect x="10" y="520" width="100" height="30" class="button btn-secondary"/>
+    <rect x="120" y="520" width="100" height="30" class="button btn-primary"/>
+    <rect x="230" y="520" width="110" height="30" class="button btn-success"/>
+    
+    <!-- Anotación -->
+    <text x="175" y="620" class="annotation" text-anchor="middle">Grid 2 columnas</text>
+  </g>
+  
+  <!-- MOVIL -->
+  <g transform="translate(900, 80)">
+    <text x="125" y="-10" class="device-label" text-anchor="middle">MOVIL (&lt;480px)</text>
+    <rect x="0" y="0" width="250" height="600" fill="#f5f5f5" stroke="#333" stroke-width="2" rx="8"/>
+    
+    <!-- Header Sticky -->
+    <rect x="10" y="10" width="230" height="25" class="header" rx="4"/>
+    <text x="125" y="27" style="fill: white; font-size: 10px; font-weight: bold;" text-anchor="middle">Diagnostico</text>
+    <circle cx="225" cy="22" r="8" fill="white" opacity="0.3"/>
+    
+    <!-- Grid 1 columna -->
+    <rect x="10" y="45" width="230" height="45" class="card-orange"/>
+    <text x="125" y="60" class="text" text-anchor="middle" style="font-weight: bold;">Servicio</text>
+    <text x="125" y="70" class="text" text-anchor="middle" style="font-size: 6px;">SRV-2026-003</text>
+    <text x="125" y="80" class="text" text-anchor="middle" style="font-size: 6px;">OSWALDO BALTAZAR</text>
+    
+    <rect x="10" y="95" width="230" height="45" class="card-blue"/>
+    <text x="125" y="110" class="text" text-anchor="middle" style="font-weight: bold;">Equipo</text>
+    <text x="125" y="120" class="text" text-anchor="middle" style="font-size: 6px;">Otro - patrial p30</text>
+    
+    <rect x="10" y="145" width="230" height="35" class="card-yellow"/>
+    <text x="125" y="160" class="text" text-anchor="middle" style="font-weight: bold;">Descripcion</text>
+    <text x="125" y="170" class="text" text-anchor="middle" style="font-size: 6px;">equipo no prende</text>
+    
+    <!-- Tecnico vertical -->
+    <rect x="10" y="185" width="230" height="35" class="card" style="fill: #f0f0f0;"/>
+    <text x="125" y="198" class="text" text-anchor="middle" style="font-weight: bold;">TECNICO</text>
+    <rect x="15" y="202" width="220" height="12" fill="white" stroke="#ddd" rx="2"/>
+    
+    <!-- Problemas apilados -->
+    <text x="20" y="233" style="font-size: 9px; font-weight: bold; fill: #2192B8;">Problemas</text>
+    <rect x="150" y="223" width="90" height="16" class="button btn-primary"/>
+    <text x="195" y="234" style="fill: white; font-size: 7px; font-weight: bold;" text-anchor="middle">+ Agregar</text>
+    
+    <rect x="10" y="245" width="230" height="180" style="fill: white; stroke: #f0f0f0; rx: 4;"/>
+    
+    <!-- Problema 1 vertical -->
+    <rect x="15" y="250" width="220" height="120" class="problema"/>
+    <rect x="20" y="255" width="30" height="12" fill="#2192B8" rx="6"/>
+    <text x="35" y="264" style="fill: white; font-size: 7px; font-weight: bold;" text-anchor="middle">1</text>
+    
+    <rect x="20" y="272" width="200" height="25" fill="white" stroke="#ddd" rx="2"/>
+    <text x="25" y="280" style="font-size: 6px; fill: #2192B8; font-weight: bold;">DESCRIPCION</text>
+    <text x="25" y="290" style="font-size: 6px;">Pantalla rota...</text>
+    
+    <rect x="20" y="302" width="200" height="25" fill="white" stroke="#ddd" rx="2"/>
+    <text x="25" y="310" style="font-size: 6px; fill: #2192B8; font-weight: bold;">SOLUCION</text>
+    <text x="25" y="320" style="font-size: 6px;">Cambiar pantalla...</text>
+    
+    <rect x="20" y="332" width="200" height="25" fill="white" stroke="#ddd" rx="2"/>
+    <text x="25" y="340" style="font-size: 6px; fill: #2192B8; font-weight: bold;">COSTO</text>
+    <text x="210" y="350" style="font-size: 8px; fill: #2E7D32; font-weight: bold;" text-anchor="end">$ 0.00</text>
+    
+    <!-- Monto Total -->
+    <rect x="10" y="435" width="230" height="40" class="card-green"/>
+    <text x="125" y="450" style="font-size: 7px; fill: #666;" text-anchor="middle">MONTO TOTAL</text>
+    <text x="125" y="467" style="font-size: 14px; fill: #2E7D32; font-weight: bold;" text-anchor="middle">$ 0.00</text>
+    
+    <!-- Botones apilados verticalmente -->
+    <rect x="10" y="485" width="230" height="28" class="button btn-secondary"/>
+    <text x="125" y="503" style="fill: white; font-size: 8px; font-weight: bold;" text-anchor="middle">Cancelar</text>
+    
+    <rect x="10" y="518" width="230" height="28" class="button btn-primary"/>
+    <text x="125" y="536" style="fill: white; font-size: 8px; font-weight: bold;" text-anchor="middle">Guardar</text>
+    
+    <rect x="10" y="551" width="230" height="28" class="button btn-success"/>
+    <text x="125" y="569" style="fill: white; font-size: 8px; font-weight: bold;" text-anchor="middle">Finalizar</text>
+    
+    <!-- Anotación -->
+    <text x="125" y="620" class="annotation" text-anchor="middle">Todo apilado</text>
+  </g>
+  
+  <!-- Flechas y anotaciones comparativas -->
+  <path d="M 450 350 L 490 350" class="arrow"/>
+  <text x="470" y="340" style="font-size: 10px; fill: #FF5722; font-weight: bold;" text-anchor="middle">Reduce</text>
+  
+  <path d="M 850 350 L 890 350" class="arrow"/>
+  <text x="870" y="340" style="font-size: 10px; fill: #FF5722; font-weight: bold;" text-anchor="middle">Apila</text>
+  
+  <!-- Leyenda -->
+  <g transform="translate(50, 720)">
+    <text x="0" y="0" style="font-size: 14px; font-weight: bold; fill: #333;">Caracteristicas clave por dispositivo:</text>
+    
+    <text x="0" y="25" style="font-size: 11px; fill: #333;">Escritorio:</text>
+    <text x="100" y="25" style="font-size: 10px; fill: #666;">Grid 3 columnas - Problemas en fila horizontal - Botones en linea</text>
+    
+    <text x="0" y="45" style="font-size: 11px; fill: #333;">Tablet:</text>
+    <text x="100" y="45" style="font-size: 10px; fill: #666;">Grid 2 columnas - Problemas en 2 columnas + solucion completa - Botones en linea</text>
+    
+    <text x="0" y="65" style="font-size: 11px; fill: #333;">Movil:</text>
+    <text x="100" y="65" style="font-size: 10px; fill: #666;">Grid 1 columna - Todo apilado verticalmente - Botones full width - Header sticky - Inputs 16px</text>
+  </g>
+  
+</svg>

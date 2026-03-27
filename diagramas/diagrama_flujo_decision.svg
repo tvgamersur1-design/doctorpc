@@ -1,0 +1,141 @@
+<svg width="1100" height="900" xmlns="http://www.w3.org/2000/svg" font-family="Arial">
+  <!-- Title -->
+  <text x="550" y="30" text-anchor="middle" font-size="20" font-weight="bold" fill="#1976D2">
+    Flujo de Decisión: Envío Automático vs Manual
+  </text>
+
+  <!-- Start -->
+  <rect x="400" y="60" width="300" height="50" rx="25" fill="#4CAF50" stroke="#2E7D32" stroke-width="2"/>
+  <text x="550" y="90" text-anchor="middle" font-size="14" font-weight="bold" fill="white">
+    Usuario hace clic en "Enviar WhatsApp"
+  </text>
+
+  <!-- Arrow -->
+  <line x1="550" y1="110" x2="550" y2="140" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Validar teléfono -->
+  <rect x="425" y="140" width="250" height="50" rx="5" fill="#2196F3" stroke="#1565C0" stroke-width="2"/>
+  <text x="550" y="170" text-anchor="middle" font-size="13" font-weight="bold" fill="white">
+    Validar teléfono del cliente
+  </text>
+
+  <!-- Arrow -->
+  <line x1="550" y1="190" x2="550" y2="220" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Decision: Teléfono válido -->
+  <polygon points="550,220 650,270 550,320 450,270" fill="#FFF9C4" stroke="#F57F17" stroke-width="2"/>
+  <text x="550" y="265" text-anchor="middle" font-size="12" font-weight="bold">¿Teléfono</text>
+  <text x="550" y="280" text-anchor="middle" font-size="12" font-weight="bold">válido?</text>
+
+  <!-- NO path -->
+  <line x1="450" y1="270" x2="200" y2="270" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="320" y="260" font-size="12" font-weight="bold" fill="#D32F2F">NO</text>
+
+  <!-- Error -->
+  <rect x="50" y="245" width="150" height="50" rx="5" fill="#FFCDD2" stroke="#C62828" stroke-width="2"/>
+  <text x="125" y="265" text-anchor="middle" font-size="11" font-weight="bold">Mostrar error:</text>
+  <text x="125" y="280" text-anchor="middle" font-size="11">"Teléfono inválido"</text>
+
+  <!-- SÍ path -->
+  <line x1="550" y1="320" x2="550" y2="360" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="570" y="345" font-size="12" font-weight="bold" fill="#2E7D32">SÍ</text>
+
+  <!-- Intentar envío automático -->
+  <rect x="425" y="360" width="250" height="50" rx="5" fill="#2196F3" stroke="#1565C0" stroke-width="2"/>
+  <text x="550" y="390" text-anchor="middle" font-size="13" font-weight="bold" fill="white">
+    Intentar envío automático
+  </text>
+
+  <!-- Arrow -->
+  <line x1="550" y1="410" x2="550" y2="440" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Decision: API configurada -->
+  <polygon points="550,440 680,500 550,560 420,500" fill="#FFF9C4" stroke="#F57F17" stroke-width="2"/>
+  <text x="550" y="490" text-anchor="middle" font-size="11" font-weight="bold">¿Variables de entorno</text>
+  <text x="550" y="505" text-anchor="middle" font-size="11" font-weight="bold">configuradas?</text>
+  <text x="550" y="520" text-anchor="middle" font-size="10">(WHATSAPP_TOKEN,</text>
+  <text x="550" y="533" text-anchor="middle" font-size="10">WHATSAPP_PHONE_ID)</text>
+
+  <!-- NO path - MODO MANUAL -->
+  <line x1="420" y1="500" x2="250" y2="500" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="330" y="490" font-size="12" font-weight="bold" fill="#D32F2F">NO</text>
+
+  <!-- MODO MANUAL -->
+  <rect x="50" y="450" width="200" height="40" rx="5" fill="#FF9800" stroke="#E65100" stroke-width="2"/>
+  <text x="150" y="475" text-anchor="middle" font-size="14" font-weight="bold" fill="white">
+    MODO MANUAL - Fallback
+  </text>
+
+  <!-- Manual steps -->
+  <rect x="50" y="510" width="200" height="180" rx="5" fill="#FFE0B2" stroke="#EF6C00" stroke-width="1"/>
+  <text x="60" y="530" font-size="11">1. Generar PDF en navegador</text>
+  <text x="60" y="550" font-size="11">2. Descargar PDF automáticamente</text>
+  <text x="60" y="570" font-size="11">3. Abrir WhatsApp Web</text>
+  <text x="60" y="590" font-size="11">4. Mensaje pre-cargado</text>
+  <text x="60" y="610" font-size="11">5. Usuario adjunta PDF</text>
+  <text x="70" y="630" font-size="11">   manualmente</text>
+
+  <!-- Arrow from manual -->
+  <line x1="150" y1="690" x2="150" y2="750" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Manual notification -->
+  <rect x="50" y="750" width="200" height="60" rx="5" fill="#FFF3E0" stroke="#F57C00" stroke-width="2"/>
+  <text x="150" y="770" text-anchor="middle" font-size="10">Notificación:</text>
+  <text x="150" y="785" text-anchor="middle" font-size="10">"PDF descargado.</text>
+  <text x="150" y="800" text-anchor="middle" font-size="10">Adjúntalo en WhatsApp"</text>
+
+  <!-- SÍ path - MODO AUTOMÁTICO -->
+  <line x1="680" y1="500" x2="850" y2="500" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="760" y="490" font-size="12" font-weight="bold" fill="#2E7D32">SÍ</text>
+
+  <!-- MODO AUTOMÁTICO -->
+  <rect x="750" y="450" width="250" height="40" rx="5" fill="#4CAF50" stroke="#2E7D32" stroke-width="2"/>
+  <text x="875" y="475" text-anchor="middle" font-size="14" font-weight="bold" fill="white">
+    MODO AUTOMÁTICO
+  </text>
+
+  <!-- Automatic steps -->
+  <rect x="750" y="510" width="250" height="140" rx="5" fill="#C8E6C9" stroke="#388E3C" stroke-width="1"/>
+  <text x="760" y="530" font-size="11">1. POST a Netlify Function</text>
+  <text x="760" y="550" font-size="11">2. Generar PDF en servidor</text>
+  <text x="760" y="570" font-size="11">3. Subir PDF a WhatsApp Cloud</text>
+  <text x="760" y="590" font-size="11">4. Enviar documento al cliente</text>
+  <text x="760" y="610" font-size="11">5. Retornar confirmación</text>
+
+  <!-- Arrow from automatic -->
+  <line x1="875" y1="650" x2="875" y2="690" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Decision: Envío exitoso -->
+  <polygon points="875,690 950,730 875,770 800,730" fill="#FFF9C4" stroke="#F57F17" stroke-width="2"/>
+  <text x="875" y="725" text-anchor="middle" font-size="11" font-weight="bold">¿Envío</text>
+  <text x="875" y="740" text-anchor="middle" font-size="11" font-weight="bold">exitoso?</text>
+
+  <!-- SÍ path -->
+  <line x1="875" y1="770" x2="875" y2="810" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="895" y="795" font-size="12" font-weight="bold" fill="#2E7D32">SÍ</text>
+
+  <!-- Success notification -->
+  <rect x="775" y="810" width="200" height="50" rx="5" fill="#C8E6C9" stroke="#388E3C" stroke-width="2"/>
+  <text x="875" y="830" text-anchor="middle" font-size="11">Notificación:</text>
+  <text x="875" y="845" text-anchor="middle" font-size="11" font-weight="bold">"✓ PDF enviado exitosamente"</text>
+
+  <!-- NO path - Fallback -->
+  <line x1="800" y1="730" x2="550" y2="730" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="670" y="720" font-size="12" font-weight="bold" fill="#D32F2F">NO</text>
+
+  <!-- Activar fallback -->
+  <rect x="450" y="705" width="100" height="50" rx="5" fill="#FFCDD2" stroke="#C62828" stroke-width="2"/>
+  <text x="500" y="725" text-anchor="middle" font-size="11">Activar</text>
+  <text x="500" y="740" text-anchor="middle" font-size="11">fallback</text>
+
+  <!-- Arrow to manual mode -->
+  <line x1="450" y1="730" x2="250" y2="730" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="250" y1="730" x2="250" y2="500" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333"/>
+    </marker>
+  </defs>
+</svg>

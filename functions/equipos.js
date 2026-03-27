@@ -75,8 +75,16 @@ exports.handler = async (event, context) => {
 
     // GET /equipos
     if (httpMethod === 'GET' && !id) {
-      console.log('[equipos] Obteniendo lista de equipos...');
-      const equipos = await db.collection('equipos').find({}).toArray();
+      const queryParams = event.queryStringParameters || {};
+      const incluirEliminados = queryParams.incluirEliminados === 'true';
+      
+      console.log(`[equipos] Obteniendo lista de equipos (incluirEliminados: ${incluirEliminados})...`);
+      
+      const filtro = incluirEliminados ? {} : { eliminado: { $ne: true } };
+      const equipos = await db.collection('equipos')
+        .find(filtro)
+        .toArray();
+      
       console.log(`[equipos] ✓ Retornando ${equipos.length} equipos`);
       return {
         statusCode: 200,
@@ -122,6 +130,9 @@ exports.handler = async (event, context) => {
         ubicacion: body.ubicacion?.trim() || '',
         responsable: body.responsable?.trim() || '',
         notas: body.notas?.trim() || '',
+        eliminado: false,
+        fecha_eliminacion: null,
+        motivo_eliminacion: null,
         fecha_creacion: new Date().toISOString(),
         fecha_actualizacion: new Date().toISOString()
       };
@@ -133,6 +144,44 @@ exports.handler = async (event, context) => {
         statusCode: 201,
         headers,
         body: JSON.stringify({ ...nuevoEquipo, _id: result.insertedId })
+      };
+    }
+
+    // PUT /equipos/:id/restaurar (RESTORE)
+    if (httpMethod === 'PUT' && id && rawPath.includes('/restaurar')) {
+      console.log(`[equipos] RESTAURAR: Reactivando equipo ${id}`);
+      
+      const updateData = {
+        eliminado: false,
+        estado: 'operativo',
+        fecha_eliminacion: null,
+        motivo_eliminacion: null,
+        fecha_actualizacion: new Date().toISOString()
+      };
+
+      const result = await db.collection('equipos').findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: updateData },
+        { returnDocument: 'after' }
+      );
+
+      if (!result) {
+        return {
+          statusCode: 404,
+          headers,
+          body: JSON.stringify({ error: 'Equipo no encontrado' })
+        };
+      }
+
+      console.log(`[equipos] ✓ Equipo restaurado: ${id}`);
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ 
+          success: true,
+          message: 'Equipo restaurado correctamente',
+          equipo: result
+        })
       };
     }
 
@@ -167,12 +216,25 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // DELETE /equipos/:id
+    // DELETE /equipos/:id (SOFT DELETE)
     if (httpMethod === 'DELETE' && id) {
-      console.log(`[equipos] DELETE: Eliminando equipo ${id}`);
-      const result = await db.collection('equipos').deleteOne({ _id: new ObjectId(id) });
+      console.log(`[equipos] SOFT DELETE: Marcando equipo como eliminado ${id}`);
+      
+      const updateData = {
+        eliminado: true,
+        estado: 'inactivo',
+        fecha_eliminacion: new Date().toISOString(),
+        motivo_eliminacion: body.motivo || null,
+        fecha_actualizacion: new Date().toISOString()
+      };
 
-      if (result.deletedCount === 0) {
+      const result = await db.collection('equipos').findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: updateData },
+        { returnDocument: 'after' }
+      );
+
+      if (!result) {
         return {
           statusCode: 404,
           headers,
@@ -180,11 +242,15 @@ exports.handler = async (event, context) => {
         };
       }
 
-      console.log(`[equipos] ✓ Equipo eliminado: ${id}`);
+      console.log(`[equipos] ✓ Equipo marcado como eliminado: ${id}`);
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({ success: true })
+        body: JSON.stringify({ 
+          success: true,
+          message: 'Equipo eliminado correctamente',
+          equipo: result
+        })
       };
     }
 
