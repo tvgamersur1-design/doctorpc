@@ -3,11 +3,6 @@ command = "npm install"
 functions = "functions"
 publish = "public"
 
-# Configuración para Puppeteer
-[functions]
-external_node_modules = ["@sparticuz/chromium"]
-included_files = ["node_modules/@sparticuz/chromium/**"]
-
 [dev]
 command = "npm run dev"
 port = 3000

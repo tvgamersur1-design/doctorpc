@@ -16,7 +16,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@sparticuz/chromium": "^143.0.4",
     "axios": "^1.6.2",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
@@ -26,8 +25,7 @@
     "form-data": "^4.0.5",
     "jsonwebtoken": "^9.0.3",
     "jspdf": "^2.5.2",
-    "mongodb": "^7.1.0",
-    "puppeteer-core": "^24.40.0"
+    "mongodb": "^7.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"

@@ -98,13 +98,18 @@ La aplicación estará disponible en `http://localhost:3000`
 
 ### ✅ Generación de PDF
 
-**Solución implementada con Puppeteer:**
-- ✅ Funciona en Netlify usando `@sparticuz/chromium`
-- ✅ Genera PDFs profesionales desde HTML
-- ✅ Sin dependencias de jsPDF en el servidor
-- ⚡ Puede tardar 3-5 segundos en la primera ejecución (cold start)
+**Solución implementada:**
+- ✅ Función serverless obtiene datos de MongoDB
+- ✅ PDF se genera en el navegador con jsPDF
+- ✅ Funciona perfectamente en Netlify
+- ⚡ Generación instantánea (sin cold start)
+- 💾 No consume recursos del servidor
 
-**Nota:** La primera vez que se genera un PDF después de un periodo de inactividad puede tardar más debido al cold start de Netlify Functions.
+**Ventajas:**
+- Sin límites de tiempo de ejecución
+- Sin dependencias pesadas en el servidor
+- Funciona offline una vez cargada la página
+- Compatible con todos los navegadores modernos
 
 ### ⚠️ WhatsApp (En Desarrollo)
 
