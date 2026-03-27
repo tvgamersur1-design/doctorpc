@@ -284,59 +284,6 @@ class ReporteServicio {
   */
 
   /**
-   * Imprimir reporte - Genera PDF y abre ventana de impresión
-   */
-  async imprimirReporte(servicioId = null) {
-    // Usar el servicioId pasado o el almacenado en la clase
-    const idAUsar = servicioId || this.servicioIdActual;
-    
-    if (!idAUsar) {
-      this.mostrarNotificacion('No hay servicio seleccionado', 'error');
-      return;
-    }
-
-    console.log('🖨️ Preparando impresión para servicio:', idAUsar);
-
-    try {
-      // Mostrar indicador de carga
-      this.mostrarNotificacion('⏳ Preparando impresión...', 'info');
-
-      // Obtener datos desde la función serverless
-      const response = await fetch('/.netlify/functions/generar-pdf', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ servicioId: idAUsar })
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error response:', errorText);
-        throw new Error('Error al obtener datos del reporte');
-      }
-
-      const result = await response.json();
-      
-      if (!result.success || !result.data) {
-        throw new Error('Datos del reporte no disponibles');
-      }
-
-      const reporte = result.data;
-      
-      // Generar PDF con jsPDF y abrir ventana de impresión
-      this.mostrarNotificacion('🖨️ Abriendo ventana de impresión...', 'info');
-      await this.generarPDFParaImprimir(reporte);
-      
-      this.mostrarNotificacion('✅ Ventana de impresión abierta', 'success');
-      console.log('✅ Ventana de impresión abierta');
-    } catch (error) {
-      console.error('❌ Error al imprimir:', error);
-      this.mostrarNotificacion('❌ Error al preparar impresión: ' + error.message, 'error');
-    }
-  }
-
-  /**
    * Generar PDF y abrir ventana de impresión (sin descargar)
    */
   async generarPDFParaImprimir(reporte) {
