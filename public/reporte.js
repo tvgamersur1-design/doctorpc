@@ -79,18 +79,38 @@ class ReporteServicio {
   async obtenerReporte(servicioId) {
     try {
       console.log('🔍 Obteniendo reporte para servicio:', servicioId);
-      const response = await fetch(`/api/reporte/${servicioId}`);
+      
+      // Intentar GET /api/reporte/ (funciona en desarrollo local)
+      let response = await fetch(`/api/reporte/${servicioId}`);
+      
+      if (response.ok) {
+        this.reporteActual = await response.json();
+        this.servicioIdActual = servicioId;
+        console.log('✅ Reporte obtenido desde /api/reporte/');
+        return this.reporteActual;
+      }
+      
+      // Fallback: usar POST a generar-pdf (funciona en Netlify)
+      console.log('🔄 Usando fallback generar-pdf...');
+      response = await fetch('/.netlify/functions/generar-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ servicioId })
+      });
       
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
       
-      this.reporteActual = await response.json();
-      this.servicioIdActual = servicioId;
-      console.log(' Reporte obtenido y guardado para ID:', this.servicioIdActual);
-      console.log(' Datos:', this.reporteActual);
+      const result = await response.json();
+      if (result.success && result.data) {
+        this.reporteActual = result.data;
+        this.servicioIdActual = servicioId;
+        console.log('✅ Reporte obtenido desde generar-pdf');
+        return this.reporteActual;
+      }
       
-      return this.reporteActual;
+      throw new Error('Datos del reporte no disponibles');
     } catch (error) {
       console.error('Error al obtener reporte:', error);
       this.mostrarNotificacion('Error al cargar el reporte: ' + error.message, 'error');
@@ -1185,10 +1205,33 @@ class ReporteServicio {
     // Usar el servicioId pasado o el almacenado en la clase
     const idAUsar = servicioId || this.servicioIdActual;
     
-    // Si se pasa un servicioId diferente al actual, obtener el reporte primero
-    if (idAUsar && idAUsar !== this.servicioIdActual) {
-      const reporte = await this.obtenerReporte(idAUsar);
-      if (!reporte) return;
+    // Si no hay reporte cargado, obtener datos
+    if (!this.reporteActual || (idAUsar && idAUsar !== this.servicioIdActual)) {
+      if (!idAUsar) {
+        this.mostrarNotificacion('No hay servicio seleccionado', 'error');
+        return;
+      }
+      // Intentar obtener desde /api/reporte/, si falla usar generar-pdf
+      let reporte = await this.obtenerReporte(idAUsar);
+      if (!reporte) {
+        try {
+          console.log('🔄 Intentando obtener datos desde generar-pdf...');
+          const response = await fetch('/.netlify/functions/generar-pdf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ servicioId: idAUsar })
+          });
+          if (response.ok) {
+            const result = await response.json();
+            if (result.success && result.data) {
+              this.reporteActual = result.data;
+              this.servicioIdActual = idAUsar;
+            }
+          }
+        } catch (e) {
+          console.error('Error al obtener datos:', e);
+        }
+      }
     }
 
     if (!this.reporteActual) {

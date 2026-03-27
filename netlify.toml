@@ -78,6 +78,11 @@ to = "/.netlify/functions/enviar-whatsapp-pdf"
 status = 200
 
 [[redirects]]
+from = "/api/reporte/*"
+to = "/.netlify/functions/generar-pdf"
+status = 200
+
+[[redirects]]
 from = "/api/generar-pdf"
 to = "/.netlify/functions/generar-pdf"
 status = 200
