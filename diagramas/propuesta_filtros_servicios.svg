@@ -1,0 +1,271 @@
+<svg viewBox="0 0 1400 1800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .title { font: bold 24px sans-serif; fill: #1a1a1a; }
+      .subtitle { font: bold 18px sans-serif; fill: #2192B8; }
+      .label { font: 14px sans-serif; fill: #333; }
+      .small-text { font: 12px sans-serif; fill: #666; }
+      .badge { font: bold 11px sans-serif; fill: white; }
+      .icon-text { font: 14px 'Font Awesome 5 Free'; fill: #2192B8; }
+    </style>
+    
+    <!-- Sombra suave -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.2"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Fondo -->
+  <rect width="1400" height="1800" fill="#f8f9fa"/>
+
+  <!-- Título Principal -->
+  <text x="700" y="50" class="title" text-anchor="middle">🔍 Propuesta de Filtros para Gestión de Servicios</text>
+  <line x1="300" y1="65" x2="1100" y2="65" stroke="#2192B8" stroke-width="2"/>
+
+  <!-- ============ DISEÑO ACTUAL ============ -->
+  <text x="50" y="110" class="subtitle">📋 Diseño Actual (Sin Filtros)</text>
+  
+  <g filter="url(#shadow)">
+    <rect x="50" y="130" width="1300" height="200" rx="8" fill="white" stroke="#e0e0e0" stroke-width="2"/>
+    
+    <!-- Header -->
+    <rect x="50" y="130" width="1300" height="50" rx="8" fill="#2192B8"/>
+    <text x="70" y="162" class="label" fill="white" font-weight="bold">Gestión de Servicios</text>
+    <rect x="1180" y="145" width="150" height="30" rx="6" fill="#4CAF50"/>
+    <text x="1255" y="166" class="label" fill="white" text-anchor="middle">+ Nuevo Servicio</text>
+    
+    <!-- Checkbox cancelados -->
+    <rect x="70" y="200" width="16" height="16" rx="3" fill="white" stroke="#999"/>
+    <text x="95" y="212" class="small-text">Mostrar servicios cancelados</text>
+    
+    <!-- Barra de búsqueda actual -->
+    <rect x="70" y="240" width="1260" height="45" rx="8" fill="#f5f5f5" stroke="#e0e0e0" stroke-width="1"/>
+    <circle cx="90" cy="262" r="8" fill="none" stroke="#2192B8" stroke-width="2"/>
+    <line x1="96" y1="268" x2="100" y2="272" stroke="#2192B8" stroke-width="2"/>
+    <text x="115" y="267" class="small-text" fill="#999">Buscar por número, descripción, local...</text>
+  </g>
+
+  <!-- ============ PROPUESTA DE FILTROS ============ -->
+  <text x="50" y="390" class="subtitle">✨ Diseño Propuesto (Con Filtros Avanzados)</text>
+  
+  <g filter="url(#shadow)">
+    <rect x="50" y="410" width="1300" height="380" rx="8" fill="white" stroke="#e0e0e0" stroke-width="2"/>
+    
+    <!-- Header -->
+    <rect x="50" y="410" width="1300" height="50" rx="8" fill="#2192B8"/>
+    <text x="70" y="442" class="label" fill="white" font-weight="bold">Gestión de Servicios</text>
+    <rect x="1180" y="425" width="150" height="30" rx="6" fill="#4CAF50"/>
+    <text x="1255" y="446" class="label" fill="white" text-anchor="middle">+ Nuevo Servicio</text>
+    
+    <!-- Fila 1: Búsqueda + Botón Filtros -->
+    <rect x="70" y="480" width="1000" height="45" rx="8" fill="#f5f5f5" stroke="#e0e0e0" stroke-width="1"/>
+    <circle cx="90" cy="502" r="8" fill="none" stroke="#2192B8" stroke-width="2"/>
+    <line x1="96" y1="508" x2="100" y2="512" stroke="#2192B8" stroke-width="2"/>
+    <text x="115" y="507" class="small-text" fill="#999">Buscar por número, cliente, descripción...</text>
+    
+    <!-- Botón Filtros -->
+    <rect x="1090" y="480" width="120" height="45" rx="8" fill="#2192B8" stroke="#1976D2" stroke-width="2"/>
+    <text x="1150" y="507" class="label" fill="white" text-anchor="middle" font-weight="bold">🔽 Filtros</text>
+    
+    <!-- Botón Limpiar -->
+    <rect x="1230" y="480" width="100" height="45" rx="8" fill="#f5f5f5" stroke="#e0e0e0" stroke-width="1"/>
+    <text x="1280" y="507" class="small-text" text-anchor="middle" fill="#666">✕ Limpiar</text>
+    
+    <!-- Panel de Filtros Expandido -->
+    <rect x="70" y="545" width="1260" height="230" rx="8" fill="#f8f9fa" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="5,5"/>
+    
+    <!-- Título del panel -->
+    <text x="85" y="570" class="label" font-weight="bold" fill="#2192B8">Filtros Avanzados</text>
+    
+    <!-- Fila 1 de filtros: Estado, Local, Rango de Fechas -->
+    <g>
+      <!-- Estado -->
+      <text x="85" y="600" class="small-text" font-weight="bold">Estado:</text>
+      <rect x="85" y="610" width="280" height="38" rx="6" fill="white" stroke="#ddd" stroke-width="1"/>
+      <text x="100" y="633" class="small-text" fill="#666">Todos los estados ▼</text>
+      
+      <!-- Local -->
+      <text x="390" y="600" class="small-text" font-weight="bold">Local:</text>
+      <rect x="390" y="610" width="200" height="38" rx="6" fill="white" stroke="#ddd" stroke-width="1"/>
+      <text x="405" y="633" class="small-text" fill="#666">Todos ▼</text>
+      
+      <!-- Fecha Desde -->
+      <text x="615" y="600" class="small-text" font-weight="bold">Fecha Desde:</text>
+      <rect x="615" y="610" width="200" height="38" rx="6" fill="white" stroke="#ddd" stroke-width="1"/>
+      <text x="630" y="633" class="small-text" fill="#999">📅 dd/mm/aaaa</text>
+      
+      <!-- Fecha Hasta -->
+      <text x="840" y="600" class="small-text" font-weight="bold">Fecha Hasta:</text>
+      <rect x="840" y="610" width="200" height="38" rx="6" fill="white" stroke="#ddd" stroke-width="1"/>
+      <text x="855" y="633" class="small-text" fill="#999">📅 dd/mm/aaaa</text>
+    </g>
+    
+    <!-- Fila 2 de filtros: Tipo de Equipo, Rango de Costo -->
+    <g>
+      <!-- Tipo de Equipo -->
+      <text x="85" y="675" class="small-text" font-weight="bold">Tipo de Equipo:</text>
+      <rect x="85" y="685" width="280" height="38" rx="6" fill="white" stroke="#ddd" stroke-width="1"/>
+      <text x="100" y="708" class="small-text" fill="#666">Todos los tipos ▼</text>
+      
+      <!-- Costo Mínimo -->
+      <text x="390" y="675" class="small-text" font-weight="bold">Costo Mínimo:</text>
+      <rect x="390" y="685" width="200" height="38" rx="6" fill="white" stroke="#ddd" stroke-width="1"/>
+      <text x="405" y="708" class="small-text" fill="#999">$ 0.00</text>
+      
+      <!-- Costo Máximo -->
+      <text x="615" y="675" class="small-text" font-weight="bold">Costo Máximo:</text>
+      <rect x="615" y="685" width="200" height="38" rx="6" fill="white" stroke="#ddd" stroke-width="1"/>
+      <text x="630" y="708" class="small-text" fill="#999">$ 9999.00</text>
+      
+      <!-- Checkbox Cancelados -->
+      <rect x="840" y="690" width="18" height="18" rx="3" fill="white" stroke="#2192B8" stroke-width="2"/>
+      <text x="868" y="704" class="small-text">Incluir cancelados</text>
+    </g>
+    
+    <!-- Botón Aplicar Filtros -->
+    <rect x="1100" y="685" width="230" height="38" rx="6" fill="#4CAF50"/>
+    <text x="1215" y="708" class="label" fill="white" text-anchor="middle" font-weight="bold">✓ Aplicar Filtros</text>
+  </g>
+
+  <!-- ============ OPCIONES DE FILTROS ============ -->
+  <text x="50" y="850" class="subtitle">📊 Opciones de Filtros Disponibles</text>
+  
+  <!-- Filtro 1: Estado -->
+  <g filter="url(#shadow)">
+    <rect x="50" y="880" width="400" height="180" rx="8" fill="white" stroke="#2192B8" stroke-width="2"/>
+    <rect x="50" y="880" width="400" height="45" rx="8" fill="#2192B8"/>
+    <text x="250" y="908" class="label" fill="white" text-anchor="middle" font-weight="bold">1️⃣ Estado del Servicio</text>
+    
+    <text x="70" y="950" class="small-text">• Pendiente de evaluación</text>
+    <text x="70" y="975" class="small-text">• En diagnóstico</text>
+    <text x="70" y="1000" class="small-text">• Diagnosticado</text>
+    <text x="70" y="1025" class="small-text">• En reparación</text>
+    <text x="70" y="1050" class="small-text">• Completado / Entregado / Cancelado</text>
+  </g>
+  
+  <!-- Filtro 2: Local -->
+  <g filter="url(#shadow)">
+    <rect x="480" y="880" width="400" height="180" rx="8" fill="white" stroke="#4CAF50" stroke-width="2"/>
+    <rect x="480" y="880" width="400" height="45" rx="8" fill="#4CAF50"/>
+    <text x="680" y="908" class="label" fill="white" text-anchor="middle" font-weight="bold">2️⃣ Local</text>
+    
+    <text x="500" y="950" class="small-text">• Todos</text>
+    <text x="500" y="980" class="small-text">• Ferreñafe</text>
+    <text x="500" y="1010" class="small-text">• Chiclayo</text>
+    <text x="500" y="1040" class="small-text" fill="#999" font-style="italic">(Filtro rápido por ubicación)</text>
+  </g>
+  
+  <!-- Filtro 3: Rango de Fechas -->
+  <g filter="url(#shadow)">
+    <rect x="910" y="880" width="440" height="180" rx="8" fill="white" stroke="#FF9800" stroke-width="2"/>
+    <rect x="910" y="880" width="440" height="45" rx="8" fill="#FF9800"/>
+    <text x="1130" y="908" class="label" fill="white" text-anchor="middle" font-weight="bold">3️⃣ Rango de Fechas</text>
+    
+    <text x="930" y="950" class="small-text">• Fecha Desde (date picker)</text>
+    <text x="930" y="980" class="small-text">• Fecha Hasta (date picker)</text>
+    <text x="930" y="1010" class="small-text" fill="#999" font-style="italic">Filtrar servicios por período</text>
+    <text x="930" y="1040" class="small-text" fill="#999" font-style="italic">Ejemplo: Servicios de enero 2024</text>
+  </g>
+  
+  <!-- Filtro 4: Tipo de Equipo -->
+  <g filter="url(#shadow)">
+    <rect x="50" y="1090" width="400" height="180" rx="8" fill="white" stroke="#9C27B0" stroke-width="2"/>
+    <rect x="50" y="1090" width="400" height="45" rx="8" fill="#9C27B0"/>
+    <text x="250" y="1118" class="label" fill="white" text-anchor="middle" font-weight="bold">4️⃣ Tipo de Equipo</text>
+    
+    <text x="70" y="1160" class="small-text">• Todos</text>
+    <text x="70" y="1185" class="small-text">• Laptop</text>
+    <text x="70" y="1210" class="small-text">• Desktop</text>
+    <text x="70" y="1235" class="small-text">• Monitor / Impresora / Otro</text>
+  </g>
+  
+  <!-- Filtro 5: Rango de Costo -->
+  <g filter="url(#shadow)">
+    <rect x="480" y="1090" width="400" height="180" rx="8" fill="white" stroke="#F44336" stroke-width="2"/>
+    <rect x="480" y="1090" width="400" height="45" rx="8" fill="#F44336"/>
+    <text x="680" y="1118" class="label" fill="white" text-anchor="middle" font-weight="bold">5️⃣ Rango de Costo Total</text>
+    
+    <text x="500" y="1160" class="small-text">• Costo Mínimo: $ 0.00</text>
+    <text x="500" y="1190" class="small-text">• Costo Máximo: $ 9999.00</text>
+    <text x="500" y="1220" class="small-text" fill="#999" font-style="italic">Filtrar por presupuesto</text>
+    <text x="500" y="1250" class="small-text" fill="#999" font-style="italic">Ejemplo: Servicios entre $50 - $200</text>
+  </g>
+  
+  <!-- Filtro 6: Incluir Cancelados -->
+  <g filter="url(#shadow)">
+    <rect x="910" y="1090" width="440" height="180" rx="8" fill="white" stroke="#607D8B" stroke-width="2"/>
+    <rect x="910" y="1090" width="440" height="45" rx="8" fill="#607D8B"/>
+    <text x="1130" y="1118" class="label" fill="white" text-anchor="middle" font-weight="bold">6️⃣ Incluir Cancelados</text>
+    
+    <text x="930" y="1160" class="small-text">• Checkbox para mostrar/ocultar</text>
+    <text x="930" y="1190" class="small-text">• Por defecto: NO mostrar cancelados</text>
+    <text x="930" y="1220" class="small-text" fill="#999" font-style="italic">Mantiene la funcionalidad actual</text>
+  </g>
+
+  <!-- ============ BENEFICIOS ============ -->
+  <text x="50" y="1320" class="subtitle">💡 Beneficios de los Filtros</text>
+  
+  <g filter="url(#shadow)">
+    <rect x="50" y="1340" width="630" height="200" rx="8" fill="#E8F5E9" stroke="#4CAF50" stroke-width="2"/>
+    <text x="70" y="1370" class="label" font-weight="bold" fill="#2E7D32">✅ Para el Usuario:</text>
+    <text x="90" y="1400" class="small-text">• Búsqueda más rápida y precisa</text>
+    <text x="90" y="1425" class="small-text">• Análisis de servicios por período</text>
+    <text x="90" y="1450" class="small-text">• Identificar servicios por costo</text>
+    <text x="90" y="1475" class="small-text">• Comparar rendimiento entre locales</text>
+    <text x="90" y="1500" class="small-text">• Seguimiento de estados específicos</text>
+    <text x="90" y="1525" class="small-text">• Reportes y estadísticas más fáciles</text>
+  </g>
+  
+  <g filter="url(#shadow)">
+    <rect x="720" y="1340" width="630" height="200" rx="8" fill="#E3F2FD" stroke="#2192B8" stroke-width="2"/>
+    <text x="740" y="1370" class="label" font-weight="bold" fill="#1565C0">🎯 Para el Negocio:</text>
+    <text x="760" y="1400" class="small-text">• Mejor control de inventario de servicios</text>
+    <text x="760" y="1425" class="small-text">• Análisis de rentabilidad por tipo</text>
+    <text x="760" y="1450" class="small-text">• Identificar servicios más comunes</text>
+    <text x="760" y="1475" class="small-text">• Optimizar tiempos de respuesta</text>
+    <text x="760" y="1500" class="small-text">• Mejorar planificación de recursos</text>
+    <text x="760" y="1525" class="small-text">• Toma de decisiones basada en datos</text>
+  </g>
+
+  <!-- ============ COMPORTAMIENTO ============ -->
+  <text x="50" y="1590" class="subtitle">⚙️ Comportamiento del Sistema</text>
+  
+  <g filter="url(#shadow)">
+    <rect x="50" y="1610" width="1300" height="150" rx="8" fill="white" stroke="#e0e0e0" stroke-width="2"/>
+    
+    <rect x="70" y="1630" width="30" height="30" rx="6" fill="#2192B8"/>
+    <text x="85" y="1652" class="label" fill="white" text-anchor="middle" font-weight="bold">1</text>
+    <text x="115" y="1650" class="small-text" font-weight="bold">Botón "Filtros" colapsa/expande el panel</text>
+    
+    <rect x="70" y="1675" width="30" height="30" rx="6" fill="#4CAF50"/>
+    <text x="85" y="1697" class="label" fill="white" text-anchor="middle" font-weight="bold">2</text>
+    <text x="115" y="1695" class="small-text" font-weight="bold">Los filtros se aplican al hacer clic en "Aplicar Filtros"</text>
+    
+    <rect x="70" y="1720" width="30" height="30" rx="6" fill="#FF9800"/>
+    <text x="85" y="1742" class="label" fill="white" text-anchor="middle" font-weight="bold">3</text>
+    <text x="115" y="1740" class="small-text" font-weight="bold">Botón "Limpiar" resetea todos los filtros a valores por defecto</text>
+    
+    <rect x="700" y="1630" width="30" height="30" rx="6" fill="#9C27B0"/>
+    <text x="715" y="1652" class="label" fill="white" text-anchor="middle" font-weight="bold">4</text>
+    <text x="745" y="1650" class="small-text" font-weight="bold">Los filtros se combinan (AND lógico)</text>
+    
+    <rect x="700" y="1675" width="30" height="30" rx="6" fill="#F44336"/>
+    <text x="715" y="1697" class="label" fill="white" text-anchor="middle" font-weight="bold">5</text>
+    <text x="745" y="1695" class="small-text" font-weight="bold">Indicador visual de filtros activos (badge con número)</text>
+    
+    <rect x="700" y="1720" width="30" height="30" rx="6" fill="#607D8B"/>
+    <text x="715" y="1742" class="label" fill="white" text-anchor="middle" font-weight="bold">6</text>
+    <text x="745" y="1740" class="small-text" font-weight="bold">Compatible con paginación existente</text>
+  </g>
+
+  <!-- Footer -->
+  <text x="700" y="1785" class="small-text" text-anchor="middle" fill="#999">Diseño responsive: En móvil, los filtros se apilan verticalmente</text>
+</svg>

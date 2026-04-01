@@ -110,7 +110,7 @@ exports.handler = async (event, context) => {
     }
 
     // Extraer descripción del problema desde múltiples fuentes
-    let descripcionProblema = servicio.descripcion_problema || servicio.problemas || '';
+    let descripcionProblema = servicio.problemas_reportados || servicio.descripcion_problema || servicio.problemas || '';
     if (Array.isArray(servicio.servicios) && servicio.servicios.length > 0 && !descripcionProblema) {
       descripcionProblema = servicio.servicios.map(s => s.nombre || s).join(', ');
     }

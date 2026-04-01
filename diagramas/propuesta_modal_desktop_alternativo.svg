@@ -1,0 +1,216 @@
+<svg viewBox="0 0 900 700" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo -->
+  <rect width="900" height="700" fill="#f1f5f9"/>
+  
+  <!-- DISEÑO ALTERNATIVO 1: Layout de 2 columnas -->
+  <g id="alternativa-1">
+    <text x="225" y="30" font-size="14" font-weight="bold" fill="#333" text-anchor="middle">ALTERNATIVA 1: Dos Columnas</text>
+    
+    <!-- Modal -->
+    <rect x="25" y="50" width="400" height="600" rx="16" fill="white" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)"/>
+    
+    <!-- Header con gradiente -->
+    <defs>
+      <linearGradient id="headerGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#0f766e;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#14b8a6;stop-opacity:1" />
+      </linearGradient>
+      <filter id="shadow">
+        <feDropShadow dx="0" dy="4" stdDeviation="8" flood-opacity="0.1"/>
+      </filter>
+    </defs>
+    
+    <rect x="25" y="50" width="400" height="70" rx="16" fill="url(#headerGrad1)"/>
+    <circle cx="55" cy="85" r="14" fill="#10b981"/>
+    <text x="55" y="90" font-size="14" fill="white" text-anchor="middle">✓</text>
+    <text x="78" y="90" font-size="18" font-weight="bold" fill="white">Confirmar Reparación</text>
+    <circle cx="395" cy="85" r="16" fill="rgba(255,255,255,0.2)"/>
+    <text x="395" y="92" font-size="20" fill="white" text-anchor="middle">×</text>
+    
+    <!-- Columna Izquierda: Info -->
+    <g id="left-column">
+      <!-- Card Servicio -->
+      <rect x="40" y="135" width="170" height="85" rx="8" fill="#fef3c7" stroke="#fbbf24" stroke-width="2"/>
+      <text x="50" y="155" font-size="10" font-weight="bold" fill="#92400e">📋 SERVICIO</text>
+      <line x1="50" y1="162" x2="200" y2="162" stroke="#fbbf24" stroke-width="1"/>
+      <text x="50" y="178" font-size="11" font-weight="bold" fill="#78350f">SRV-2026-005</text>
+      <text x="50" y="195" font-size="10" fill="#92400e">📅 2026-03-31</text>
+      <text x="50" y="210" font-size="9" fill="#a16207">Estado: En proceso</text>
+      
+      <!-- Card Equipo -->
+      <rect x="40" y="230" width="170" height="85" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+      <text x="50" y="250" font-size="10" font-weight="bold" fill="#1e3a8a">💻 EQUIPO</text>
+      <line x1="50" y1="257" x2="200" y2="257" stroke="#3b82f6" stroke-width="1"/>
+      <text x="50" y="273" font-size="11" font-weight="bold" fill="#1e40af">Monitor</text>
+      <text x="50" y="290" font-size="10" fill="#1e40af">Marca: Hp</text>
+      <text x="50" y="305" font-size="10" fill="#1e40af">Modelo: G004</text>
+      
+      <!-- Card Cliente -->
+      <rect x="40" y="325" width="170" height="85" rx="8" fill="#dcfce7" stroke="#22c55e" stroke-width="2"/>
+      <text x="50" y="345" font-size="10" font-weight="bold" fill="#14532d">👤 CLIENTE</text>
+      <line x1="50" y1="352" x2="200" y2="352" stroke="#22c55e" stroke-width="1"/>
+      <text x="50" y="368" font-size="10" font-weight="bold" fill="#15803d">JESÚS FERNANDO</text>
+      <text x="50" y="385" font-size="10" fill="#15803d">📞 921709774</text>
+      <text x="50" y="400" font-size="9" fill="#166534">✉️ cliente@email.com</text>
+      
+      <!-- Resumen Total -->
+      <rect x="40" y="420" width="170" height="60" rx="8" fill="#f0f9ff" stroke="#0284c7" stroke-width="2"/>
+      <text x="50" y="440" font-size="10" font-weight="bold" fill="#0c4a6e">💰 RESUMEN</text>
+      <line x1="50" y1="447" x2="200" y2="447" stroke="#0284c7" stroke-width="1"/>
+      <text x="50" y="463" font-size="10" fill="#075985">Problemas: 3</text>
+      <text x="200" y="473" font-size="16" font-weight="bold" fill="#0284c7" text-anchor="end">$190.00</text>
+    </g>
+    
+    <!-- Columna Derecha: Problemas -->
+    <g id="right-column">
+      <rect x="220" y="135" width="190" height="25" rx="6" fill="#f8fafc"/>
+      <text x="230" y="152" font-size="11" font-weight="bold" fill="#334155">Problemas Diagnosticados</text>
+      
+      <!-- Problema 1 - Compacto -->
+      <rect x="220" y="168" width="190" height="75" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+      <rect x="228" y="176" width="18" height="18" rx="4" fill="#3b82f6"/>
+      <text x="237" y="189" font-size="12" fill="white" font-weight="bold">✓</text>
+      <text x="252" y="189" font-size="11" font-weight="bold" fill="#1e293b">Problema 1</text>
+      <text x="228" y="205" font-size="9" fill="#64748b">pantalla no enciende</text>
+      <text x="228" y="220" font-size="8" fill="#10b981">✓ reparacion</text>
+      <rect x="228" y="227" width="174" height="10" rx="5" fill="#e0f2fe"/>
+      <rect x="228" y="227" width="174" height="10" rx="5" fill="#0ea5e9"/>
+      <text x="400" y="235" font-size="11" font-weight="bold" fill="#0284c7" text-anchor="end">$30.00</text>
+      
+      <!-- Problema 2 - Compacto -->
+      <rect x="220" y="251" width="190" height="75" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+      <rect x="228" y="259" width="18" height="18" rx="4" fill="#3b82f6"/>
+      <text x="237" y="272" font-size="12" fill="white" font-weight="bold">✓</text>
+      <text x="252" y="272" font-size="11" font-weight="bold" fill="#1e293b">Problema 2</text>
+      <text x="228" y="288" font-size="9" fill="#64748b">cable de cargador</text>
+      <text x="228" y="303" font-size="8" fill="#10b981">✓ nuevo</text>
+      <rect x="228" y="310" width="174" height="10" rx="5" fill="#e0f2fe"/>
+      <rect x="228" y="310" width="174" height="10" rx="5" fill="#0ea5e9"/>
+      <text x="400" y="318" font-size="11" font-weight="bold" fill="#0284c7" text-anchor="end">$80.00</text>
+      
+      <!-- Problema 3 - Compacto -->
+      <rect x="220" y="334" width="190" height="75" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+      <rect x="228" y="342" width="18" height="18" rx="4" fill="#3b82f6"/>
+      <text x="237" y="355" font-size="12" fill="white" font-weight="bold">✓</text>
+      <text x="252" y="355" font-size="11" font-weight="bold" fill="#1e293b">Problema 3</text>
+      <text x="228" y="371" font-size="9" fill="#64748b">antivirus</text>
+      <text x="228" y="386" font-size="8" fill="#10b981">✓ instalacion</text>
+      <rect x="228" y="393" width="174" height="10" rx="5" fill="#e0f2fe"/>
+      <rect x="228" y="393" width="174" height="10" rx="5" fill="#0ea5e9"/>
+      <text x="400" y="401" font-size="11" font-weight="bold" fill="#0284c7" text-anchor="end">$80.00</text>
+      
+      <!-- Comentario -->
+      <rect x="220" y="417" width="190" height="63" rx="6" fill="white" stroke="#cbd5e1" stroke-width="1"/>
+      <text x="228" y="433" font-size="9" fill="#64748b">💬 Comentario</text>
+      <rect x="228" y="438" width="174" height="35" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+      <text x="235" y="455" font-size="9" fill="#334155">el equipo esta óptimo</text>
+    </g>
+    
+    <!-- Footer con botones -->
+    <rect x="40" y="495" width="370" height="140" rx="8" fill="#fefce8" stroke="#facc15" stroke-width="1"/>
+    <text x="50" y="515" font-size="10" fill="#713f12">⚠️ Verifica que todos los problemas estén marcados</text>
+    <text x="50" y="530" font-size="9" fill="#854d0e">antes de completar la reparación.</text>
+    
+    <rect x="50" y="545" width="165" height="45" rx="8" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1"/>
+    <text x="132" y="572" font-size="13" font-weight="bold" fill="#475569" text-anchor="middle">Cancelar</text>
+    
+    <rect x="225" y="545" width="175" height="45" rx="8" fill="#10b981" stroke="#059669" stroke-width="2"/>
+    <text x="312" y="572" font-size="13" font-weight="bold" fill="white" text-anchor="middle">✓ Completar</text>
+    
+    <text x="225" y="615" font-size="8" fill="#64748b" text-anchor="middle">Última actualización: Hoy 14:30</text>
+  </g>
+  
+  <!-- DISEÑO ALTERNATIVO 2: Layout horizontal con tabs -->
+  <g id="alternativa-2">
+    <text x="675" y="30" font-size="14" font-weight="bold" fill="#333" text-anchor="middle">ALTERNATIVA 2: Tabs Horizontales</text>
+    
+    <!-- Modal más ancho -->
+    <rect x="475" y="50" width="400" height="600" rx="16" fill="white" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)"/>
+    
+    <!-- Header minimalista -->
+    <rect x="475" y="50" width="400" height="60" rx="16" fill="#1e293b"/>
+    <text x="495" y="85" font-size="16" font-weight="bold" fill="white">✓ Confirmar Reparación</text>
+    <text x="855" y="88" font-size="22" fill="#94a3b8" text-anchor="end">×</text>
+    
+    <!-- Tabs -->
+    <rect x="490" y="120" width="370" height="40" rx="8" fill="#f1f5f9"/>
+    <rect x="495" y="125" width="115" height="30" rx="6" fill="#3b82f6"/>
+    <text x="552" y="145" font-size="10" font-weight="bold" fill="white" text-anchor="middle">📋 Detalles</text>
+    <rect x="615" y="125" width="115" height="30" rx="6" fill="transparent"/>
+    <text x="672" y="145" font-size="10" font-weight="bold" fill="#64748b" text-anchor="middle">💻 Equipo</text>
+    <rect x="735" y="125" width="115" height="30" rx="6" fill="transparent"/>
+    <text x="792" y="145" font-size="10" font-weight="bold" fill="#64748b" text-anchor="middle">👤 Cliente</text>
+    
+    <!-- Info rápida en chips -->
+    <g id="info-chips">
+      <rect x="490" y="175" width="110" height="28" rx="14" fill="#fef3c7" stroke="#fbbf24" stroke-width="1"/>
+      <text x="545" y="193" font-size="9" fill="#92400e" text-anchor="middle">SRV-2026-005</text>
+      
+      <rect x="610" y="175" width="90" height="28" rx="14" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
+      <text x="655" y="193" font-size="9" fill="#1e40af" text-anchor="middle">Monitor Hp</text>
+      
+      <rect x="710" y="175" width="150" height="28" rx="14" fill="#dcfce7" stroke="#22c55e" stroke-width="1"/>
+      <text x="785" y="193" font-size="9" fill="#15803d" text-anchor="middle">JESÚS F. - 921709774</text>
+    </g>
+    
+    <!-- Lista de problemas horizontal -->
+    <text x="490" y="225" font-size="12" font-weight="bold" fill="#1e293b">Problemas Encontrados</text>
+    <text x="490" y="242" font-size="9" fill="#64748b">Confirma que todos han sido reparados</text>
+    
+    <!-- Grid de problemas 3 columnas -->
+    <g id="problems-grid">
+      <!-- Problema 1 -->
+      <rect x="490" y="255" width="115" height="140" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+      <rect x="498" y="263" width="20" height="20" rx="5" fill="#10b981"/>
+      <text x="508" y="278" font-size="14" fill="white" font-weight="bold">✓</text>
+      <text x="525" y="278" font-size="11" font-weight="bold" fill="#1e293b">P1</text>
+      <rect x="498" y="288" width="99" height="75" rx="6" fill="white"/>
+      <text x="505" y="303" font-size="9" fill="#64748b">Descripción:</text>
+      <text x="505" y="318" font-size="8" fill="#334155">pantalla no</text>
+      <text x="505" y="330" font-size="8" fill="#334155">enciende</text>
+      <text x="505" y="348" font-size="7" fill="#10b981">✓ reparacion</text>
+      <text x="590" y="385" font-size="13" font-weight="bold" fill="#0284c7" text-anchor="end">$30</text>
+      
+      <!-- Problema 2 -->
+      <rect x="615" y="255" width="115" height="140" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+      <rect x="623" y="263" width="20" height="20" rx="5" fill="#10b981"/>
+      <text x="633" y="278" font-size="14" fill="white" font-weight="bold">✓</text>
+      <text x="650" y="278" font-size="11" font-weight="bold" fill="#1e293b">P2</text>
+      <rect x="623" y="288" width="99" height="75" rx="6" fill="white"/>
+      <text x="630" y="303" font-size="9" fill="#64748b">Descripción:</text>
+      <text x="630" y="318" font-size="8" fill="#334155">cable de</text>
+      <text x="630" y="330" font-size="8" fill="#334155">cargador</text>
+      <text x="630" y="348" font-size="7" fill="#10b981">✓ nuevo</text>
+      <text x="715" y="385" font-size="13" font-weight="bold" fill="#0284c7" text-anchor="end">$80</text>
+      
+      <!-- Problema 3 -->
+      <rect x="740" y="255" width="115" height="140" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+      <rect x="748" y="263" width="20" height="20" rx="5" fill="#10b981"/>
+      <text x="758" y="278" font-size="14" fill="white" font-weight="bold">✓</text>
+      <text x="775" y="278" font-size="11" font-weight="bold" fill="#1e293b">P3</text>
+      <rect x="748" y="288" width="99" height="75" rx="6" fill="white"/>
+      <text x="755" y="303" font-size="9" fill="#64748b">Descripción:</text>
+      <text x="755" y="318" font-size="8" fill="#334155">antivirus</text>
+      <text x="755" y="348" font-size="7" fill="#10b981">✓ instalacion</text>
+      <text x="840" y="385" font-size="13" font-weight="bold" fill="#0284c7" text-anchor="end">$80</text>
+    </g>
+    
+    <!-- Total destacado -->
+    <rect x="490" y="410" width="370" height="50" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="500" y="440" font-size="14" font-weight="bold" fill="#1e40af">TOTAL A COBRAR:</text>
+    <text x="850" y="442" font-size="20" font-weight="bold" fill="#2563eb" text-anchor="end">$190.00</text>
+    
+    <!-- Comentario -->
+    <rect x="490" y="475" width="370" height="70" rx="8" fill="white" stroke="#cbd5e1" stroke-width="1"/>
+    <text x="500" y="493" font-size="10" fill="#64748b">💬 Comentario adicional (opcional)</text>
+    <rect x="500" y="500" width="350" height="35" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="510" y="520" font-size="9" fill="#334155">el equipo esta óptimo</text>
+    
+    <!-- Botones modernos -->
+    <rect x="490" y="560" width="175" height="50" rx="10" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+    <text x="577" y="590" font-size="13" font-weight="bold" fill="#475569" text-anchor="middle">← Cancelar</text>
+    
+    <rect x="685" y="560" width="175" height="50" rx="10" fill="#10b981" stroke="#059669" stroke-width="2"/>
+    <text x="772" y="590" font-size="13" font-weight="bold" fill="white" text-anchor="middle">Completar →</text>
+  </g>
+</svg>

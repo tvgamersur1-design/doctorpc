@@ -17,10 +17,10 @@ Se implementó la generación de PDFs usando **Puppeteer** para que funcione en 
 - Troubleshooting y alternativas
 - Ejemplos de uso
 
-### 3. `test-pdf-local.js`
-- Script de prueba para verificar que Puppeteer funciona
-- Ejecutar: `node test-pdf-local.js`
-- Genera un PDF de prueba llamado `test-reporte.pdf`
+### 3. Pruebas
+- El PDF se genera directamente en el navegador con jsPDF
+- No requiere scripts de prueba adicionales
+- Funciona tanto en desarrollo local como en producción
 
 ## Archivos Modificados
 
@@ -73,10 +73,7 @@ test-reporte.pdf
 # Instalar dependencias
 npm install
 
-# Ejecutar prueba de PDF
-node test-pdf-local.js
-
-# Debería crear test-reporte.pdf
+# El PDF se genera en el navegador, no requiere pruebas de servidor
 ```
 
 ### Prueba en Desarrollo
@@ -123,6 +120,6 @@ Por ahora, solo se implementó la generación de PDF.
 
 Si hay problemas:
 1. Revisar logs de Netlify Functions
-2. Ejecutar `node test-pdf-local.js` para verificar localmente
-3. Verificar que las variables de entorno estén configuradas
-4. Revisar `GENERACION_PDF.md` para troubleshooting detallado
+2. Verificar que las variables de entorno estén configuradas
+3. Revisar `GENERACION_PDF.md` para troubleshooting detallado
+4. Verificar que jsPDF esté cargado correctamente en el navegador

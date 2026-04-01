@@ -88,6 +88,8 @@ async function initializeDatabase() {
     await db.collection('servicio_equipo').createIndex({ prioridad: 1 });
     await db.collection('servicio_equipo').createIndex({ fecha_inicio: -1 });
     await db.collection('servicio_equipo').createIndex({ tecnico_asignado: 1 });
+    await db.collection('servicio_equipo').createIndex({ estado: 1, fecha_creacion: -1 });
+    await db.collection('servicio_equipo').createIndex({ cliente_id: 1, estado: 1 });
     console.log('✓ Índices de servicio_equipo creados');
 
     // ============ INSERTAR DATOS INICIALES ============

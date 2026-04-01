@@ -41,7 +41,7 @@ app.use(cors({
   },
   credentials: true
 }));
-app.use(express.json({ limit: '2mb' }));
+app.use(express.json({ limit: '10mb' }));
 app.use(express.static('public'));
 
 // Rate limiting para login (máx 10 intentos por 15 minutos por IP)
@@ -137,6 +137,11 @@ async function createIndexes() {
     await db.collection('servicio_equipo').createIndex({ equipo_id: 1 });
     await db.collection('servicio_equipo').createIndex({ numero_orden: 1 }, { unique: true });
     await db.collection('servicio_equipo').createIndex({ estado: 1 });
+    await db.collection('servicio_equipo').createIndex({ estado: 1, fecha_creacion: -1 });
+    await db.collection('servicio_equipo').createIndex({ cliente_id: 1, estado: 1 });
+    
+    // Índices compuestos para servicios
+    await db.collection('servicios').createIndex({ estado: 1, fecha_creacion: -1 });
     
     // Índices para usuarios
     await db.collection('usuarios').createIndex({ usuario: 1 }, { unique: true });
@@ -813,33 +818,64 @@ app.get('/api/servicios/proximo-numero', async (req, res) => {
   }
 });
 
-// GET all servicios
+// GET all servicios (con paginación y búsqueda)
 app.get('/api/servicios', async (req, res) => {
   try {
-    // Por defecto, excluir servicios cancelados
     const incluirCancelados = req.query.incluir_cancelados === 'true';
-    
-    console.log('🔍 GET /api/servicios - Conectado a BD:', !!db);
-    console.log('🔍 Query params:', req.query);
-    console.log('🔍 incluir_cancelados:', incluirCancelados);
+    const page = parseInt(req.query.page) || 0;
+    const limit = parseInt(req.query.limit) || 20;
+    const busqueda = req.query.q?.trim() || '';
+    const estadoFiltro = req.query.estado?.trim() || '';
     
     const filter = incluirCancelados ? {} : { estado: { $ne: 'Cancelado' } };
-    console.log('🔍 Filtro aplicado:', JSON.stringify(filter));
     
-    const servicios = await db.collection('servicios').find(filter).toArray();
-    
-    const canceladosCount = servicios.filter(s => s.estado === 'Cancelado').length;
-    console.log(`📋 GET /api/servicios: Retornando ${servicios.length} servicios (${canceladosCount} cancelados)`);
-    
-    if (servicios.length > 0) {
-      console.log(`   Primer servicio: _id=${servicios[0]._id}, nombre=${servicios[0].nombre_servicio}`);
-    } else {
-      console.warn('⚠️ No hay servicios en la base de datos');
+    // Filtro por estado específico
+    if (estadoFiltro) {
+      filter.estado = estadoFiltro;
     }
-    res.json(servicios);
+    
+    // Búsqueda por texto
+    if (busqueda) {
+      filter.$or = [
+        { numero_servicio: { $regex: busqueda, $options: 'i' } },
+        { nombre_servicio: { $regex: busqueda, $options: 'i' } },
+        { descripcion: { $regex: busqueda, $options: 'i' } },
+        { problemas_reportados: { $regex: busqueda, $options: 'i' } },
+        { local: { $regex: busqueda, $options: 'i' } }
+      ];
+    }
+    
+    // Si page > 0, usar paginación; si no, retornar todo (compatibilidad)
+    if (page > 0) {
+      const skip = (page - 1) * limit;
+      const [servicios, total] = await Promise.all([
+        db.collection('servicios')
+          .find(filter)
+          .sort({ fecha_creacion: -1 })
+          .skip(skip)
+          .limit(limit)
+          .toArray(),
+        db.collection('servicios').countDocuments(filter)
+      ]);
+      
+      console.log(`📋 GET /api/servicios: Página ${page}, ${servicios.length}/${total} servicios`);
+      res.json({
+        data: servicios,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit)
+        }
+      });
+    } else {
+      // Modo compatibilidad: retornar todos
+      const servicios = await db.collection('servicios').find(filter).sort({ fecha_creacion: -1 }).toArray();
+      console.log(`📋 GET /api/servicios: Retornando ${servicios.length} servicios (sin paginación)`);
+      res.json(servicios);
+    }
   } catch (error) {
     console.error('❌ Error GET /api/servicios:', error);
-    console.error('❌ BD conectada:', !!db);
     res.status(500).json({ error: error.message });
   }
 });
@@ -1336,19 +1372,58 @@ app.delete('/api/equipos/:id', async (req, res) => {
 
 // ==================== SERVICIO-EQUIPO ====================
 
-// GET all servicio-equipo
+// GET all servicio-equipo (con paginación y búsqueda)
 app.get('/api/servicio-equipo', async (req, res) => {
   try {
-    console.log('🔍 GET /api/servicio-equipo - Conectado a BD:', !!db);
-    const servicioEquipo = await db.collection('servicio_equipo').find({}).toArray();
-    console.log(`📋 GET /api/servicio-equipo: Retornando ${servicioEquipo.length} órdenes`);
-    if (servicioEquipo.length === 0) {
-      console.warn('⚠️ No hay órdenes de servicio en la base de datos');
+    const page = parseInt(req.query.page) || 0;
+    const limit = parseInt(req.query.limit) || 20;
+    const busqueda = req.query.q?.trim() || '';
+    const estadoFiltro = req.query.estado?.trim() || '';
+    const incluirCanceladas = req.query.incluir_canceladas === 'true';
+    
+    const filter = incluirCanceladas ? {} : { estado: { $ne: 'Cancelado' } };
+    
+    if (estadoFiltro) {
+      filter.estado = estadoFiltro;
     }
-    res.json(servicioEquipo);
+    
+    if (busqueda) {
+      filter.$or = [
+        { numero_orden: { $regex: busqueda, $options: 'i' } },
+        { descripcion_problema: { $regex: busqueda, $options: 'i' } },
+        { observaciones: { $regex: busqueda, $options: 'i' } }
+      ];
+    }
+    
+    if (page > 0) {
+      const skip = (page - 1) * limit;
+      const [servicioEquipo, total] = await Promise.all([
+        db.collection('servicio_equipo')
+          .find(filter)
+          .sort({ fecha_creacion: -1 })
+          .skip(skip)
+          .limit(limit)
+          .toArray(),
+        db.collection('servicio_equipo').countDocuments(filter)
+      ]);
+      
+      console.log(`📋 GET /api/servicio-equipo: Página ${page}, ${servicioEquipo.length}/${total} órdenes`);
+      res.json({
+        data: servicioEquipo,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit)
+        }
+      });
+    } else {
+      const servicioEquipo = await db.collection('servicio_equipo').find(filter).sort({ fecha_creacion: -1 }).toArray();
+      console.log(`📋 GET /api/servicio-equipo: Retornando ${servicioEquipo.length} órdenes (sin paginación)`);
+      res.json(servicioEquipo);
+    }
   } catch (error) {
     console.error('❌ Error GET /api/servicio-equipo:', error);
-    console.error('❌ BD conectada:', !!db);
     res.status(500).json({ error: error.message });
   }
 });
@@ -1530,6 +1605,53 @@ connectDB().then(() => {
   // ==================== WHATSAPP ====================
   // Registrar ruta después de conectar a DB para pasar la referencia
   require('./routes/whatsapp')(app, db);
+
+  // ==================== UPLOAD IMAGEN (Cloudinary) ====================
+  const crypto = require('crypto');
+  const FormData = require('form-data');
+
+  app.post('/api/upload-imagen', async (req, res) => {
+    try {
+      const { imagen, carpeta } = req.body;
+      if (!imagen || !carpeta) {
+        return res.status(400).json({ error: 'Campos "imagen" y "carpeta" son requeridos' });
+      }
+
+      const cloud_name = process.env.CLOUDINARY_CLOUD_NAME;
+      const api_key = process.env.CLOUDINARY_API_KEY;
+      const api_secret = process.env.CLOUDINARY_API_SECRET;
+
+      if (!cloud_name || !api_key || !api_secret) {
+        return res.status(500).json({ error: 'Variables de Cloudinary no configuradas' });
+      }
+
+      const folder = `doctorpc/${carpeta}`;
+      const timestamp = Math.floor(Date.now() / 1000);
+      const signatureString = `folder=${folder}&timestamp=${timestamp}${api_secret}`;
+      const signature = crypto.createHash('sha1').update(signatureString).digest('hex');
+
+      const fileData = imagen.startsWith('data:') ? imagen : `data:image/jpeg;base64,${imagen}`;
+
+      const formData = new FormData();
+      formData.append('file', fileData);
+      formData.append('api_key', api_key);
+      formData.append('timestamp', String(timestamp));
+      formData.append('signature', signature);
+      formData.append('folder', folder);
+
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`,
+        formData,
+        { headers: formData.getHeaders(), timeout: 30000 }
+      );
+
+      console.log(`[upload-imagen] ✓ Imagen subida: ${response.data.public_id}`);
+      res.json({ url: response.data.secure_url, public_id: response.data.public_id });
+    } catch (error) {
+      console.error('[upload-imagen] ❌ Error:', error.response?.data || error.message);
+      res.status(500).json({ error: error.response?.data?.error?.message || error.message });
+    }
+  });
 
   app.listen(PORT, () => {
     console.log(`\n${'═'.repeat(50)}`);

@@ -90,6 +90,7 @@ exports.handler = async (event, context) => {
     try {
       await db.collection('usuarios').createIndex({ usuario: 1 }, { unique: true });
       await db.collection('usuarios').createIndex({ correo: 1 }, { unique: true });
+      await db.collection('login_attempts').createIndex({ timestamp: 1 }, { expireAfterSeconds: 900 });
     } catch (e) { /* ya existen */ }
     await seedAdmin(db);
 
@@ -97,6 +98,20 @@ exports.handler = async (event, context) => {
 
     // POST /api/auth/login
     if (event.httpMethod === 'POST' && rawPath.includes('/login')) {
+      // Rate limiting por IP (máx 10 intentos cada 15 minutos)
+      const ip = (event.headers['x-forwarded-for'] || event.headers['client-ip'] || 'unknown').split(',')[0].trim();
+      const WINDOW_MS = 15 * 60 * 1000;
+      const MAX_ATTEMPTS = 10;
+      const now = Date.now();
+
+      const attempts = await db.collection('login_attempts').countDocuments({
+        ip, timestamp: { $gt: new Date(now - WINDOW_MS) }
+      });
+
+      if (attempts >= MAX_ATTEMPTS) {
+        return { statusCode: 429, headers, body: JSON.stringify({ error: 'Demasiados intentos de login. Intente nuevamente en 15 minutos.' }) };
+      }
+
       let body = {};
       try { body = JSON.parse(event.body); } catch (e) {}
 
@@ -107,11 +122,13 @@ exports.handler = async (event, context) => {
 
       const user = await db.collection('usuarios').findOne({ usuario });
       if (!user) {
+        await db.collection('login_attempts').insertOne({ ip, timestamp: new Date() });
         return { statusCode: 401, headers, body: JSON.stringify({ error: 'Usuario o contraseña incorrectos' }) };
       }
 
       const claveValida = await bcrypt.compare(clave, user.clave);
       if (!claveValida) {
+        await db.collection('login_attempts').insertOne({ ip, timestamp: new Date() });
         return { statusCode: 401, headers, body: JSON.stringify({ error: 'Usuario o contraseña incorrectos' }) };
       }
 

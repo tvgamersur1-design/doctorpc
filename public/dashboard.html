@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Administración - Doctor PC</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="reporte.css?v=2">
-    <link rel="stylesheet" href="cancelacion.css">
-    <link rel="stylesheet" href="diagnostico.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/reporte.css?v=2">
+    <link rel="stylesheet" href="css/cancelacion.css">
+    <link rel="stylesheet" href="css/diagnostico.css">
     <!-- Librería para generar PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
@@ -348,11 +348,11 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                         <div class="form-group" style="margin: 0;">
                             <label>Adelanto ($):</label>
-                            <input type="number" name="adelanto" step="0.01">
+                            <input type="number" name="adelanto" step="0.01" min="0">
                         </div>
                         <div class="form-group" style="margin: 0;">
                             <label>Monto Total ($):</label>
-                            <input type="number" name="monto" step="0.01">
+                            <input type="number" name="monto" step="0.01" min="0">
                         </div>
                     </div>
                 </div>
@@ -460,10 +460,10 @@
                         <p><strong>Serie:</strong> <span id="equipoSerieDiagnostico" style="font-family: monospace;">-</span></p>
                     </div>
 
-                    <!-- Descripción del Servicio -->
+                    <!-- Problemas Reportados -->
                     <div class="diagnostico-info-card" style="border-left-color: #FBC02D; background: #fff8e1;">
                         <h4 style="color: #F57F17;">
-                            <i class="fas fa-file-lines"></i> Descripción
+                            <i class="fas fa-exclamation-circle"></i> Problemas Reportados
                         </h4>
                         <p id="descripcionServicioDiagnostico" style="background: white; padding: 8px; border-radius: 4px; max-height: 85px; overflow-y: auto;">-</p>
                     </div>
@@ -815,69 +815,63 @@
 
     <!-- Modal Confirmar Reparación (Problemas completados) -->
     <div id="modalConfirmarReparacion" class="modal">
-        <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-content reparacion-modal">
             <div class="modal-header">
                 <h2><i class="fas fa-check-circle" style="color: #4CAF50; margin-right: 8px;"></i>Confirmar Reparación</h2>
                 <button class="close-btn" onclick="cerrarModalConfirmarReparacion()">×</button>
             </div>
             <div class="form-section">
                 <!-- Grid de Información: Servicio, Equipo, Cliente -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-                    <div style="padding: 12px; background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%); border-radius: 8px; border-left: 4px solid #FF9800;">
-                        <h4 style="color: #FF9800; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px; font-size: 13px;">
-                            <i class="fas fa-file-alt"></i> Servicio
-                        </h4>
-                        <div style="font-size: 11px; line-height: 1.7;">
-                            <p style="margin: 3px 0;"><span style="color: #999;">Número:</span> <strong style="color: #333;" id="numeroServicioReparacion">-</strong></p>
-                            <p style="margin: 3px 0;"><span style="color: #999;">Fecha:</span> <strong style="color: #333;" id="fechaServicioReparacion">-</strong></p>
-                        </div>
+                <div class="reparacion-info-grid">
+                    <div class="reparacion-info-card reparacion-card-servicio">
+                        <h4><i class="fas fa-file-alt"></i> Servicio</h4>
+                        <p><span>Número:</span> <strong id="numeroServicioReparacion">-</strong></p>
+                        <p><span>Fecha:</span> <strong id="fechaServicioReparacion">-</strong></p>
                     </div>
-                    <div style="padding: 12px; background: linear-gradient(135deg, #e3f2fd 0%, #f3f7ff 100%); border-radius: 8px; border-left: 4px solid #2196F3;">
-                        <h4 style="color: #2196F3; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px; font-size: 13px;">
-                            <i class="fas fa-laptop"></i> Equipo
-                        </h4>
-                        <div style="font-size: 11px; line-height: 1.7;">
-                            <p style="margin: 3px 0;"><span style="color: #999;">Tipo:</span> <strong style="color: #333;" id="equipoTipoReparacion">-</strong></p>
-                            <p style="margin: 3px 0;"><span style="color: #999;">Marca/Modelo:</span> <strong style="color: #333;" id="marcaModeloReparacion">-</strong></p>
-                        </div>
+                    <div class="reparacion-info-card reparacion-card-equipo">
+                        <h4><i class="fas fa-laptop"></i> Equipo</h4>
+                        <p><span>Tipo:</span> <strong id="equipoTipoReparacion">-</strong></p>
+                        <p><span>Marca/Modelo:</span> <strong id="marcaModeloReparacion">-</strong></p>
                     </div>
-                    <div style="padding: 12px; background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%); border-radius: 8px; border-left: 4px solid #4CAF50;">
-                        <h4 style="color: #4CAF50; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px; font-size: 13px;">
-                            <i class="fas fa-user"></i> Cliente
-                        </h4>
-                        <div style="font-size: 11px; line-height: 1.7;">
-                            <p style="margin: 3px 0;"><span style="color: #999;">Nombre:</span> <strong style="color: #333;" id="clienteNombreReparacion">-</strong></p>
-                            <p style="margin: 3px 0;"><span style="color: #999;">Teléfono:</span> <strong style="color: #333;" id="clienteTelefonoReparacion">-</strong></p>
-                        </div>
+                    <div class="reparacion-info-card reparacion-card-cliente">
+                        <h4><i class="fas fa-user"></i> Cliente</h4>
+                        <p><span>Nombre:</span> <strong id="clienteNombreReparacion">-</strong></p>
+                        <p><span>Teléfono:</span> <strong id="clienteTelefonoReparacion">-</strong></p>
                     </div>
                 </div>
 
-                <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, #ddd, transparent); margin-bottom: 20px;">
+                <hr class="reparacion-divider">
 
-                <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <h4 style="color: #333; margin-bottom: 10px;">Problemas encontrados en diagnóstico:</h4>
-                    <p style="font-size: 13px; color: #666; margin: 0;">Confirma que todos estos problemas han sido reparados:</p>
+                <div class="reparacion-section-header">
+                    <h4><i class="fas fa-tools"></i> Problemas encontrados en diagnóstico</h4>
+                    <p>Confirma que todos estos problemas han sido reparados:</p>
                 </div>
 
-                <div id="problemasReparacionContainer" style="max-height: 300px; overflow-y: auto; margin-bottom: 20px;"></div>
+                <div id="problemasReparacionContainer" class="reparacion-problemas-container"></div>
 
-                <div class="form-group full" style="margin-bottom: 20px;">
-                    <label style="font-size: 13px; color: #666;">
+                <!-- Monto Total -->
+                <div class="reparacion-monto-total">
+                    <span>Monto Total de Reparación</span>
+                    <strong id="montoTotalReparacion">$ 0.00</strong>
+                </div>
+
+                <div class="form-group full" style="margin-bottom: 10px;">
+                    <label class="reparacion-label">
                         <i class="fas fa-comment"></i> Comentario (Opcional)
                     </label>
-                    <textarea id="comentarioReparacion" placeholder="Agrega notas sobre la reparación realizada..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; resize: vertical; min-height: 80px;"></textarea>
+                    <textarea id="comentarioReparacion" class="reparacion-textarea" placeholder="Agrega notas sobre la reparación realizada..."></textarea>
                 </div>
 
-                <div style="background: #fff3e0; border-left: 4px solid #FF9800; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
-                    <p style="margin: 0; color: #E65100; font-size: 13px;">
-                        <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
+                <div class="reparacion-alerta">
+                    <p>
+                        <i class="fas fa-info-circle"></i>
                         Marca todos los problemas como completados para finalizar la reparación.
                     </p>
                 </div>
 
-                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <div class="reparacion-actions">
                     <button type="button" class="btn-secondary" onclick="cerrarModalConfirmarReparacion()">
-                        Cancelar
+                        <i class="fas fa-times"></i> Cancelar
                     </button>
                     <button type="button" class="btn-primary" id="btnConfirmarReparacion" onclick="confirmarReparacionCompleta()" style="background: #4CAF50; border-color: #4CAF50;" disabled>
                         <i class="fas fa-check"></i> Marcar como Completado
@@ -1028,8 +1022,16 @@
                     </div>
 
                     <div class="form-group">
-                        <label style="font-size: 12px; color: #333;"><i class="fas fa-camera"></i> Foto de Entrega (Opcional)</label>
-                        <input type="file" id="entFoto" accept="image/*" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                        <label style="font-size: 12px; color: #333;"><i class="fas fa-camera"></i> Fotos de Entrega (Opcional - máx. 3)</label>
+                        <input type="file" id="entFotoInput" accept="image/*" style="display: none;" onchange="agregarFotoEntrega(this)">
+                        <div id="fotosEntregaContainer" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px;">
+                            <!-- Preview de fotos se agregan aquí dinámicamente -->
+                            <div id="btnAgregarFoto" onclick="document.getElementById('entFotoInput').click()" style="width: 100px; height: 100px; border: 2px dashed #ccc; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; background: #fafafa;">
+                                <i class="fas fa-plus" style="font-size: 20px; color: #999; margin-bottom: 4px;"></i>
+                                <span style="font-size: 10px; color: #999;">Agregar</span>
+                            </div>
+                        </div>
+                        <p id="fotoEntregaStatus" style="font-size: 11px; color: #999; margin-top: 6px;"></p>
                     </div>
                 </div>
 
@@ -1135,7 +1137,8 @@
 
     <script src="animations.js"></script>
     <script src="reporte.js?v=2"></script>
-    <script src="app.js?v=5"></script>
+    <!-- Script principal con toda la funcionalidad -->
+    <script src="app.js?v=6"></script>
     <script>
         // Incluir modales en el cierre al hacer clic fuera
          const originalWindowOnclick = window.onclick;
@@ -1295,6 +1298,16 @@
                       </form>
                   </div>
               </div>
+
+    <!-- Modal Ver Imagen Completa -->
+    <div id="modalImagenCompleta" class="modal" style="z-index: 10001; background: rgba(0,0,0,0.95);">
+        <div style="position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 20px;">
+            <button onclick="cerrarImagenCompleta()" style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 18px; z-index: 10002; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-times"></i>
+            </button>
+            <img id="imagenCompletaSrc" src="" alt="Imagen completa" style="max-width: 95%; max-height: 90vh; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); object-fit: contain;">
+        </div>
+    </div>
 
               </body>
               </html>

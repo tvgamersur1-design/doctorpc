@@ -75,7 +75,7 @@ git push origin main
 ### PDF no se genera
 1. Revisar logs de Netlify Functions
 2. Verificar que `MONGODB_URI` esté configurado
-3. Probar localmente: `node test-pdf-local.js`
+3. Verificar que todas las variables de entorno estén en Netlify
 
 ### Error de conexión a MongoDB
 1. Verificar que `MONGODB_URI` esté en variables de entorno

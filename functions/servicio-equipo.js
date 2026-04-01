@@ -77,17 +77,62 @@ exports.handler = async (event, context) => {
     if (httpMethod === 'GET' && !id) {
       console.log('[servicio-equipo] Obteniendo lista de órdenes...');
       
-      // Por defecto, excluir órdenes canceladas
-      const incluirCanceladas = event.queryStringParameters?.incluir_canceladas === 'true';
+      const params = event.queryStringParameters || {};
+      const page = parseInt(params.page) || 0;
+      const limit = parseInt(params.limit) || 20;
+      const busqueda = (params.q || '').trim();
+      const estadoFiltro = (params.estado || '').trim();
+      const incluirCanceladas = params.incluir_canceladas === 'true';
+      
       const filter = incluirCanceladas ? {} : { estado: { $ne: 'Cancelado' } };
       
-      const servicioEquipo = await db.collection('servicio_equipo').find(filter).toArray();
-      console.log(`[servicio-equipo] ✓ Retornando ${servicioEquipo.length} órdenes (canceladas: ${incluirCanceladas ? 'incluidas' : 'excluidas'})`);
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify(servicioEquipo)
-      };
+      if (estadoFiltro) {
+        filter.estado = estadoFiltro;
+      }
+      
+      if (busqueda) {
+        filter.$or = [
+          { numero_orden: { $regex: busqueda, $options: 'i' } },
+          { descripcion_problema: { $regex: busqueda, $options: 'i' } },
+          { observaciones: { $regex: busqueda, $options: 'i' } }
+        ];
+      }
+      
+      if (page > 0) {
+        const skip = (page - 1) * limit;
+        const [servicioEquipo, total] = await Promise.all([
+          db.collection('servicio_equipo')
+            .find(filter)
+            .sort({ fecha_creacion: -1 })
+            .skip(skip)
+            .limit(limit)
+            .toArray(),
+          db.collection('servicio_equipo').countDocuments(filter)
+        ]);
+        
+        console.log(`[servicio-equipo] ✓ Página ${page}, ${servicioEquipo.length}/${total} órdenes`);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            data: servicioEquipo,
+            pagination: {
+              page,
+              limit,
+              total,
+              totalPages: Math.ceil(total / limit)
+            }
+          })
+        };
+      } else {
+        const servicioEquipo = await db.collection('servicio_equipo').find(filter).sort({ fecha_creacion: -1 }).toArray();
+        console.log(`[servicio-equipo] ✓ Retornando ${servicioEquipo.length} órdenes (sin paginación)`);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify(servicioEquipo)
+        };
+      }
     }
 
     // GET /servicio-equipo/:id

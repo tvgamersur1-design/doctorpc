@@ -1,0 +1,276 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1100">
+  <defs>
+    <style>
+      .header { fill: #2196F3; }
+      .header-text { fill: white; font-family: Arial, sans-serif; font-weight: bold; }
+      .section-title { fill: #2196F3; font-family: Arial, sans-serif; font-weight: bold; font-size: 12px; }
+      .label { fill: #1976D2; font-family: Arial, sans-serif; font-weight: bold; font-size: 10px; }
+      .value { fill: #333; font-family: Arial, sans-serif; font-size: 10px; }
+      .box { fill: #F5F5F5; stroke: #E0E0E0; stroke-width: 1; }
+      .table-header { fill: #1976D2; }
+      .table-row { fill: #FAFAFA; stroke: #E0E0E0; stroke-width: 0.5; }
+      .total-row { fill: #4CAF50; }
+      .signature-line { stroke: #999; stroke-width: 1; }
+      .terms-text { fill: #666; font-family: Arial, sans-serif; font-size: 8px; }
+      .icon { fill: #2196F3; }
+      .badge { fill: #FFC107; stroke: #FF9800; stroke-width: 1; }
+      .photo-box { fill: #E3F2FD; stroke: #2196F3; stroke-width: 1; stroke-dasharray: 3,3; }
+    </style>
+  </defs>
+  
+  <!-- ENCABEZADO -->
+  <rect class="header" width="800" height="80" rx="0"/>
+  
+  <!-- Logo placeholder -->
+  <circle cx="40" cy="40" r="25" fill="white" opacity="0.9"/>
+  <text x="40" y="45" text-anchor="middle" fill="#2196F3" font-size="14" font-weight="bold">PC</text>
+  
+  <!-- Nombre empresa -->
+  <text class="header-text" x="80" y="35" font-size="20">DOCTOR PC</text>
+  <text class="header-text" x="80" y="50" font-size="9" opacity="0.9">Soluciones Informáticas Profesionales</text>
+  <text class="header-text" x="80" y="63" font-size="8" opacity="0.8">Tel: 961 509 941 | Email: contacto@doctorpc.com</text>
+  
+  <!-- Número de orden -->
+  <rect x="650" y="15" width="130" height="50" rx="5" fill="white"/>
+  <text x="715" y="32" text-anchor="middle" class="label" fill="#2196F3">ORDEN N°</text>
+  <text x="715" y="52" text-anchor="middle" font-size="18" font-weight="bold" fill="#2196F3">SRV-2026-005</text>
+  
+  <!-- Fecha emisión -->
+  <text x="780" y="95" text-anchor="end" class="value" fill="#666">Fecha de emisión: 31 de marzo de 2026</text>
+  
+  <!-- SECCIÓN: CLIENTE Y EQUIPO (DOS COLUMNAS) -->
+  <g transform="translate(0, 110)">
+    <!-- Columna Cliente -->
+    <rect class="header" x="20" y="0" width="370" height="25" rx="3"/>
+    <text class="header-text" x="205" y="16" text-anchor="middle" font-size="11">INFORMACIÓN DEL CLIENTE</text>
+    
+    <rect class="box" x="20" y="25" width="370" height="95" rx="3"/>
+    <text class="label" x="30" y="42">Cliente:</text>
+    <text class="value" x="80" y="42">JESUS FERNANDO LUCERO PURIHUAMAN</text>
+    
+    <text class="label" x="30" y="58">DNI:</text>
+    <text class="value" x="80" y="58">60160048</text>
+    
+    <text class="label" x="30" y="74">Teléfono:</text>
+    <text class="value" x="80" y="74">921709774</text>
+    
+    <text class="label" x="30" y="90">Email:</text>
+    <text class="value" x="80" y="90">jesus.fernando@email.com</text>
+    
+    <text class="label" x="30" y="106">Dirección:</text>
+    <text class="value" x="80" y="106">Av. Principal 123, Chiclayo</text>
+    
+    <!-- Columna Equipo -->
+    <rect class="header" x="410" y="0" width="370" height="25" rx="3"/>
+    <text class="header-text" x="595" y="16" text-anchor="middle" font-size="11">EQUIPO RECIBIDO</text>
+    
+    <rect class="box" x="410" y="25" width="370" height="95" rx="3"/>
+    <text class="label" x="420" y="42">Tipo:</text>
+    <text class="value" x="470" y="42">Monitor</text>
+    
+    <text class="label" x="420" y="58">Marca:</text>
+    <text class="value" x="470" y="58">Hp</text>
+    
+    <text class="label" x="420" y="74">Modelo:</text>
+    <text class="value" x="470" y="74">G004</text>
+    
+    <text class="label" x="420" y="90">N° Serie:</text>
+    <text class="value" x="470" y="90">501</text>
+    
+    <text class="label" x="420" y="106">Estado Ingreso:</text>
+    <text class="value" x="490" y="106">Con daños visibles</text>
+  </g>
+  
+  <!-- SECCIÓN: DETALLES DEL SERVICIO E INFO TÉCNICA -->
+  <g transform="translate(0, 235)">
+    <!-- Columna Detalles -->
+    <rect class="header" x="20" y="0" width="370" height="25" rx="3"/>
+    <text class="header-text" x="205" y="16" text-anchor="middle" font-size="11">DETALLES DEL SERVICIO</text>
+    
+    <rect class="box" x="20" y="25" width="370" height="95" rx="3"/>
+    <text class="label" x="30" y="42">Problema Reportado:</text>
+    <text class="value" x="30" y="56" font-size="9">• Pantalla rota</text>
+    <text class="value" x="30" y="68" font-size="9">• No enciende</text>
+    <text class="value" x="30" y="80" font-size="9">• Ventilador ruidoso</text>
+    <text class="value" x="30" y="92" font-size="9">• Virus/Malware</text>
+    
+    <text class="label" x="30" y="108">Local:</text>
+    <rect x="70" y="98" width="60" height="16" rx="3" fill="#E3F2FD" stroke="#2196F3"/>
+    <text x="100" y="109" text-anchor="middle" class="value" fill="#2196F3" font-weight="bold">Chiclayo</text>
+    
+    <!-- Columna Info Técnica -->
+    <rect class="header" x="410" y="0" width="370" height="25" rx="3"/>
+    <text class="header-text" x="595" y="16" text-anchor="middle" font-size="11">INFORMACIÓN TÉCNICA</text>
+    
+    <rect class="box" x="410" y="25" width="370" height="95" rx="3"/>
+    <text class="label" x="420" y="42">Técnico:</text>
+    <text class="value" x="480" y="42">jesus</text>
+    
+    <text class="label" x="420" y="58">Estado:</text>
+    <rect x="480" y="48" width="80" height="16" rx="3" fill="#C8E6C9" stroke="#4CAF50"/>
+    <text x="520" y="59" text-anchor="middle" class="value" fill="#2E7D32" font-weight="bold">Entregado</text>
+    
+    <text class="label" x="420" y="78">Prioridad:</text>
+    <rect x="480" y="68" width="60" height="16" rx="3" fill="#FFF3E0" stroke="#FF9800"/>
+    <text x="510" y="79" text-anchor="middle" class="value" fill="#E65100" font-weight="bold">Normal</text>
+    
+    <text class="label" x="420" y="98">Fecha Ingreso:</text>
+    <text class="value" x="500" y="98">31/03/2026 - 11:23</text>
+    
+    <text class="label" x="420" y="112">Fecha Entrega:</text>
+    <text class="value" x="500" y="112">31/03/2026 - 16:49</text>
+  </g>
+  
+  <!-- SECCIÓN: DIAGNÓSTICO Y SOLUCIÓN -->
+  <g transform="translate(0, 365)">
+    <rect class="header" x="20" y="0" width="760" height="25" rx="3"/>
+    <text class="header-text" x="400" y="16" text-anchor="middle" font-size="11">DIAGNÓSTICO Y SOLUCIÓN</text>
+    
+    <rect class="box" x="20" y="25" width="760" height="85" rx="3"/>
+    
+    <text class="label" x="30" y="42">Diagnóstico Técnico:</text>
+    <text class="value" x="30" y="56" font-size="9">• pantalla-rota: Solución → pantalla nueva (S/. 30.00)</text>
+    <text class="value" x="30" y="68" font-size="9">• cable de cargador: Solución → nuevo (S/. 80.00)</text>
+    <text class="value" x="30" y="80" font-size="9">• antivirus: Solución → instalación (S/. 80.00)</text>
+    
+    <text class="label" x="30" y="98">Solución Aplicada:</text>
+    <text class="value" x="30" y="108" font-size="9">Se reemplazó la pantalla dañada, se instaló cable de cargador nuevo y se realizó limpieza completa del sistema con instalación de antivirus.</text>
+  </g>
+  
+  <!-- SECCIÓN: TABLA DE COSTOS -->
+  <g transform="translate(0, 475)">
+    <rect class="header" x="20" y="0" width="760" height="25" rx="3"/>
+    <text class="header-text" x="400" y="16" text-anchor="middle" font-size="11">DESGLOSE DE COSTOS</text>
+    
+    <!-- Encabezado tabla -->
+    <rect class="table-header" x="120" y="30" width="460" height="20"/>
+    <rect class="table-header" x="580" y="30" width="100" height="20"/>
+    <text class="header-text" x="130" y="43" font-size="10">CONCEPTO</text>
+    <text class="header-text" x="590" y="43" font-size="10">MONTO</text>
+    
+    <!-- Fila 1 -->
+    <rect class="table-row" x="120" y="50" width="460" height="18"/>
+    <rect class="table-row" x="580" y="50" width="100" height="18"/>
+    <text class="value" x="130" y="62">Servicio Técnico</text>
+    <text class="value" x="590" y="62">S/. 30.00</text>
+    
+    <!-- Fila 2 -->
+    <rect class="table-row" x="120" y="68" width="460" height="18"/>
+    <rect class="table-row" x="580" y="68" width="100" height="18"/>
+    <text class="value" x="130" y="80">Repuestos:</text>
+    <text class="value" x="590" y="80">S/. 160.00</text>
+    
+    <!-- Subfila 2.1 -->
+    <rect class="table-row" x="120" y="86" width="460" height="16"/>
+    <rect class="table-row" x="580" y="86" width="100" height="16"/>
+    <text class="value" x="145" y="97" font-size="9">- Pantalla nueva</text>
+    <text class="value" x="590" y="97" font-size="9">S/. 30.00</text>
+    
+    <!-- Subfila 2.2 -->
+    <rect class="table-row" x="120" y="102" width="460" height="16"/>
+    <rect class="table-row" x="580" y="102" width="100" height="16"/>
+    <text class="value" x="145" y="113" font-size="9">- Cable cargador</text>
+    <text class="value" x="590" y="113" font-size="9">S/. 80.00</text>
+    
+    <!-- Subfila 2.3 -->
+    <rect class="table-row" x="120" y="118" width="460" height="16"/>
+    <rect class="table-row" x="580" y="118" width="100" height="16"/>
+    <text class="value" x="145" y="129" font-size="9">- Antivirus (instalación)</text>
+    <text class="value" x="590" y="129" font-size="9">S/. 80.00</text>
+    
+    <!-- Fila 3 -->
+    <rect class="table-row" x="120" y="134" width="460" height="18"/>
+    <rect class="table-row" x="580" y="134" width="100" height="18"/>
+    <text class="value" x="130" y="146">Adicionales</text>
+    <text class="value" x="590" y="146">S/. 0.00</text>
+    
+    <!-- Línea separadora -->
+    <line x1="120" y1="156" x2="680" y2="156" stroke="#999" stroke-width="1"/>
+    
+    <!-- Subtotal -->
+    <rect class="table-row" x="120" y="160" width="460" height="18"/>
+    <rect class="table-row" x="580" y="160" width="100" height="18"/>
+    <text class="value" x="130" y="172" font-weight="bold">Subtotal</text>
+    <text class="value" x="590" y="172">S/. 161.02</text>
+    
+    <!-- IGV -->
+    <rect class="table-row" x="120" y="178" width="460" height="18"/>
+    <rect class="table-row" x="580" y="178" width="100" height="18"/>
+    <text class="value" x="130" y="190">I.G.V. (18%)</text>
+    <text class="value" x="590" y="190">S/. 28.98</text>
+    
+    <!-- Total -->
+    <rect class="total-row" x="120" y="196" width="460" height="22"/>
+    <rect class="total-row" x="580" y="196" width="100" height="22"/>
+    <text class="header-text" x="130" y="210" font-size="11">TOTAL A PAGAR</text>
+    <text class="header-text" x="590" y="210" font-size="11">S/. 190.00</text>
+    
+    <!-- Pagos -->
+    <rect x="120" y="223" width="460" height="18" fill="#E8F5E9" stroke="#4CAF50" stroke-width="1"/>
+    <rect x="580" y="223" width="100" height="18" fill="#E8F5E9" stroke="#4CAF50" stroke-width="1"/>
+    <text class="value" x="130" y="235" fill="#2E7D32">Adelanto Recibido</text>
+    <text class="value" x="590" y="235" fill="#2E7D32">S/. 205.00</text>
+    
+    <rect x="120" y="241" width="460" height="20" fill="#FFF3E0" stroke="#FF9800" stroke-width="1"/>
+    <rect x="580" y="241" width="100" height="20" fill="#FFF3E0" stroke="#FF9800" stroke-width="1"/>
+    <text class="value" x="130" y="254" font-weight="bold" fill="#E65100">SALDO A FAVOR DEL CLIENTE</text>
+    <text class="value" x="590" y="254" font-weight="bold" fill="#E65100">S/. 15.00</text>
+  </g>
+  
+  <!-- SECCIÓN: DATOS DE ENTREGA -->
+  <g transform="translate(0, 745)">
+    <rect class="header" x="20" y="0" width="760" height="25" rx="3"/>
+    <text class="header-text" x="400" y="16" text-anchor="middle" font-size="11">DATOS DE ENTREGA</text>
+    
+    <rect class="box" x="20" y="25" width="520" height="85" rx="3"/>
+    
+    <text class="label" x="30" y="42">Fecha y Hora de Entrega:</text>
+    <text class="value" x="170" y="42">31/03/2026 - 16:49</text>
+    
+    <text class="label" x="30" y="58">Encargado de Entrega:</text>
+    <text class="value" x="170" y="58">jesuus</text>
+    
+    <text class="label" x="30" y="74">Estado del Equipo:</text>
+    <rect x="170" y="64" width="160" height="16" rx="3" fill="#C8E6C9" stroke="#4CAF50"/>
+    <text x="250" y="75" text-anchor="middle" class="value" fill="#2E7D32" font-weight="bold">Funcionando correctamente</text>
+    
+    <text class="label" x="30" y="94">Observaciones:</text>
+    <text class="value" x="30" y="104" font-size="9">Equipo entregado en perfectas condiciones. Cliente satisfecho con el servicio.</text>
+    
+    <!-- Foto de entrega -->
+    <rect class="photo-box" x="560" y="25" width="220" height="85" rx="3"/>
+    <text x="670" y="50" text-anchor="middle" class="label" fill="#2196F3">FOTO DE ENTREGA</text>
+    <circle cx="670" cy="75" r="15" fill="#2196F3" opacity="0.3"/>
+    <text x="670" y="82" text-anchor="middle" font-size="20" fill="#2196F3">📷</text>
+    <text x="670" y="100" text-anchor="middle" class="value" font-size="8">(1 foto adjunta)</text>
+  </g>
+  
+  <!-- SECCIÓN: FIRMAS -->
+  <g transform="translate(0, 860)">
+    <line class="signature-line" x1="120" y1="30" x2="280" y2="30"/>
+    <text x="200" y="45" text-anchor="middle" class="value" font-size="9">Firma del Técnico</text>
+    <text x="200" y="57" text-anchor="middle" class="value" font-size="8" fill="#999">jesus</text>
+    
+    <line class="signature-line" x1="520" y1="30" x2="680" y2="30"/>
+    <text x="600" y="45" text-anchor="middle" class="value" font-size="9">Firma del Cliente</text>
+    <text x="600" y="57" text-anchor="middle" class="value" font-size="8" fill="#999">JESUS FERNANDO</text>
+  </g>
+  
+  <!-- SECCIÓN: TÉRMINOS Y CONDICIONES -->
+  <g transform="translate(0, 935)">
+    <rect x="20" y="0" width="760" height="80" fill="#FAFAFA" stroke="#E0E0E0" stroke-width="1" rx="3"/>
+    
+    <text class="label" x="30" y="15" font-size="10">TÉRMINOS Y CONDICIONES:</text>
+    
+    <text class="terms-text" x="30" y="28">• Garantía de 30 días en mano de obra. No cubre daños por mal uso, líquidos derramados o golpes posteriores a la entrega.</text>
+    <text class="terms-text" x="30" y="40">• El equipo no reclamado en 60 días se dará de baja sin previo aviso, según lo establecido en el artículo 1803 del Código Civil.</text>
+    <text class="terms-text" x="30" y="52">• Los repuestos instalados cuentan con garantía del proveedor según especificaciones técnicas.</text>
+    <text class="terms-text" x="30" y="64">• El cliente acepta los términos y condiciones al firmar este documento y recibir el equipo.</text>
+    <text class="terms-text" x="30" y="76">• Para cualquier reclamo o consulta, comunicarse al 961 509 941 o escribir a contacto@doctorpc.com</text>
+  </g>
+  
+  <!-- Pie de página -->
+  <text x="400" y="1085" text-anchor="middle" class="terms-text" fill="#999">
+    Documento generado electrónicamente por Doctor PC - Sistema de Gestión de Servicios v2.0
+  </text>
+</svg>

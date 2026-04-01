@@ -1,3 +1,150 @@
+// ==================== SISTEMA DE FOTOS ====================
+function mostrarMensaje(msg, tipo) {
+    if (tipo === 'error') alert('⚠️ ' + msg);
+    else alert(msg);
+}
+
+let fotosEntregaArray = []; // Array de { base64, url, public_id }
+const MAX_FOTOS_ENTREGA = 3;
+
+function comprimirImagen(file, maxWidth = 1200, quality = 0.7) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                let w = img.width, h = img.height;
+                if (w > maxWidth) { h = (h * maxWidth) / w; w = maxWidth; }
+                canvas.width = w;
+                canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+async function agregarFotoEntrega(input) {
+    const file = input.files[0];
+    if (!file) return;
+    input.value = '';
+
+    if (!file.type.startsWith('image/')) {
+        mostrarMensaje('Selecciona una imagen válida', 'error');
+        return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+        mostrarMensaje('La imagen es muy grande (máx. 10MB)', 'error');
+        return;
+    }
+    if (fotosEntregaArray.length >= MAX_FOTOS_ENTREGA) {
+        mostrarMensaje(`Máximo ${MAX_FOTOS_ENTREGA} fotos permitidas`, 'error');
+        return;
+    }
+
+    const statusEl = document.getElementById('fotoEntregaStatus');
+    statusEl.textContent = 'Comprimiendo imagen...';
+    statusEl.style.color = '#2192B8';
+
+    try {
+        const base64 = await comprimirImagen(file, 1200, 0.7);
+        const index = fotosEntregaArray.length;
+        fotosEntregaArray.push({ base64, url: null, public_id: null });
+        renderFotosEntregaPreview();
+        const tamanoKB = Math.round((base64.length * 3) / 4 / 1024);
+        statusEl.textContent = `${fotosEntregaArray.length}/${MAX_FOTOS_ENTREGA} fotos (${tamanoKB} KB)`;
+        statusEl.style.color = '#4CAF50';
+    } catch (error) {
+        console.error('Error al procesar imagen:', error);
+        mostrarMensaje('Error al procesar la imagen', 'error');
+        statusEl.textContent = '';
+    }
+}
+
+function renderFotosEntregaPreview() {
+    const container = document.getElementById('fotosEntregaContainer');
+    const btnAgregar = document.getElementById('btnAgregarFoto');
+
+    // Limpiar previews existentes (mantener botón agregar)
+    container.querySelectorAll('.foto-preview-item').forEach(el => el.remove());
+
+    fotosEntregaArray.forEach((foto, i) => {
+        const div = document.createElement('div');
+        div.className = 'foto-preview-item';
+        div.style.cssText = 'position: relative; width: 100px; height: 100px; border-radius: 8px; overflow: hidden; border: 2px solid #ddd;';
+        div.innerHTML = `
+            <img src="${foto.base64}" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;" onclick="abrirImagenCompleta('${foto.base64.replace(/'/g, "\\'")}')">
+            <button type="button" onclick="eliminarFotoEntrega(${i})" style="position: absolute; top: 2px; right: 2px; background: #d32f2f; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 10px; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-times"></i>
+            </button>
+            ${foto.url ? '<i class="fas fa-cloud" style="position: absolute; bottom: 2px; right: 2px; color: #4CAF50; font-size: 10px;"></i>' : ''}
+        `;
+        container.insertBefore(div, btnAgregar);
+    });
+
+    // Ocultar botón agregar si llegó al máximo
+    btnAgregar.style.display = fotosEntregaArray.length >= MAX_FOTOS_ENTREGA ? 'none' : 'flex';
+}
+
+function eliminarFotoEntrega(index) {
+    fotosEntregaArray.splice(index, 1);
+    renderFotosEntregaPreview();
+    const statusEl = document.getElementById('fotoEntregaStatus');
+    statusEl.textContent = fotosEntregaArray.length > 0 ? `${fotosEntregaArray.length}/${MAX_FOTOS_ENTREGA} fotos` : '';
+}
+
+function limpiarFotosEntrega() {
+    fotosEntregaArray = [];
+    renderFotosEntregaPreview();
+    const statusEl = document.getElementById('fotoEntregaStatus');
+    if (statusEl) statusEl.textContent = '';
+}
+
+async function subirFotosACloudinary() {
+    const fotasSinSubir = fotosEntregaArray.filter(f => !f.url);
+    if (fotasSinSubir.length === 0) return fotosEntregaArray.map(f => ({ url: f.url, public_id: f.public_id }));
+
+    const resultados = [];
+    for (let i = 0; i < fotosEntregaArray.length; i++) {
+        const foto = fotosEntregaArray[i];
+        if (foto.url) {
+            resultados.push({ url: foto.url, public_id: foto.public_id });
+            continue;
+        }
+        try {
+            const res = await fetch(`${API_URL}/upload-imagen`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ imagen: foto.base64, carpeta: 'entregas' })
+            });
+            if (!res.ok) throw new Error('Error al subir imagen');
+            const data = await res.json();
+            foto.url = data.url;
+            foto.public_id = data.public_id;
+            resultados.push({ url: data.url, public_id: data.public_id });
+        } catch (error) {
+            console.error(`Error subiendo foto ${i + 1}:`, error);
+            throw new Error(`Error al subir foto ${i + 1}`);
+        }
+    }
+    return resultados;
+}
+
+function abrirImagenCompleta(src) {
+    document.getElementById('imagenCompletaSrc').src = src;
+    document.getElementById('modalImagenCompleta').classList.add('show');
+}
+
+function cerrarImagenCompleta() {
+    document.getElementById('modalImagenCompleta').classList.remove('show');
+    document.getElementById('imagenCompletaSrc').src = '';
+}
+
 // ==================== AUTENTICACIÓN ====================
 function verificarSesion() {
     const token = localStorage.getItem('token');
@@ -1043,6 +1190,26 @@ async function abrirModalNuevoServicio() {
         document.getElementById('equipo_id').value = '';
         document.getElementById('equipoSeleccionado').value = '';
         window.clienteIdActual = null;
+
+        // ✅ VALIDACIÓN: Agregar listeners para prevenir valores negativos en tiempo real
+        const adelantoInput = document.querySelector('input[name="adelanto"]');
+        const montoInput = document.querySelector('input[name="monto"]');
+        
+        if (adelantoInput) {
+            adelantoInput.addEventListener('input', function() {
+                if (this.value && parseFloat(this.value) < 0) {
+                    this.value = 0;
+                }
+            });
+        }
+        
+        if (montoInput) {
+            montoInput.addEventListener('input', function() {
+                if (this.value && parseFloat(this.value) < 0) {
+                    this.value = 0;
+                }
+            });
+        }
     } catch (error) {
         console.error('Error:', error);
         alert('Error al abrir modal de nuevo servicio');
@@ -1651,6 +1818,20 @@ async function guardarServicio(e) {
     const formData = new FormData(document.getElementById('formServicio'));
     const servicio = Object.fromEntries(formData);
 
+    // ✅ VALIDACIÓN: Evitar valores negativos en Adelanto y Monto Total
+    const adelanto = parseFloat(servicio.adelanto) || 0;
+    const monto = parseFloat(servicio.monto) || 0;
+    
+    if (adelanto < 0) {
+        alert('⚠️ El adelanto no puede ser negativo');
+        return;
+    }
+    
+    if (monto < 0) {
+        alert('⚠️ El monto total no puede ser negativo');
+        return;
+    }
+
     // Asegurar que equipo_id se incluye aunque esté vacío
     if (!servicio.equipo_id) {
         servicio.equipo_id = document.getElementById('equipo_id').value || null;
@@ -1976,7 +2157,15 @@ async function guardarServicioReal(servicio) {
     }
 }
 
-async function cargarServicios() {
+// Estado global de paginación de servicios
+let serviciosPaginaActual = 1;
+let serviciosLimitePorPagina = 20;
+let serviciosBusquedaTimer = null;
+let serviciosBusquedaActual = '';
+
+async function cargarServicios(page = 1, busqueda = '') {
+    serviciosPaginaActual = page;
+    serviciosBusquedaActual = busqueda;
     const container = document.getElementById('serviciosContainer');
     container.innerHTML = `
         <div class="loading-spinner-inline">
@@ -1994,43 +2183,35 @@ async function cargarServicios() {
         const checkbox = document.getElementById('mostrarCancelados');
         const mostrarCancelados = checkbox ? checkbox.checked : false;
         
-        console.log('🔍 Checkbox element:', checkbox);
-        console.log('🔍 Checkbox checked:', mostrarCancelados);
+        // Construir URL con paginación y búsqueda
+        const params = new URLSearchParams();
+        params.set('page', page);
+        params.set('limit', serviciosLimitePorPagina);
+        if (mostrarCancelados) params.set('incluir_cancelados', 'true');
+        if (busqueda) params.set('q', busqueda);
         
-        const urlServicios = mostrarCancelados 
-            ? `${API_SERVICIOS}?incluir_cancelados=true` 
-            : API_SERVICIOS;
+        const serviciosRes = await fetch(`${API_SERVICIOS}?${params.toString()}`);
+        const respuesta = await serviciosRes.json();
         
-        console.log('🔗 URL de servicios:', urlServicios);
-        
-        const serviciosRes = await fetch(urlServicios);
-        const servicios = await serviciosRes.json();
-        
-        console.log('📊 Servicios recibidos:', servicios.length);
-        console.log('📊 Servicios completos:', servicios);
-        
-        // Contar cancelados
-        const cancelados = servicios.filter(s => s.estado === 'Cancelado');
-        console.log('❌ Servicios cancelados en respuesta:', cancelados.length);
-        if (cancelados.length > 0) {
-            console.log('❌ Cancelados:', cancelados.map(s => s.numero_servicio || s._id));
-        }
+        // Soporte para respuesta paginada o array directo
+        const servicios = respuesta.data || respuesta;
+        const pagination = respuesta.pagination || null;
 
         const servicioEquipoRes = await fetch(`${API_SERVICIO_EQUIPO}`);
         const serviciosEquipo = await servicioEquipoRes.json();
 
         if (servicios.length === 0) {
-            container.innerHTML = '<div class="no-records">No hay servicios registrados</div>';
+            let mensajeVacio = busqueda 
+                ? `<div class="no-records">No se encontraron servicios para "<strong>${busqueda}</strong>"</div>`
+                : '<div class="no-records">No hay servicios registrados</div>';
+            container.innerHTML = renderBarraBusquedaServicios(busqueda) + mensajeVacio;
+            if (pagination) container.innerHTML += renderPaginacionServicios(pagination);
             return;
         }
 
-        let html = `
-            <div style="margin-bottom: 20px; position: relative;">
-                <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #2192B8; font-size: 14px; pointer-events: none;"></i>
-                <input type="text" id="busquedaServicios" placeholder="Buscar por número, cliente, local, estado, equipo..." 
-                       onkeyup="filtrarServicios()" style="max-width: 100%; padding: 12px 15px 12px 40px; font-size: 14px; border: 2px solid #e0e0e0; border-radius: 8px; width: 100%;">
-            </div>
+        let html = renderBarraBusquedaServicios(busqueda);
 
+        html += `
             <table class="records-table" id="tablaServicios">
                 <thead>
                     <tr>
@@ -2093,7 +2274,6 @@ async function cargarServicios() {
                     estadoBadge = '<span style="background: #F8D7DA; color: #721C24;' + estadoBadge.slice(6);
                     break;
                 case 'Diagnosticado':
-                    // Para datos antiguos
                     estadoBadge += '<i class="fas fa-check-circle" style="color: #155724;"></i> Diagnosticado</span>';
                     estadoBadge = '<span style="background: #D4EDDA; color: #155724;' + estadoBadge.slice(6);
                     break;
@@ -2118,7 +2298,6 @@ async function cargarServicios() {
             const problemasTexto = Array.isArray(problemasRaw) ? problemasRaw.join(', ') : String(problemasRaw);
             const descripcionStr = problemasTexto ? problemasTexto.substring(0, 40) + (problemasTexto.length > 40 ? '...' : '') : 'N/A';
             
-            // Normalizar el estado para comparaciones
             const estadoNormalizado = (srv.estado || '').trim();
 
             html += `
@@ -2164,11 +2343,82 @@ async function cargarServicios() {
         });
 
         html += `</tbody></table>`;
+        
+        // Agregar controles de paginación
+        if (pagination) {
+            html += renderPaginacionServicios(pagination);
+        }
+        
         container.innerHTML = html;
     } catch (error) {
         console.error('Error:', error);
         container.innerHTML = '<div class="error-message">Error al cargar servicios</div>';
     }
+}
+
+function renderBarraBusquedaServicios(busquedaActual) {
+    return `
+        <div style="margin-bottom: 20px; position: relative;">
+            <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #2192B8; font-size: 14px; pointer-events: none;"></i>
+            <input type="text" id="busquedaServicios" placeholder="Buscar por número, descripción, local..." 
+                   value="${busquedaActual || ''}"
+                   onkeyup="buscarServiciosConDebounce()" style="max-width: 100%; padding: 12px 15px 12px 40px; font-size: 14px; border: 2px solid #e0e0e0; border-radius: 8px; width: 100%;">
+        </div>`;
+}
+
+function renderPaginacionServicios(pagination) {
+    if (!pagination || pagination.totalPages <= 1) return '';
+    
+    let html = `
+        <div style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 20px; flex-wrap: wrap;">
+            <button onclick="cargarServicios(1, serviciosBusquedaActual)" 
+                    ${pagination.page <= 1 ? 'disabled' : ''} 
+                    style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; background: ${pagination.page <= 1 ? '#f5f5f5' : 'white'}; cursor: ${pagination.page <= 1 ? 'default' : 'pointer'}; font-size: 13px;">
+                <i class="fas fa-angle-double-left"></i>
+            </button>
+            <button onclick="cargarServicios(${pagination.page - 1}, serviciosBusquedaActual)" 
+                    ${pagination.page <= 1 ? 'disabled' : ''} 
+                    style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; background: ${pagination.page <= 1 ? '#f5f5f5' : 'white'}; cursor: ${pagination.page <= 1 ? 'default' : 'pointer'}; font-size: 13px;">
+                <i class="fas fa-angle-left"></i> Anterior
+            </button>`;
+    
+    // Mostrar números de página
+    const inicio = Math.max(1, pagination.page - 2);
+    const fin = Math.min(pagination.totalPages, pagination.page + 2);
+    
+    for (let i = inicio; i <= fin; i++) {
+        const esActual = i === pagination.page;
+        html += `
+            <button onclick="cargarServicios(${i}, serviciosBusquedaActual)" 
+                    style="padding: 8px 14px; border: 1px solid ${esActual ? '#2192B8' : '#ddd'}; border-radius: 6px; background: ${esActual ? '#2192B8' : 'white'}; color: ${esActual ? 'white' : '#333'}; cursor: pointer; font-weight: ${esActual ? '700' : '400'}; font-size: 13px;">
+                ${i}
+            </button>`;
+    }
+    
+    html += `
+            <button onclick="cargarServicios(${pagination.page + 1}, serviciosBusquedaActual)" 
+                    ${pagination.page >= pagination.totalPages ? 'disabled' : ''} 
+                    style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; background: ${pagination.page >= pagination.totalPages ? '#f5f5f5' : 'white'}; cursor: ${pagination.page >= pagination.totalPages ? 'default' : 'pointer'}; font-size: 13px;">
+                Siguiente <i class="fas fa-angle-right"></i>
+            </button>
+            <button onclick="cargarServicios(${pagination.totalPages}, serviciosBusquedaActual)" 
+                    ${pagination.page >= pagination.totalPages ? 'disabled' : ''} 
+                    style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; background: ${pagination.page >= pagination.totalPages ? '#f5f5f5' : 'white'}; cursor: ${pagination.page >= pagination.totalPages ? 'default' : 'pointer'}; font-size: 13px;">
+                <i class="fas fa-angle-double-right"></i>
+            </button>
+            <span style="margin-left: 12px; color: #666; font-size: 13px;">
+                Página ${pagination.page} de ${pagination.totalPages} (${pagination.total} registros)
+            </span>
+        </div>`;
+    return html;
+}
+
+function buscarServiciosConDebounce() {
+    clearTimeout(serviciosBusquedaTimer);
+    serviciosBusquedaTimer = setTimeout(() => {
+        const texto = document.getElementById('busquedaServicios').value.trim();
+        cargarServicios(1, texto);
+    }, 400);
 }
 
 // Validar transiciones permitidas de estados
@@ -2416,23 +2666,28 @@ async function abrirModalConfirmarReparacion(servicioId, servicio) {
 
         // Construir HTML con checkboxes incluyendo solución
          let htmlProblemas = '';
+         let montoTotal = 0;
          problemas.forEach((problema, index) => {
+             const costo = parseFloat(problema.costo) || 0;
+             montoTotal += costo;
              htmlProblemas += `
-                 <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: white; border: 1px solid #e0e0e0; border-radius: 6px; margin-bottom: 10px;">
-                     <input type="checkbox" id="problema-${index}" class="checkboxProblema" style="margin-top: 4px; cursor: pointer;" onchange="verificarTodosReparados()">
-                     <div style="flex: 1;">
-                         <label for="problema-${index}" style="cursor: pointer; display: block;">
-                             <strong style="color: #333; font-size: 14px;">Problema ${index + 1}:</strong>
-                             <p style="margin: 5px 0 0 0; color: #666; font-size: 13px;">${problema.descripcion}</p>
-                             ${problema.solucion ? `<p style="margin: 5px 0 0 0; color: #4CAF50; font-size: 12px;"><strong>Solución:</strong> ${problema.solucion}</p>` : ''}
-                             <p style="margin: 5px 0 0 0; color: #2192B8; font-weight: bold;">$${parseFloat(problema.costo).toFixed(2)}</p>
-                         </label>
-                     </div>
+                 <div class="reparacion-problema-card" id="problemaCard-${index}">
+                     <input type="checkbox" id="problema-${index}" class="checkboxProblema" onchange="verificarTodosReparados()">
+                     <label for="problema-${index}" class="reparacion-problema-label">
+                         <div class="reparacion-problema-header">
+                             <span class="reparacion-problema-num">${index + 1}</span>
+                             <strong>Problema ${index + 1}</strong>
+                         </div>
+                         <p class="reparacion-problema-desc">${problema.descripcion}</p>
+                         ${problema.solucion ? `<p class="reparacion-problema-solucion"><i class="fas fa-wrench"></i> ${problema.solucion}</p>` : ''}
+                         <p class="reparacion-problema-costo">$${costo.toFixed(2)}</p>
+                     </label>
                  </div>
              `;
          });
 
          document.getElementById('problemasReparacionContainer').innerHTML = htmlProblemas;
+         document.getElementById('montoTotalReparacion').textContent = `$ ${montoTotal.toFixed(2)}`;
          document.getElementById('modalConfirmarReparacion').classList.add('show');
     } catch (error) {
         console.error('Error:', error);
@@ -2519,6 +2774,9 @@ async function abrirModalEntrega(servicioId, servicio) {
         document.getElementById('entGarantia').value = '';
         document.getElementById('entRecomendaciones').value = '';
 
+        // Limpiar fotos previas
+        limpiarFotosEntrega();
+
         document.getElementById('modalEntregaServicio').classList.add('show');
     } catch (error) {
         console.error('Error:', error);
@@ -2595,6 +2853,21 @@ async function confirmarEntregaServicio() {
     }
 
     try {
+        // Subir fotos a Cloudinary si hay
+        let fotosUrls = [];
+        if (fotosEntregaArray.length > 0) {
+            document.getElementById('fotoEntregaStatus').textContent = 'Subiendo fotos...';
+            document.getElementById('fotoEntregaStatus').style.color = '#2192B8';
+            try {
+                fotosUrls = await subirFotosACloudinary();
+            } catch (error) {
+                mostrarMensaje('Error al subir fotos: ' + error.message, 'error');
+                document.getElementById('fotoEntregaStatus').textContent = 'Error al subir fotos';
+                document.getElementById('fotoEntregaStatus').style.color = '#d32f2f';
+                return;
+            }
+        }
+
         // Recopilar todos los datos de entrega
         const datosEntrega = {
             fechaEntrega: fechaEntrega,
@@ -2602,6 +2875,7 @@ async function confirmarEntregaServicio() {
             encargadoEntrega: encargadoEntrega,
             estadoEquipo: estadoEquipo,
             observacionesEntrega: document.getElementById('entObservaciones').value.trim(),
+            fotos: fotosUrls,
             montoCobraHoy: parseFloat(document.getElementById('entMontoCobraHoy').value || 0),
             metodoPago: document.getElementById('entMetodoPago').value,
             comprobanteEntrega: document.getElementById('entComprobante').value.trim(),
@@ -2614,6 +2888,7 @@ async function confirmarEntregaServicio() {
 
         // Cambiar estado a 'Entregado' pasando datos de entrega
         await cambiarEstadoServicio(window.servicioEnEntrega.id, 'Entregado', datosEntregaJSON);
+        limpiarFotosEntrega();
         cerrarModalEntrega();
     } catch (error) {
         console.error('Error:', error);
@@ -2639,6 +2914,10 @@ function cerrarModalErrorValidacion() {
 // Verificar si todos los problemas están marcados
 function verificarTodosReparados() {
     const checkboxes = document.querySelectorAll('.checkboxProblema');
+    checkboxes.forEach((cb, i) => {
+        const card = document.getElementById(`problemaCard-${i}`);
+        if (card) card.classList.toggle('reparacion-problema-checked', cb.checked);
+    });
     const todosChecked = Array.from(checkboxes).every(cb => cb.checked);
     document.getElementById('btnConfirmarReparacion').disabled = !todosChecked;
 }
@@ -2741,26 +3020,7 @@ async function cambiarEstadoServicio(servicioId, nuevoEstado, datosAdicionales =
 
 // Filtrar servicios en la tabla
 function filtrarServicios() {
-    const searchText = document.getElementById('busquedaServicios').value.toLowerCase();
-    const filas = document.querySelectorAll('.row-servicio');
-
-    filas.forEach(fila => {
-        const numero = fila.getAttribute('data-numero').toLowerCase();
-        const cliente = fila.getAttribute('data-cliente');
-        const estado = fila.getAttribute('data-estado');
-        const equipo = fila.getAttribute('data-equipo');
-        const problemas = fila.getAttribute('data-problemas');
-        const local = fila.getAttribute('data-local');
-
-        const coincide = numero.includes(searchText) || 
-                        cliente.includes(searchText) || 
-                        estado.includes(searchText) || 
-                        equipo.includes(searchText) ||
-                        problemas.includes(searchText) ||
-                        local.includes(searchText);
-
-        fila.style.display = coincide ? '' : 'none';
-    });
+    buscarServiciosConDebounce();
 }
 
 // Abrir modal diagnóstico
@@ -2836,7 +3096,7 @@ async function abrirModalDiagnostico(servicioId, clienteNombre) {
         document.getElementById('telefonoDiagnostico').textContent = cliente?.telefono || 'N/A';
         
         // Mostrar descripción del servicio
-        document.getElementById('descripcionServicioDiagnostico').textContent = servicio.problemas || 'Sin descripción';
+        document.getElementById('descripcionServicioDiagnostico').textContent = servicio.problemas_reportados || servicio.problemas || servicio.descripcion_problema || 'Sin problemas reportados';
         
         // Mostrar datos del equipo
          document.getElementById('equipoTipoDiagnostico').textContent = equipoInfo.tipo_equipo || '-';
@@ -2976,6 +3236,22 @@ function agregarProblemaFila() {
     `;
 
     container.appendChild(fila);
+
+    // ✅ VALIDACIÓN: Agregar listener para prevenir valores negativos en tiempo real
+    const costoInput = fila.querySelector('.costoInput');
+    if (costoInput) {
+        costoInput.addEventListener('input', function() {
+            if (this.value && parseFloat(this.value) < 0) {
+                this.value = 0;
+                this.style.borderColor = '#d32f2f';
+                this.style.backgroundColor = '#ffebee';
+                setTimeout(() => {
+                    this.style.borderColor = '';
+                    this.style.backgroundColor = '';
+                }, 1500);
+            }
+        });
+    }
 }
 
 // Eliminar fila de problema
@@ -3112,6 +3388,17 @@ async function guardarDiagnosticoInterno(finalizarDiag = false) {
                  costoInput.style.borderWidth = '2px';
                  costoInput.style.backgroundColor = '#ffebee';
              }
+             hayErrores = true;
+         }
+
+         // ✅ VALIDACIÓN: Evitar costos negativos
+         if (costo && parseFloat(costo) < 0) {
+             if (costoInput) {
+                 costoInput.style.borderColor = '#d32f2f';
+                 costoInput.style.borderWidth = '2px';
+                 costoInput.style.backgroundColor = '#ffebee';
+             }
+             alert('⚠️ El costo no puede ser negativo');
              hayErrores = true;
          }
 
@@ -3443,8 +3730,8 @@ async function abrirModalDetallesServicio(servicioId) {
                                                  ${datosReparacion.observacionesInicio}
                                              </p>
                                          ` : ''}
-                                     </div>
-                                 `;
+                                         </div>
+                                         `;
                              } catch (e) {
                                  return '<p style="color: #d32f2f; font-size: 13px;">Error al procesar datos de reparación</p>';
                              }
@@ -3556,8 +3843,25 @@ async function abrirModalDetallesServicio(servicioId) {
                                                  ${datosEntrega.recomendaciones}
                                              </p>
                                          ` : ''}
-                                     </div>
-                                 `;
+                                         ${datosEntrega.fotos && datosEntrega.fotos.length > 0 ? `
+                                             <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #C8E6C9;">
+                                                 <p style="margin: 0 0 10px 0; font-size: 13px; font-weight: 600; color: #2E7D32;">
+                                                     <i class="fas fa-images" style="margin-right: 6px;"></i>Fotos de Entrega (${datosEntrega.fotos.length})
+                                                 </p>
+                                                 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                                     ${datosEntrega.fotos.map((foto, idx) => `
+                                                         <div style="width: 120px; height: 120px; border-radius: 8px; overflow: hidden; border: 2px solid #ddd; cursor: pointer; transition: transform 0.2s;" 
+                                                              onclick="abrirImagenCompleta('${(foto.url || '').replace(/'/g, "\\'")}')"
+                                                              onmouseover="this.style.transform='scale(1.05)'" 
+                                                              onmouseout="this.style.transform='scale(1)'">
+                                                             <img src="${foto.url}" alt="Foto entrega ${idx + 1}" style="width: 100%; height: 100%; object-fit: cover;">
+                                                         </div>
+                                                     `).join('')}
+                                                 </div>
+                                             </div>
+                                         ` : ''}
+                                         </div>
+                                         `;
                              } catch (e) {
                                  return '<p style="color: #d32f2f; font-size: 13px;">Error al procesar datos de entrega</p>';
                              }

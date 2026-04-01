@@ -17,7 +17,7 @@
   <!-- Company name -->
   <text x="185" y="90" font-size="18" font-weight="bold" fill="white">DOCTOR PC</text>
   <text x="185" y="108" font-size="9" fill="white">Soluciones Informáticas Profesionales</text>
-  <text x="185" y="122" font-size="8" fill="white">Tel: 961 509 9414 | Email: contacto@gmail.com</text>
+  <text x="185" y="122" font-size="8" fill="white">Tel: 961 509 941 | Email: contacto@gmail.com</text>
 
   <!-- Order number box -->
   <rect x="580" y="70" width="100" height="60" rx="5" fill="white" stroke="#1565C0" stroke-width="2"/>

@@ -42,7 +42,7 @@ function generarPDFReporte(data) {
   doc.setFontSize(7);
   doc.setFont(undefined, 'normal');
   doc.text('Soluciones Informáticas Profesionales', margin, 17);
-  doc.text('Tel: 961 509 9414 | Email: contacto@gmail.com', margin, 22);
+  doc.text('Tel: 961 509 941 | Email: contacto@gmail.com', margin, 22);
   
   // Número de orden
   doc.setFillColor(255, 255, 255);

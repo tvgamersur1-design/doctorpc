@@ -38,9 +38,8 @@ La generación de PDFs está completamente implementada y probada. Funciona tant
 
 ### Nuevos Archivos
 1. ✅ `functions/generar-pdf.js` - Función serverless
-2. ✅ `test-pdf-local.js` - Script de prueba
-3. ✅ `GENERACION_PDF.md` - Documentación técnica
-4. ✅ `CAMBIOS_PDF.md` - Log de cambios
+2. ✅ `GENERACION_PDF.md` - Documentación técnica
+3. ✅ `CAMBIOS_PDF.md` - Log de cambios
 5. ✅ `test-reporte.pdf` - PDF de prueba generado
 
 ### Archivos Modificados
@@ -138,9 +137,8 @@ El sistema está **100% listo** para generar PDFs en producción. La implementac
 
 Si tienes problemas:
 1. Revisar `GENERACION_PDF.md` para troubleshooting detallado
-2. Ejecutar `node test-pdf-local.js` para verificar localmente
-3. Revisar logs de Netlify Functions
-4. Verificar que Chrome esté instalado (solo para desarrollo local en Windows)
+2. Revisar logs de Netlify Functions
+3. Verificar que las variables de entorno estén configuradas correctamente
 
 ---
 

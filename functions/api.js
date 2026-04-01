@@ -13,7 +13,7 @@ const MONGODB_URI = process.env.MONGODB_URI;
 const DB_NAME = 'doctorpc';
 
 if (!MONGODB_URI) {
-  console.error('❌ ERROR: MONGODB_URI no está configurado en .env');
+  console.error(' ERROR: MONGODB_URI no está configurado en .env');
 }
 
 let db;

@@ -404,7 +404,7 @@ class ReporteServicio {
     doc.setFontSize(7);
     doc.setFont(undefined, 'normal');
     doc.text('Soluciones Informáticas Profesionales', margin + 26, 17);
-    doc.text('Tel: 961 509 9414 | Email: contacto@doctorpc.com', margin + 26, 22);
+    doc.text('Tel: 961 509 941 | Email: contacto@doctorpc.com', margin + 26, 22);
     
     // Número de orden
     doc.setFillColor(255, 255, 255);
@@ -792,7 +792,7 @@ class ReporteServicio {
       doc.setFontSize(7);
       doc.setFont(undefined, 'normal');
       doc.text('Soluciones Informáticas Profesionales', margin + 26, 17);
-      doc.text('Tel: 961 509 9414 | Email: contacto@gmail.com', margin + 26, 22);
+      doc.text('Tel: 961 509 941 | Email: contacto@gmail.com', margin + 26, 22);
 
       // Número de orden
       doc.setFillColor(255, 255, 255);
