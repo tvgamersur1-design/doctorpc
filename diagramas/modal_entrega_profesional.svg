@@ -1,0 +1,265 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1400">
+  <defs>
+    <style>
+      .title { font: bold 24px 'Segoe UI', sans-serif; fill: #1a237e; }
+      .subtitle { font: bold 16px 'Segoe UI', sans-serif; fill: #424242; }
+      .text { font: 14px 'Segoe UI', sans-serif; fill: #333; }
+      .small-text { font: 12px 'Segoe UI', sans-serif; fill: #666; }
+      .label { font: 600 13px 'Segoe UI', sans-serif; fill: #424242; }
+      .value { font: bold 18px 'Segoe UI', sans-serif; }
+      .input-text { font: 14px 'Segoe UI', sans-serif; fill: #333; }
+      
+      /* Sombras */
+      .shadow { filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15)); }
+      .shadow-sm { filter: drop-shadow(0 2px 6px rgba(0,0,0,0.1)); }
+      
+      /* Gradientes */
+      .gradient-blue { fill: url(#gradBlue); }
+      .gradient-green { fill: url(#gradGreen); }
+      .gradient-orange { fill: url(#gradOrange); }
+      .gradient-purple { fill: url(#gradPurple); }
+      .gradient-red { fill: url(#gradRed); }
+    </style>
+    
+    <!-- Gradientes -->
+    <linearGradient id="gradBlue" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2196F3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1976D2;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="gradGreen" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#388E3C;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="gradOrange" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF9800;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F57C00;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="gradPurple" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#9C27B0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7B1FA2;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="gradRed" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#F44336;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D32F2F;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="gradGray" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6c757d;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5a6268;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Patrón de fondo -->
+    <pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#e0e0e0" opacity="0.3"/>
+    </pattern>
+  </defs>
+
+  <!-- Fondo con patrón -->
+  <rect width="1000" height="1400" fill="#f5f5f5"/>
+  <rect width="1000" height="1400" fill="url(#dots)"/>
+
+  <!-- Título principal -->
+  <text x="500" y="50" text-anchor="middle" class="title">MODAL DE ENTREGA - DISEÑO PROFESIONAL</text>
+  <text x="500" y="75" text-anchor="middle" class="small-text">Sistema de gestión de deudas integrado</text>
+
+  <!-- Modal Container con sombra -->
+  <g class="shadow">
+    <rect x="100" y="110" width="800" height="1250" rx="16" fill="#fff"/>
+  </g>
+
+  <!-- Header del Modal con gradiente -->
+  <rect x="100" y="110" width="800" height="70" rx="16" class="gradient-blue"/>
+  <rect x="100" y="145" width="800" height="35" fill="#2196F3"/>
+  
+  <!-- Icono y título del header -->
+  <circle cx="135" cy="145" r="18" fill="rgba(255,255,255,0.2)"/>
+  <text x="135" y="152" text-anchor="middle" style="font: bold 20px sans-serif; fill: #fff;">🚚</text>
+  <text x="165" y="152" style="font: bold 20px 'Segoe UI', sans-serif; fill: #fff;">Entrega de Servicio</text>
+  
+  <!-- Botón cerrar -->
+  <circle cx="865" cy="145" r="16" fill="rgba(255,255,255,0.2)"/>
+  <text x="865" y="152" text-anchor="middle" style="font: bold 18px sans-serif; fill: #fff;">×</text>
+
+  <!-- Sección: Información del Servicio -->
+  <g class="shadow-sm">
+    <rect x="120" y="200" width="760" height="100" rx="12" fill="#FFF8E1"/>
+    <rect x="120" y="200" width="6" height="100" rx="3" fill="#FFC107"/>
+  </g>
+  
+  <text x="135" y="225" class="subtitle" fill="#F57F17">📋 Información del Servicio</text>
+  
+  <!-- Grid de información -->
+  <g class="small-text">
+    <text x="135" y="250" fill="#666">Número de Servicio:</text>
+    <text x="280" y="250" font-weight="600" fill="#2196F3">SRV-2024-001</text>
+    
+    <text x="135" y="270" fill="#666">Cliente:</text>
+    <text x="200" y="270" font-weight="600" fill="#333">Juan Pérez Gómez</text>
+    <text x="400" y="270" fill="#666">DNI:</text>
+    <text x="440" y="270" font-weight="600" fill="#333">12345678</text>
+    
+    <text x="135" y="290" fill="#666">Equipo:</text>
+    <text x="200" y="290" font-weight="600" fill="#333">Laptop HP Pavilion 15</text>
+  </g>
+
+  <!-- Sección: Resumen Financiero -->
+  <g class="shadow-sm">
+    <rect x="120" y="320" width="760" height="220" rx="12" fill="#E3F2FD"/>
+    <rect x="120" y="320" width="6" height="220" rx="3" class="gradient-blue"/>
+  </g>
+  
+  <text x="135" y="345" class="subtitle" fill="#1565C0">💰 Resumen Financiero</text>
+
+  <!-- Tarjetas de montos con sombra -->
+  <g class="shadow-sm">
+    <rect x="140" y="360" width="220" height="90" rx="10" fill="#fff"/>
+    <rect x="140" y="360" width="220" height="4" rx="2" fill="#4CAF50"/>
+  </g>
+  <text x="150" y="385" class="small-text" fill="#666">Monto Total</text>
+  <text x="150" y="420" class="value" fill="#333">S/ 480.00</text>
+  <circle cx="330" cy="405" r="20" fill="#E8F5E9"/>
+  <text x="330" y="412" text-anchor="middle" style="font: bold 16px sans-serif; fill: #4CAF50;">💵</text>
+
+  <g class="shadow-sm">
+    <rect x="390" y="360" width="220" height="90" rx="10" fill="#fff"/>
+    <rect x="390" y="360" width="220" height="4" rx="2" fill="#FF9800"/>
+  </g>
+  <text x="400" y="385" class="small-text" fill="#666">Pagado Hasta Ahora</text>
+  <text x="400" y="420" class="value" fill="#333">S/ 120.00</text>
+  <circle cx="580" cy="405" r="20" fill="#FFF3E0"/>
+  <text x="580" y="412" text-anchor="middle" style="font: bold 16px sans-serif; fill: #FF9800;">✓</text>
+
+  <g class="shadow-sm">
+    <rect x="640" y="360" width="220" height="90" rx="10" fill="#fff"/>
+    <rect x="640" y="360" width="220" height="4" rx="2" fill="#F44336"/>
+  </g>
+  <text x="650" y="385" class="small-text" fill="#666">Saldo Pendiente</text>
+  <text x="650" y="420" class="value" fill="#F44336">S/ 360.00</text>
+  <circle cx="830" cy="405" r="20" fill="#FFEBEE"/>
+  <text x="830" y="412" text-anchor="middle" style="font: bold 16px sans-serif; fill: #F44336;">⚠</text>
+
+  <!-- Campos de pago -->
+  <rect x="140" y="470" width="340" height="55" rx="8" fill="#fff" stroke="#e0e0e0" stroke-width="2"/>
+  <text x="150" y="490" class="label">💵 Monto a Cobrar Hoy *</text>
+  <rect x="150" y="495" width="320" height="20" rx="4" fill="#fff" stroke="#4CAF50" stroke-width="2"/>
+  <text x="160" y="510" class="input-text" font-weight="600">360.00</text>
+  <text x="450" y="510" class="small-text" fill="#4CAF50">✓ Saldo completo</text>
+
+  <rect x="520" y="470" width="340" height="55" rx="8" fill="#fff" stroke="#e0e0e0" stroke-width="2"/>
+  <text x="530" y="490" class="label">💳 Método de Pago</text>
+  <rect x="530" y="495" width="320" height="20" rx="4" fill="#fff" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="540" y="510" class="input-text">Efectivo</text>
+  <text x="830" y="510" class="small-text" fill="#999">▼</text>
+
+  <!-- Indicador de estado GRANDE -->
+  <g class="shadow-sm">
+    <rect x="140" y="560" width="720" height="60" rx="10" fill="#E8F5E9"/>
+    <rect x="140" y="560" width="8" height="60" rx="4" fill="#4CAF50"/>
+  </g>
+  <circle cx="175" cy="590" r="18" fill="#4CAF50"/>
+  <text x="175" y="597" text-anchor="middle" style="font: bold 20px sans-serif; fill: #fff;">✓</text>
+  <text x="205" y="595" style="font: bold 18px 'Segoe UI', sans-serif; fill: #2E7D32;">DEUDA SALDADA - Cliente no deberá nada</text>
+
+  <!-- Sección: Datos de Entrega -->
+  <g class="shadow-sm">
+    <rect x="120" y="650" width="760" height="280" rx="12" fill="#F3E5F5"/>
+    <rect x="120" y="650" width="6" height="280" rx="3" class="gradient-purple"/>
+  </g>
+  
+  <text x="135" y="675" class="subtitle" fill="#6A1B9A">📝 Datos de Entrega</text>
+
+  <!-- Grid de campos 2x2 -->
+  <rect x="140" y="690" width="340" height="50" rx="8" fill="#fff" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="150" y="710" class="label">📅 Fecha de Entrega *</text>
+  <rect x="150" y="715" width="320" height="18" rx="4" fill="#fff" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="160" y="728" class="input-text">07/04/2026</text>
+
+  <rect x="520" y="690" width="340" height="50" rx="8" fill="#fff" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="530" y="710" class="label">🕐 Hora de Entrega *</text>
+  <rect x="530" y="715" width="320" height="18" rx="4" fill="#fff" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="540" y="728" class="input-text">16:40</text>
+
+  <rect x="140" y="755" width="340" height="50" rx="8" fill="#fff" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="150" y="775" class="label">👤 Encargado de Entrega *</text>
+  <rect x="150" y="780" width="320" height="18" rx="4" fill="#fff" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="160" y="793" class="input-text">Jesús Lucero</text>
+
+  <rect x="520" y="755" width="340" height="50" rx="8" fill="#fff" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="530" y="775" class="label">✅ Estado del Equipo *</text>
+  <rect x="530" y="780" width="320" height="18" rx="4" fill="#fff" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="540" y="793" class="input-text">Funcionando correctamente</text>
+  <text x="830" y="793" class="small-text" fill="#999">▼</text>
+
+  <rect x="140" y="820" width="720" height="50" rx="8" fill="#fff" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="150" y="840" class="label">📝 Observaciones de Entrega (Opcional)</text>
+  <rect x="150" y="845" width="700" height="18" rx="4" fill="#fff" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="160" y="858" class="input-text" fill="#999">Anotar cualquier detalle importante...</text>
+
+  <rect x="140" y="885" width="720" height="35" rx="8" fill="#E3F2FD" stroke="#2196F3" stroke-width="1" stroke-dasharray="4,4"/>
+  <text x="150" y="908" class="small-text" fill="#1976D2">📷 Fotos de Entrega (Opcional - máx. 3)</text>
+  <rect x="700" y="892" width="150" height="22" rx="6" fill="#2196F3"/>
+  <text x="775" y="907" text-anchor="middle" style="font: 600 12px sans-serif; fill: #fff;">📸 Tomar Foto</text>
+
+  <!-- Sección: Información Adicional -->
+  <g class="shadow-sm">
+    <rect x="120" y="950" width="760" height="150" rx="12" fill="#FFF3E0"/>
+    <rect x="120" y="950" width="6" height="150" rx="3" class="gradient-orange"/>
+  </g>
+  
+  <text x="135" y="975" class="subtitle" fill="#E65100">🛡️ Información Adicional</text>
+
+  <rect x="140" y="990" width="340" height="50" rx="8" fill="#fff" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="150" y="1010" class="label">📅 Garantía Hasta</text>
+  <rect x="150" y="1015" width="320" height="18" rx="4" fill="#fff" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="160" y="1028" class="input-text">07/05/2026</text>
+
+  <rect x="520" y="990" width="340" height="50" rx="8" fill="#fff" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="530" y="1010" class="label">💡 Recomendaciones</text>
+  <rect x="530" y="1015" width="320" height="18" rx="4" fill="#fff" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="540" y="1028" class="input-text">Mantenimiento próximo, cuidados...</text>
+
+  <rect x="140" y="1055" width="720" height="35" rx="8" fill="#fff" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="150" y="1078" class="label">🧾 Comprobante/Referencia (Opcional)</text>
+
+  <!-- Botones con sombra y gradiente -->
+  <g class="shadow-sm">
+    <rect x="140" y="1130" width="340" height="55" rx="10" fill="url(#gradGray)"/>
+  </g>
+  <text x="310" y="1163" text-anchor="middle" style="font: 600 16px 'Segoe UI', sans-serif; fill: #fff;">✏️ Revisar Datos</text>
+
+  <g class="shadow-sm">
+    <rect x="520" y="1130" width="360" height="55" rx="10" class="gradient-green"/>
+  </g>
+  <text x="700" y="1163" text-anchor="middle" style="font: 600 16px 'Segoe UI', sans-serif; fill: #fff;">✅ Confirmar Entrega</text>
+
+  <!-- Leyenda de estados -->
+  <rect x="120" y="1210" width="760" height="130" rx="12" fill="#f9f9f9" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="135" y="1235" class="subtitle">🎨 Indicadores de Estado del Pago:</text>
+
+  <!-- Estado 1: Saldado -->
+  <rect x="140" y="1250" width="230" height="45" rx="8" fill="#E8F5E9" stroke="#4CAF50" stroke-width="2"/>
+  <circle cx="160" cy="1272" r="12" fill="#4CAF50"/>
+  <text x="160" y="1278" text-anchor="middle" style="font: bold 14px sans-serif; fill: #fff;">✓</text>
+  <text x="180" y="1277" class="small-text" fill="#2E7D32" font-weight="600">Deuda Saldada</text>
+
+  <!-- Estado 2: Parcial -->
+  <rect x="385" y="1250" width="230" height="45" rx="8" fill="#FFF3E0" stroke="#FF9800" stroke-width="2"/>
+  <circle cx="405" cy="1272" r="12" fill="#FF9800"/>
+  <text x="405" y="1278" text-anchor="middle" style="font: bold 14px sans-serif; fill: #fff;">⚠</text>
+  <text x="425" y="1277" class="small-text" fill="#E65100" font-weight="600">Pago Parcial</text>
+
+  <!-- Estado 3: No paga -->
+  <rect x="630" y="1250" width="230" height="45" rx="8" fill="#FFEBEE" stroke="#F44336" stroke-width="2"/>
+  <circle cx="650" cy="1272" r="12" fill="#F44336"/>
+  <text x="650" y="1278" text-anchor="middle" style="font: bold 14px sans-serif; fill: #fff;">✗</text>
+  <text x="670" y="1277" class="small-text" fill="#C62828" font-weight="600">No Paga / Error</text>
+
+  <!-- Nota al pie -->
+  <text x="500" y="1370" text-anchor="middle" class="small-text" fill="#999">
+    * Campos obligatorios | El indicador cambia automáticamente según el monto ingresado
+  </text>
+</svg>

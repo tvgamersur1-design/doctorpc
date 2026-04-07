@@ -1,0 +1,688 @@
+/* ==================== MODAL DIAGNÓSTICO RESPONSIVE ==================== */
+
+/* Fuente mejorada para todo el modal */
+#modalDiagnostico {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Clases para estructura del modal */
+.diagnostico-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.diagnostico-info-card {
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 4px solid;
+}
+
+.diagnostico-info-card h4 {
+    margin: 0 0 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.diagnostico-info-card p {
+    margin: 3px 0;
+    display: flex;
+    gap: 4px;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+/* Header con título y técnico */
+.diagnostico-header-row {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.diagnostico-title-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.diagnostico-title-section h3 {
+    color: #333;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+}
+
+.diagnostico-tecnico-container {
+    padding: 10px 12px;
+    background: #f0f0f0;
+    border-radius: 6px;
+    border-left: 3px solid #757575;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.diagnostico-tecnico-container label {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+}
+
+.diagnostico-tecnico-input {
+    width: 150px;
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.diagnostico-tecnico-input:focus {
+    border-color: #2192B8;
+    box-shadow: 0 0 6px rgba(33, 146, 184, 0.2);
+    outline: none;
+}
+
+/* Container de problemas */
+.diagnostico-problemas-container {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    border: 1px solid #f0f0f0;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+/* Filas de problemas */
+.problema-fila {
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    background: #f9f9f9;
+    transition: all 0.3s ease;
+}
+
+.problema-fila:hover {
+    border-color: #2192B8;
+    box-shadow: 0 2px 8px rgba(33, 146, 184, 0.1);
+}
+
+.problema-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.problema-numero {
+    background: #2192B8;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.problema-label {
+    font-size: 12px;
+    color: #666;
+    flex: 1;
+}
+
+.btn-eliminar-problema {
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.btn-eliminar-problema:hover {
+    background: #d32f2f;
+    transform: scale(1.05);
+}
+
+.problema-campos {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr;
+    gap: 10px;
+}
+
+.campo-grupo {
+    display: flex;
+    flex-direction: column;
+}
+
+.campo-grupo label {
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.campo-grupo input,
+.campo-grupo textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    transition: border-color 0.2s ease;
+}
+
+.campo-grupo input:focus,
+.campo-grupo textarea:focus {
+    border-color: #2192B8;
+    outline: none;
+}
+
+.campo-grupo textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+/* Monto total */
+.diagnostico-monto-total {
+    padding: 15px;
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%);
+    border-radius: 8px;
+    border-left: 4px solid #4CAF50;
+    margin-bottom: 20px;
+}
+
+.diagnostico-monto-total p {
+    margin: 0 0 8px 0;
+    color: #666;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    font-weight: 600;
+}
+
+.diagnostico-monto-total h2 {
+    color: #2E7D32;
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+/* Botones de acción */
+.diagnostico-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.diagnostico-actions button {
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.diagnostico-actions .btn-secondary {
+    background: #f0f0f0;
+    color: #666;
+}
+
+.diagnostico-actions .btn-secondary:hover {
+    background: #e0e0e0;
+}
+
+.diagnostico-actions .btn-primary {
+    background: #2196F3;
+    color: white;
+}
+
+.diagnostico-actions .btn-primary:hover {
+    background: #1976D2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(33, 146, 184, 0.3);
+}
+
+.diagnostico-actions .btn-success {
+    background: #4CAF50;
+    color: white;
+}
+
+.diagnostico-actions .btn-success:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+/* ==================== RESPONSIVE - TABLET ==================== */
+@media (max-width: 768px) {
+    /* Grid de 3 a 2 columnas */
+    .diagnostico-info-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    /* Modal más ancho */
+    #modalDiagnostico .modal-content {
+        max-width: 95vw !important;
+        width: 95% !important;
+    }
+    
+    /* Técnico debajo del título */
+    .diagnostico-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .diagnostico-tecnico-container {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .diagnostico-tecnico-input {
+        flex: 1;
+        max-width: 200px;
+    }
+    
+    /* Problemas en 2 columnas */
+    .problema-campos {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .problema-campos .campo-grupo:last-child {
+        grid-column: 1 / -1;
+    }
+}
+
+/* ==================== RESPONSIVE - MÓVIL ==================== */
+@media (max-width: 480px) {
+    /* Grid de 1 columna */
+    .diagnostico-info-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+    
+    /* Modal pantalla completa */
+    #modalDiagnostico .modal-content {
+        max-width: 100vw !important;
+        width: 100% !important;
+        border-radius: 0;
+        max-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+    
+    #modalDiagnostico .modal-header {
+        padding: 10px 12px;
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 10;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    #modalDiagnostico .modal-header h2 {
+        font-size: 15px;
+        flex: 1;
+    }
+    
+    #modalDiagnostico .close-btn {
+        font-size: 24px;
+        width: 28px;
+        height: 28px;
+    }
+    
+    #modalDiagnostico .form-section {
+        padding: 10px;
+    }
+    
+    /* Tarjetas de información más compactas */
+    .diagnostico-info-card {
+        padding: 8px;
+        border-radius: 6px;
+    }
+    
+    .diagnostico-info-card h4 {
+        font-size: 11px;
+        margin-bottom: 6px;
+        gap: 6px;
+    }
+    
+    .diagnostico-info-card h4 i {
+        font-size: 12px;
+    }
+    
+    .diagnostico-info-card p {
+        font-size: 10px;
+        line-height: 1.4;
+        margin: 2px 0;
+    }
+    
+    .diagnostico-info-card strong {
+        font-size: 10px;
+        display: inline-block;
+        min-width: 50px;
+    }
+    
+    /* Header apilado */
+    .diagnostico-header-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+    
+    .diagnostico-title-section {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    
+    .diagnostico-title-section h3 {
+        font-size: 12px;
+        flex: none;
+        width: 100%;
+        text-align: center;
+        padding: 8px;
+        background: #f0f0f0;
+        border-radius: 6px;
+        margin: 0;
+    }
+    
+    .diagnostico-title-section h3 i {
+        font-size: 14px;
+    }
+    
+    .diagnostico-title-section button {
+        padding: 10px 14px;
+        font-size: 12px;
+        white-space: nowrap;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    /* Técnico en línea completa */
+    .diagnostico-tecnico-container {
+        width: 100%;
+        padding: 8px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+    }
+    
+    .diagnostico-tecnico-container label {
+        font-size: 11px;
+        text-align: center;
+    }
+    
+    .diagnostico-tecnico-input {
+        flex: none;
+        width: 100%;
+        max-width: none;
+        font-size: 13px;
+        padding: 10px;
+        text-align: center;
+    }
+    
+    /* Container de problemas más pequeño */
+    .diagnostico-problemas-container {
+        max-height: 300px;
+        padding: 6px;
+        margin-bottom: 12px;
+        border-radius: 4px;
+    }
+    
+    /* Problemas en 1 columna - MEJORADO */
+    .problema-fila {
+        padding: 10px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+        border-width: 1px;
+    }
+    
+    .problema-header {
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+        gap: 6px;
+    }
+    
+    .problema-numero {
+        font-size: 10px;
+        padding: 4px 10px;
+        flex-shrink: 0;
+        border-radius: 12px;
+    }
+    
+    .problema-label {
+        font-size: 10px;
+        flex: 1 1 100%;
+        min-width: 0;
+        order: 2;
+        text-align: center;
+        color: #999;
+    }
+    
+    .btn-eliminar-problema {
+        padding: 6px 10px;
+        font-size: 10px;
+        flex-shrink: 0;
+        border-radius: 6px;
+    }
+    
+    /* Campos apilados verticalmente */
+    .problema-campos {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .campo-grupo {
+        width: 100%;
+        background: white;
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #f0f0f0;
+    }
+    
+    .campo-grupo label {
+        font-size: 10px;
+        font-weight: 700;
+        margin-bottom: 5px;
+        color: #2192B8;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    
+    .campo-grupo input,
+    .campo-grupo textarea {
+        padding: 10px;
+        font-size: 13px;
+        width: 100%;
+        box-sizing: border-box;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    }
+    
+    .campo-grupo textarea {
+        min-height: 70px;
+        resize: vertical;
+    }
+    
+    /* Costo con símbolo de dólar visible */
+    .campo-grupo input[type="number"] {
+        font-size: 15px;
+        font-weight: 600;
+        color: #2E7D32;
+        text-align: right;
+    }
+    
+    /* Monto total más compacto */
+    .diagnostico-monto-total {
+        padding: 12px;
+        margin-bottom: 12px;
+        border-radius: 10px;
+        text-align: center;
+    }
+    
+    .diagnostico-monto-total p {
+        font-size: 10px;
+        margin-bottom: 6px;
+        letter-spacing: 0.5px;
+    }
+    
+    .diagnostico-monto-total h2 {
+        font-size: 26px;
+        letter-spacing: 1px;
+    }
+    
+    /* Botones apilados */
+    .diagnostico-actions {
+        flex-direction: column;
+        gap: 8px;
+        padding: 0;
+    }
+    
+    .diagnostico-actions button {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 16px;
+        font-size: 13px;
+        font-weight: 700;
+        border-radius: 8px;
+    }
+    
+    .diagnostico-actions button i {
+        font-size: 16px;
+    }
+    
+    /* Separadores más sutiles */
+    #modalDiagnostico hr {
+        margin: 10px 0;
+        border-color: #f0f0f0;
+    }
+    
+    /* Ajuste del scroll */
+    #modalDiagnostico .modal-content {
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* ==================== SCROLLBAR PERSONALIZADO ==================== */
+.diagnostico-problemas-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.diagnostico-problemas-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.diagnostico-problemas-container::-webkit-scrollbar-thumb {
+    background: #2192B8;
+    border-radius: 4px;
+}
+
+.diagnostico-problemas-container::-webkit-scrollbar-thumb:hover {
+    background: #1976D2;
+}
+
+/* ==================== MEJORAS ADICIONALES PARA MÓVIL ==================== */
+@media (max-width: 480px) {
+    /* Mejora del scroll en móvil */
+    .diagnostico-problemas-container {
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Botón agregar problema más visible */
+    .diagnostico-title-section button {
+        background: linear-gradient(135deg, #2192B8 0%, #1976a2 100%);
+        box-shadow: 0 2px 8px rgba(33, 146, 184, 0.3);
+    }
+    
+    /* Inputs más grandes para móvil */
+    .campo-grupo input,
+    .campo-grupo textarea {
+        font-size: 16px !important; /* Evita zoom en iOS */
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    }
+    
+    /* Mejor contraste en labels */
+    .campo-grupo label {
+        background: rgba(33, 146, 184, 0.08);
+        padding: 4px 8px;
+        border-radius: 4px;
+        margin-bottom: 6px;
+    }
+    
+    /* Animación suave al abrir modal */
+    #modalDiagnostico.show .modal-content {
+        animation: slideInFromBottom 0.3s ease-out;
+    }
+    
+    @keyframes slideInFromBottom {
+        from {
+            transform: translateY(100%);
+        }
+        to {
+            transform: translateY(0);
+        }
+    }
+    
+    /* Mejor feedback táctil */
+    .problema-fila:active {
+        transform: scale(0.98);
+        transition: transform 0.1s ease;
+    }
+    
+    .diagnostico-actions button:active {
+        transform: scale(0.96);
+    }
+    
+    /* Espaciado entre secciones */
+    .diagnostico-info-grid + .diagnostico-header-row {
+        margin-top: 15px;
+    }
+}
+
+/* ==================== ANIMACIONES ==================== */
+@keyframes slideInModal {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#modalDiagnostico.show .modal-content {
+    animation: slideInModal 0.3s ease-out;
+}
+
+.problema-fila {
+    animation: slideInModal 0.2s ease-out;
+}

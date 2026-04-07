@@ -6,6 +6,7 @@ function mostrarMensaje(msg, tipo) {
 
 let fotosEntregaArray = []; // Array de { base64, url, public_id }
 const MAX_FOTOS_ENTREGA = 3;
+let streamCamaraEntrega = null;
 
 function comprimirImagen(file, maxWidth = 1200, quality = 0.7) {
     return new Promise((resolve, reject) => {
@@ -47,62 +48,102 @@ async function agregarFotoEntrega(input) {
         return;
     }
 
-    const statusEl = document.getElementById('fotoEntregaStatus');
-    statusEl.textContent = 'Comprimiendo imagen...';
-    statusEl.style.color = '#2192B8';
-
     try {
         const base64 = await comprimirImagen(file, 1200, 0.7);
-        const index = fotosEntregaArray.length;
         fotosEntregaArray.push({ base64, url: null, public_id: null });
         renderFotosEntregaPreview();
-        const tamanoKB = Math.round((base64.length * 3) / 4 / 1024);
-        statusEl.textContent = `${fotosEntregaArray.length}/${MAX_FOTOS_ENTREGA} fotos (${tamanoKB} KB)`;
-        statusEl.style.color = '#4CAF50';
+        actualizarContadorFotosEntrega();
     } catch (error) {
         console.error('Error al procesar imagen:', error);
         mostrarMensaje('Error al procesar la imagen', 'error');
-        statusEl.textContent = '';
+    }
+}
+
+async function abrirCamaraEntrega() {
+    if (fotosEntregaArray.length >= MAX_FOTOS_ENTREGA) {
+        mostrarMensaje(`Máximo ${MAX_FOTOS_ENTREGA} fotos permitidas`, 'error');
+        return;
+    }
+
+    const modal = document.getElementById('modalCamaraEntrega');
+    const video = document.getElementById('videoCamaraEntrega');
+
+    try {
+        streamCamaraEntrega = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: 'environment' } 
+        });
+        video.srcObject = streamCamaraEntrega;
+        modal.style.display = 'flex';
+    } catch (error) {
+        console.error('Error al acceder a la cámara:', error);
+        mostrarMensaje('No se pudo acceder a la cámara', 'error');
+    }
+}
+
+function cerrarCamaraEntrega() {
+    const modal = document.getElementById('modalCamaraEntrega');
+    const video = document.getElementById('videoCamaraEntrega');
+
+    if (streamCamaraEntrega) {
+        streamCamaraEntrega.getTracks().forEach(track => track.stop());
+        streamCamaraEntrega = null;
+    }
+    video.srcObject = null;
+    modal.style.display = 'none';
+}
+
+async function capturarFotoEntrega() {
+    const video = document.getElementById('videoCamaraEntrega');
+    const canvas = document.getElementById('canvasCamaraEntrega');
+    const context = canvas.getContext('2d');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0);
+
+    const base64 = canvas.toDataURL('image/jpeg', 0.8);
+    
+    fotosEntregaArray.push({ base64, url: null, public_id: null });
+    renderFotosEntregaPreview();
+    actualizarContadorFotosEntrega();
+    cerrarCamaraEntrega();
+}
+
+function actualizarContadorFotosEntrega() {
+    const numeroFotos = document.getElementById('numeroFotosEntrega');
+    if (numeroFotos) {
+        numeroFotos.textContent = fotosEntregaArray.length;
     }
 }
 
 function renderFotosEntregaPreview() {
     const container = document.getElementById('fotosEntregaContainer');
-    const btnAgregar = document.getElementById('btnAgregarFoto');
-
-    // Limpiar previews existentes (mantener botón agregar)
-    container.querySelectorAll('.foto-preview-item').forEach(el => el.remove());
+    container.innerHTML = '';
 
     fotosEntregaArray.forEach((foto, i) => {
         const div = document.createElement('div');
-        div.className = 'foto-preview-item';
-        div.style.cssText = 'position: relative; width: 100px; height: 100px; border-radius: 8px; overflow: hidden; border: 2px solid #ddd;';
+        div.style.cssText = 'position: relative; width: 100%; aspect-ratio: 1; border-radius: 8px; overflow: hidden; border: 2px solid #ddd;';
         div.innerHTML = `
             <img src="${foto.base64}" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;" onclick="abrirImagenCompleta('${foto.base64.replace(/'/g, "\\'")}')">
-            <button type="button" onclick="eliminarFotoEntrega(${i})" style="position: absolute; top: 2px; right: 2px; background: #d32f2f; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 10px; display: flex; align-items: center; justify-content: center;">
+            <button type="button" onclick="eliminarFotoEntrega(${i})" style="position: absolute; top: 4px; right: 4px; background: #d32f2f; color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
                 <i class="fas fa-times"></i>
             </button>
-            ${foto.url ? '<i class="fas fa-cloud" style="position: absolute; bottom: 2px; right: 2px; color: #4CAF50; font-size: 10px;"></i>' : ''}
+            ${foto.url ? '<i class="fas fa-cloud" style="position: absolute; bottom: 4px; right: 4px; color: #4CAF50; font-size: 12px; background: white; padding: 4px; border-radius: 50%;"></i>' : ''}
         `;
-        container.insertBefore(div, btnAgregar);
+        container.appendChild(div);
     });
-
-    // Ocultar botón agregar si llegó al máximo
-    btnAgregar.style.display = fotosEntregaArray.length >= MAX_FOTOS_ENTREGA ? 'none' : 'flex';
 }
 
 function eliminarFotoEntrega(index) {
     fotosEntregaArray.splice(index, 1);
     renderFotosEntregaPreview();
-    const statusEl = document.getElementById('fotoEntregaStatus');
-    statusEl.textContent = fotosEntregaArray.length > 0 ? `${fotosEntregaArray.length}/${MAX_FOTOS_ENTREGA} fotos` : '';
+    actualizarContadorFotosEntrega();
 }
 
 function limpiarFotosEntrega() {
     fotosEntregaArray = [];
     renderFotosEntregaPreview();
-    const statusEl = document.getElementById('fotoEntregaStatus');
-    if (statusEl) statusEl.textContent = '';
+    actualizarContadorFotosEntrega();
 }
 
 async function subirFotosACloudinary() {

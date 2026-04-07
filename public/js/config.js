@@ -2,7 +2,7 @@
 
 // Detectar si estamos en local o en producción
 const isLocal = window.location.hostname === 'localhost';
-const API_BASE = isLocal ? 'http://localhost:3000' : window.location.origin;
+export const API_BASE = isLocal ? 'http://localhost:3000' : window.location.origin;
 
 // Configuración de la aplicación
 export const CONFIG = {
@@ -52,6 +52,7 @@ export const API_AUTH = `${API_BASE}/api/auth`;
 export const API_UPLOAD = `${API_BASE}/api/upload-imagen`;
 export const API_PDF = `${API_BASE}/api/generar-pdf`;
 export const API_WHATSAPP = `${API_BASE}/api/enviar-whatsapp-pdf`;
+export const API_PAGOS = `${API_BASE}/api/pagos`;
 
 // También exportar como objeto para compatibilidad
 export const API = {
@@ -64,7 +65,8 @@ export const API = {
     AUTH: API_AUTH,
     UPLOAD: API_UPLOAD,
     PDF: API_PDF,
-    WHATSAPP: API_WHATSAPP
+    WHATSAPP: API_WHATSAPP,
+    PAGOS: API_PAGOS
 };
 
 // Iconos por tipo de equipo

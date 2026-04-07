@@ -57,6 +57,40 @@ export function mostrarNotificacionExito(mensaje) {
 }
 
 /**
+ * Mostrar notificación de advertencia centrada
+ * @param {string} mensaje 
+ */
+export function mostrarNotificacionAdvertencia(mensaje) {
+    // Crear elemento de notificación
+    const notif = document.createElement('div');
+    notif.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #FF9800, #F57C00);
+        color: white;
+        padding: 30px 50px;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(255, 152, 0, 0.4);
+        z-index: 10000;
+        font-size: 18px;
+        font-weight: 600;
+        text-align: center;
+        animation: slideIn 0.3s ease-out;
+    `;
+    notif.innerHTML = `<i class="fas fa-exclamation-triangle" style="font-size: 24px; margin-right: 10px;"></i>${mensaje}`;
+    
+    document.body.appendChild(notif);
+    
+    // Remover después de 3 segundos (más tiempo para advertencias)
+    setTimeout(() => {
+        notif.style.animation = 'slideOut 0.3s ease-in';
+        setTimeout(() => notif.remove(), 300);
+    }, 3000);
+}
+
+/**
  * Mostrar notificación de error
  * @param {string} mensaje 
  */
@@ -108,7 +142,7 @@ export function cerrarModalCarga() {
  * @param {string} tabName 
  * @param {Event} evt - Evento del click (opcional)
  */
-export function switchTab(tabName, evt = null) {
+export function switchTab(tabName) {
     // Ocultar todos los tabs
     document.querySelectorAll('.tab-content').forEach(el => {
         el.classList.remove('active');
@@ -123,10 +157,13 @@ export function switchTab(tabName, evt = null) {
         tabContent.classList.add('active');
     }
     
-    // Marcar botón activo
-    if (evt && evt.target) {
-        evt.target.classList.add('active');
-    }
+    // Marcar botón activo buscando el botón que contiene onclick con este tabName
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        const onclickAttr = btn.getAttribute('onclick') || '';
+        if (onclickAttr.includes(`'${tabName}'`)) {
+            btn.classList.add('active');
+        }
+    });
 }
 
 /**
@@ -194,5 +231,75 @@ export function mostrarSinRegistros(containerId, mensaje = 'No hay registros') {
     const container = document.getElementById(containerId);
     if (container) {
         container.innerHTML = `<div class="no-records">${mensaje}</div>`;
+    }
+}
+
+/**
+ * Mostrar modal de notificación personalizado
+ * @param {string} mensaje - Mensaje a mostrar
+ * @param {string} tipo - Tipo de notificación: 'warning', 'error', 'success', 'info'
+ * @param {string} titulo - Título del modal (opcional)
+ */
+export function mostrarModalNotificacion(mensaje, tipo = 'warning', titulo = null) {
+    const modal = document.getElementById('modalNotificacion');
+    const iconoElement = document.getElementById('iconoNotificacion');
+    const tituloElement = document.getElementById('tituloNotificacion');
+    const mensajeElement = document.getElementById('mensajeNotificacion');
+    
+    if (!modal || !iconoElement || !tituloElement || !mensajeElement) {
+        console.error('Modal de notificación no encontrado');
+        alert(mensaje);
+        return;
+    }
+    
+    // Configurar icono y colores según el tipo
+    let icono = '';
+    let color = '';
+    let tituloDefault = '';
+    
+    switch(tipo) {
+        case 'warning':
+            icono = '<i class="fas fa-exclamation-triangle"></i>';
+            color = '#FF9800';
+            tituloDefault = 'Atención';
+            break;
+        case 'error':
+            icono = '<i class="fas fa-times-circle"></i>';
+            color = '#d32f2f';
+            tituloDefault = 'Error';
+            break;
+        case 'success':
+            icono = '<i class="fas fa-check-circle"></i>';
+            color = '#4CAF50';
+            tituloDefault = 'Éxito';
+            break;
+        case 'info':
+            icono = '<i class="fas fa-info-circle"></i>';
+            color = '#2196F3';
+            tituloDefault = 'Información';
+            break;
+        default:
+            icono = '<i class="fas fa-exclamation-triangle"></i>';
+            color = '#FF9800';
+            tituloDefault = 'Atención';
+    }
+    
+    // Actualizar contenido del modal
+    iconoElement.innerHTML = icono;
+    iconoElement.style.color = color;
+    tituloElement.textContent = titulo || tituloDefault;
+    mensajeElement.textContent = mensaje;
+    
+    // Mostrar modal
+    modal.classList.add('show');
+}
+
+/**
+ * Cerrar modal de notificación
+ */
+export function cerrarModalNotificacion() {
+    const modal = document.getElementById('modalNotificacion');
+    if (modal) {
+        modal.classList.remove('show');
     }
 }

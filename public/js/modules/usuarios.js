@@ -1,6 +1,7 @@
 // ==================== MÓDULO DE USUARIOS ====================
 
 import { API_USUARIOS } from '../config.js';
+import { getJSON, postJSON, putJSON, deleteJSON } from '../api.js';
 import { mostrarModalCarga, cerrarModalCarga, mostrarNotificacionExito } from '../ui.js';
 import { getUsuarioActual } from '../auth.js';
 
@@ -33,19 +34,9 @@ export async function guardarNuevoUsuario(e) {
 
     try {
         mostrarModalCarga('Creando usuario...');
-        const response = await fetch(`${API_USUARIOS}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ usuario, correo, clave, rol })
-        });
+        await postJSON(API_USUARIOS, { usuario, correo, clave, rol });
 
         cerrarModalCarga();
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || 'Error al crear usuario');
-        }
-
         cerrarModalNuevoUsuario();
         mostrarNotificacionExito('Usuario creado exitosamente');
         cargarUsuarios();
@@ -69,10 +60,7 @@ export async function cargarUsuarios() {
         </div>`;
 
     try {
-        const response = await fetch(`${API_USUARIOS}`);
-        if (!response.ok) throw new Error('Error al cargar usuarios');
-        
-        const usuarios = await response.json();
+        const usuarios = await getJSON(API_USUARIOS);
         const usuarioActual = getUsuarioActual();
 
         if (usuarios.length === 0) {
@@ -136,17 +124,9 @@ export async function eliminarUsuario(id, nombre) {
 
     try {
         mostrarModalCarga('Eliminando usuario...');
-        const response = await fetch(`${API_USUARIOS}/${id}`, {
-            method: 'DELETE'
-        });
+        await deleteJSON(`${API_USUARIOS}/${id}`);
 
         cerrarModalCarga();
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || 'Error al eliminar usuario');
-        }
-
         mostrarNotificacionExito('Usuario eliminado');
         cargarUsuarios();
     } catch (error) {
@@ -201,19 +181,9 @@ export async function guardarEdicionUsuario(e) {
 
     try {
         mostrarModalCarga('Actualizando usuario...');
-        const response = await fetch(`${API_USUARIOS}/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-        });
+        await putJSON(`${API_USUARIOS}/${id}`, body);
 
         cerrarModalCarga();
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || 'Error al actualizar usuario');
-        }
-
         cerrarModalEditarUsuario();
         mostrarNotificacionExito('Usuario actualizado');
         cargarUsuarios();

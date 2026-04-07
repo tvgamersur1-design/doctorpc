@@ -27,6 +27,28 @@ export function abrirModalNuevoEquipo() {
     mostrarModal('modalNuevoEquipo');
     document.getElementById('formEquipo').reset();
     actualizarIconoNuevo();
+    
+    // Si NO venimos desde selección, asegurar que el botón de búsqueda esté visible
+    if (!window.viniendonFromSeleccion) {
+        const clienteEquipoSeleccionado = document.getElementById('clienteEquipoSeleccionado');
+        const btnBuscarCliente = document.querySelector('#modalNuevoEquipo button[onclick="abrirModalSeleccionarClienteEquipo()"]');
+        
+        if (clienteEquipoSeleccionado) {
+            clienteEquipoSeleccionado.style.backgroundColor = '#f5f5f5';
+            clienteEquipoSeleccionado.style.borderColor = '#e0e0e0';
+            clienteEquipoSeleccionado.style.cursor = 'pointer';
+        }
+        
+        if (btnBuscarCliente) {
+            btnBuscarCliente.style.display = '';
+        }
+        
+        // Eliminar el texto informativo si existe
+        const infoClienteBloqueado = document.querySelector('.info-cliente-bloqueado');
+        if (infoClienteBloqueado) {
+            infoClienteBloqueado.remove();
+        }
+    }
 }
 
 /**
@@ -35,6 +57,32 @@ export function abrirModalNuevoEquipo() {
 export function cerrarModalNuevoEquipo() {
     cerrarModal('modalNuevoEquipo');
     document.getElementById('formEquipo').reset();
+    
+    // Limpiar el modo de cliente bloqueado
+    const clienteEquipoSeleccionado = document.getElementById('clienteEquipoSeleccionado');
+    const btnBuscarCliente = document.querySelector('#modalNuevoEquipo button[onclick="abrirModalSeleccionarClienteEquipo()"]');
+    
+    if (clienteEquipoSeleccionado) {
+        // Restaurar estilos normales
+        clienteEquipoSeleccionado.style.backgroundColor = '#f5f5f5';
+        clienteEquipoSeleccionado.style.borderColor = '#e0e0e0';
+        clienteEquipoSeleccionado.style.cursor = 'pointer';
+    }
+    
+    if (btnBuscarCliente) {
+        // Mostrar botón de búsqueda
+        btnBuscarCliente.style.display = '';
+    }
+    
+    // Eliminar el texto informativo si existe
+    const infoClienteBloqueado = document.querySelector('.info-cliente-bloqueado');
+    if (infoClienteBloqueado) {
+        infoClienteBloqueado.remove();
+    }
+    
+    // Limpiar flags
+    window.viniendonFromSeleccion = false;
+    window.clientePreseleccionado = null;
 }
 
 /**
@@ -167,6 +215,26 @@ export async function abrirModalEditarEquipo(id) {
         document.getElementById('editModeloEquipo').value = equipo.modelo || '';
         document.getElementById('editSerieEquipo').value = equipo.numero_serie || '';
         document.getElementById('editClienteEquipo').value = equipo.cliente_id || '';
+        
+        // Cargar nombre del cliente
+        if (equipo.cliente_id) {
+            try {
+                const clientesRes = await fetch(`${API_CLIENTES}`);
+                const clientes = await clientesRes.json();
+                const cliente = clientes.find(c => c._id === equipo.cliente_id);
+                if (cliente) {
+                    const nombreCompleto = `${cliente.nombre} ${cliente.apellido_paterno || ''} ${cliente.apellido_materno || ''}`.trim();
+                    document.getElementById('editClienteEquipoSeleccionado').value = `${nombreCompleto} (DNI: ${cliente.dni})`;
+                } else {
+                    document.getElementById('editClienteEquipoSeleccionado').value = 'Cliente no encontrado';
+                }
+            } catch (error) {
+                console.error('Error al cargar cliente:', error);
+                document.getElementById('editClienteEquipoSeleccionado').value = 'Error al cargar cliente';
+            }
+        } else {
+            document.getElementById('editClienteEquipoSeleccionado').value = '';
+        }
 
         actualizarIconoEditar();
         mostrarModal('modalEditarEquipo');

@@ -174,13 +174,24 @@ exports.handler = async (event, context) => {
 
       const nuevoServicio = {
         numero_orden: numeroOrden,
+        servicio_id: body.servicio_id || null,
         cliente_id: body.cliente_id || null,
         equipo_id: body.equipo_id || null,
         servicios: body.servicios || [],
-        costo_total: body.costo_total || 0,
+        monto: parseFloat(body.monto) || 0,
+        adelanto: parseFloat(body.adelanto) || 0,
         estado: body.estado || 'Pendiente de evaluación',
-        descripcion_problema: body.descripcion_problema?.trim() || '',
+        problemas_reportados: body.problemas_reportados?.trim() || body.descripcion_problema?.trim() || '',
         observaciones: body.observaciones?.trim() || '',
+        local: body.local?.trim() || '',
+        fecha: body.fecha || '',
+        hora: body.hora || '',
+        numero_servicio: body.numero_servicio || '',
+        diagnostico: body.diagnostico || '',
+        trabajo_realizado: body.trabajo_realizado || '',
+        fecha_inicio: body.fecha_inicio || '',
+        fecha_cierre: body.fecha_cierre || '',
+        fotos: body.fotos || [],
         fecha_creacion: new Date().toISOString(),
         fecha_actualizacion: new Date().toISOString()
       };

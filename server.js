@@ -1600,6 +1600,64 @@ app.get('/api/status-db', async (req, res) => {
   }
 });
 
+// ==================== PAGOS ====================
+
+// GET - Obtener pagos (todos o por servicio)
+app.get('/api/pagos', async (req, res) => {
+  try {
+    const { servicio_equipo_id } = req.query;
+    const filtro = {};
+    if (servicio_equipo_id) {
+      filtro.servicio_equipo_id = servicio_equipo_id;
+    }
+    const pagos = await db.collection('pagos').find(filtro).sort({ fecha_pago: -1 }).toArray();
+    res.json(pagos);
+  } catch (error) {
+    console.error('Error GET /api/pagos:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST - Registrar pago
+app.post('/api/pagos', async (req, res) => {
+  try {
+    const { servicio_equipo_id, monto_pagado, metodo_pago, numero_referencia, notas, fecha_pago } = req.body;
+
+    if (!servicio_equipo_id || !monto_pagado || monto_pagado <= 0) {
+      return res.status(400).json({ error: 'servicio_equipo_id y monto_pagado son requeridos' });
+    }
+
+    const pago = {
+      servicio_equipo_id,
+      monto_pagado: parseFloat(monto_pagado),
+      metodo_pago: metodo_pago || 'efectivo',
+      numero_referencia: numero_referencia || '',
+      notas: notas || '',
+      fecha_pago: fecha_pago || new Date().toISOString(),
+      fecha_registro: new Date().toISOString()
+    };
+
+    const result = await db.collection('pagos').insertOne(pago);
+
+    // Actualizar el adelanto del servicio
+    if (ObjectId.isValid(servicio_equipo_id)) {
+      const servicio = await db.collection('servicio_equipo').findOne({ _id: new ObjectId(servicio_equipo_id) });
+      if (servicio) {
+        const nuevoAdelanto = parseFloat(servicio.adelanto || 0) + parseFloat(monto_pagado);
+        await db.collection('servicio_equipo').updateOne(
+          { _id: new ObjectId(servicio_equipo_id) },
+          { $set: { adelanto: nuevoAdelanto } }
+        );
+      }
+    }
+
+    res.status(201).json({ ...pago, _id: result.insertedId });
+  } catch (error) {
+    console.error('Error POST /api/pagos:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Iniciar servidor
 connectDB().then(() => {
   // ==================== WHATSAPP ====================

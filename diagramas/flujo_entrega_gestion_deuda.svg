@@ -1,0 +1,169 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1400">
+  <defs>
+    <style>
+      .title { font: bold 24px sans-serif; fill: #1a237e; }
+      .subtitle { font: bold 16px sans-serif; fill: #424242; }
+      .text { font: 14px sans-serif; fill: #333; }
+      .small-text { font: 12px sans-serif; fill: #666; }
+      .box { fill: #fff; stroke: #2196F3; stroke-width: 2; }
+      .box-success { fill: #E8F5E9; stroke: #4CAF50; stroke-width: 2; }
+      .box-warning { fill: #FFF3E0; stroke: #FF9800; stroke-width: 2; }
+      .box-info { fill: #E3F2FD; stroke: #2196F3; stroke-width: 2; }
+      .box-danger { fill: #FFEBEE; stroke: #F44336; stroke-width: 2; }
+      .arrow { fill: none; stroke: #424242; stroke-width: 2; marker-end: url(#arrowhead); }
+      .arrow-success { fill: none; stroke: #4CAF50; stroke-width: 2; marker-end: url(#arrowhead-success); }
+      .arrow-warning { fill: none; stroke: #FF9800; stroke-width: 2; marker-end: url(#arrowhead-warning); }
+      .label { font: bold 13px sans-serif; fill: #fff; }
+      .badge { font: bold 12px sans-serif; fill: #fff; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#424242" />
+    </marker>
+    <marker id="arrowhead-success" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#4CAF50" />
+    </marker>
+    <marker id="arrowhead-warning" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#FF9800" />
+    </marker>
+  </defs>
+
+  <!-- Título -->
+  <text x="600" y="40" text-anchor="middle" class="title">FLUJO DE ENTREGA Y GESTIÓN DE DEUDA</text>
+  <text x="600" y="65" text-anchor="middle" class="small-text">Sistema de control financiero al entregar equipos</text>
+
+  <!-- PASO 1: Servicio Completado -->
+  <rect x="450" y="100" width="300" height="80" rx="8" class="box-info"/>
+  <text x="600" y="130" text-anchor="middle" class="subtitle">📋 Servicio Completado</text>
+  <text x="600" y="155" text-anchor="middle" class="small-text">Estado: "Completado"</text>
+  <text x="600" y="172" text-anchor="middle" class="small-text">Listo para entrega</text>
+
+  <!-- Flecha -->
+  <path d="M 600 180 L 600 220" class="arrow"/>
+
+  <!-- PASO 2: Modal de Entrega -->
+  <rect x="350" y="220" width="500" height="140" rx="8" class="box"/>
+  <text x="600" y="250" text-anchor="middle" class="subtitle">🚚 Modal de Entrega del Equipo</text>
+  
+  <!-- Datos básicos -->
+  <rect x="370" y="265" width="220" height="80" rx="4" fill="#f5f5f5" stroke="#ddd"/>
+  <text x="380" y="285" class="small-text" font-weight="bold">Datos de Entrega:</text>
+  <text x="380" y="305" class="small-text">• Fecha y hora</text>
+  <text x="380" y="322" class="small-text">• Encargado</text>
+  <text x="380" y="339" class="small-text">• Estado del equipo</text>
+  
+  <!-- Resumen financiero -->
+  <rect x="610" y="265" width="220" height="80" rx="4" fill="#E3F2FD" stroke="#2196F3"/>
+  <text x="620" y="285" class="small-text" font-weight="bold">💰 Resumen Financiero:</text>
+  <text x="620" y="305" class="small-text">Monto Total: S/ 150.00</text>
+  <text x="620" y="322" class="small-text">Adelanto: S/ 50.00</text>
+  <text x="620" y="339" class="small-text" font-weight="bold" fill="#F44336">Saldo: S/ 100.00</text>
+
+  <!-- Flecha -->
+  <path d="M 600 360 L 600 400" class="arrow"/>
+
+  <!-- PASO 3: Sección de Pago al Entregar -->
+  <rect x="300" y="400" width="600" height="180" rx="8" class="box-warning"/>
+  <text x="600" y="430" text-anchor="middle" class="subtitle">💵 Pago al Momento de Entrega</text>
+  
+  <!-- Campo de monto -->
+  <rect x="320" y="445" width="560" height="50" rx="4" fill="#fff" stroke="#FF9800" stroke-width="2"/>
+  <text x="330" y="465" class="text" font-weight="bold">Monto que cobra hoy:</text>
+  <rect x="330" y="472" width="200" height="18" rx="3" fill="#FFF3E0" stroke="#FF9800"/>
+  <text x="340" y="485" class="small-text">S/ 100.00 (Saldo completo)</text>
+  
+  <text x="550" y="465" class="small-text">Método de pago:</text>
+  <rect x="550" y="472" width="150" height="18" rx="3" fill="#FFF3E0" stroke="#FF9800"/>
+  <text x="560" y="485" class="small-text">Efectivo / Yape / Plin</text>
+
+  <!-- Opciones -->
+  <rect x="320" y="510" width="260" height="55" rx="4" fill="#E8F5E9" stroke="#4CAF50"/>
+  <text x="330" y="530" class="small-text" font-weight="bold">✅ Opción 1: Saldar Deuda</text>
+  <text x="330" y="548" class="small-text">Monto = Saldo (S/ 100.00)</text>
+  <text x="330" y="562" class="small-text" font-weight="bold" fill="#4CAF50">→ Deuda = S/ 0.00</text>
+
+  <rect x="620" y="510" width="260" height="55" rx="4" fill="#FFEBEE" stroke="#F44336"/>
+  <text x="630" y="530" class="small-text" font-weight="bold">⚠️ Opción 2: Pago Parcial</text>
+  <text x="630" y="548" class="small-text">Monto &lt; Saldo (ej: S/ 50.00)</text>
+  <text x="630" y="562" class="small-text" font-weight="bold" fill="#F44336">→ Deuda = S/ 50.00</text>
+
+  <!-- Flecha bifurcación -->
+  <path d="M 600 580 L 600 620" class="arrow"/>
+  <path d="M 600 620 L 350 620 L 350 680" class="arrow-success"/>
+  <path d="M 600 620 L 850 620 L 850 680" class="arrow-warning"/>
+
+  <!-- RESULTADO 1: Deuda Saldada -->
+  <rect x="200" y="680" width="300" height="120" rx="8" class="box-success"/>
+  <text x="350" y="710" text-anchor="middle" class="subtitle">✅ DEUDA SALDADA</text>
+  
+  <rect x="220" y="725" width="260" height="65" rx="4" fill="#fff" stroke="#4CAF50"/>
+  <text x="230" y="745" class="small-text" font-weight="bold">Actualización del Servicio:</text>
+  <text x="230" y="762" class="small-text">• Estado: "Entregado"</text>
+  <text x="230" y="777" class="small-text" fill="#4CAF50" font-weight="bold">• Saldo Pendiente: S/ 0.00</text>
+
+  <!-- RESULTADO 2: Deuda Pendiente -->
+  <rect x="700" y="680" width="300" height="120" rx="8" class="box-danger"/>
+  <text x="850" y="710" text-anchor="middle" class="subtitle">⚠️ DEUDA PENDIENTE</text>
+  
+  <rect x="720" y="725" width="260" height="65" rx="4" fill="#fff" stroke="#F44336"/>
+  <text x="730" y="745" class="small-text" font-weight="bold">Actualización del Servicio:</text>
+  <text x="730" y="762" class="small-text">• Estado: "Entregado"</text>
+  <text x="730" y="777" class="small-text" fill="#F44336" font-weight="bold">• Saldo Pendiente: S/ 50.00</text>
+
+  <!-- Flechas a gestión -->
+  <path d="M 350 800 L 350 850" class="arrow-success"/>
+  <path d="M 850 800 L 850 850" class="arrow-warning"/>
+
+  <!-- GESTIÓN 1: Sin deuda -->
+  <rect x="200" y="850" width="300" height="100" rx="8" class="box-success"/>
+  <text x="350" y="880" text-anchor="middle" class="subtitle">📊 Gestión de Deudas</text>
+  <rect x="220" y="895" width="260" height="45" rx="4" fill="#fff" stroke="#4CAF50"/>
+  <text x="350" y="915" text-anchor="middle" class="small-text" font-weight="bold" fill="#4CAF50">✓ NO APARECE</text>
+  <text x="350" y="932" text-anchor="middle" class="small-text">Cliente sin deudas pendientes</text>
+
+  <!-- GESTIÓN 2: Con deuda -->
+  <rect x="700" y="850" width="300" height="100" rx="8" class="box-danger"/>
+  <text x="850" y="880" text-anchor="middle" class="subtitle">📊 Gestión de Deudas</text>
+  <rect x="720" y="895" width="260" height="45" rx="4" fill="#fff" stroke="#F44336"/>
+  <text x="850" y="915" text-anchor="middle" class="small-text" font-weight="bold" fill="#F44336">⚠️ SÍ APARECE</text>
+  <text x="850" y="932" text-anchor="middle" class="small-text">Deuda: S/ 50.00 - Gestionar pago</text>
+
+  <!-- Flecha a seguimiento -->
+  <path d="M 850 950 L 850 990 L 600 990 L 600 1020" class="arrow-warning"/>
+
+  <!-- PASO 4: Seguimiento de Deuda -->
+  <rect x="400" y="1020" width="400" height="140" rx="8" class="box-info"/>
+  <text x="600" y="1050" text-anchor="middle" class="subtitle">📱 Seguimiento de Deuda</text>
+  
+  <rect x="420" y="1065" width="360" height="85" rx="4" fill="#fff" stroke="#2196F3"/>
+  <text x="430" y="1085" class="small-text" font-weight="bold">Acciones disponibles:</text>
+  <text x="430" y="1105" class="small-text">• Ver historial de pagos del cliente</text>
+  <text x="430" y="1122" class="small-text">• Registrar nuevo pago parcial o total</text>
+  <text x="430" y="1139" class="small-text">• Enviar recordatorio por WhatsApp</text>
+
+  <!-- Flecha -->
+  <path d="M 600 1160 L 600 1200" class="arrow"/>
+
+  <!-- PASO 5: Registro de Pago Posterior -->
+  <rect x="350" y="1200" width="500" height="140" rx="8" class="box-success"/>
+  <text x="600" y="1230" text-anchor="middle" class="subtitle">💰 Registro de Pago Posterior</text>
+  
+  <rect x="370" y="1245" width="460" height="85" rx="4" fill="#fff" stroke="#4CAF50"/>
+  <text x="380" y="1265" class="small-text" font-weight="bold">Cuando el cliente paga la deuda:</text>
+  <text x="380" y="1285" class="small-text">1. Ir a "Gestión de Deudas"</text>
+  <text x="380" y="1302" class="small-text">2. Buscar al cliente y registrar pago</text>
+  <text x="380" y="1319" class="small-text" font-weight="bold" fill="#4CAF50">3. Saldo se actualiza automáticamente a S/ 0.00</text>
+
+  <!-- Leyenda -->
+  <rect x="50" y="1360" width="1100" height="30" rx="4" fill="#f5f5f5" stroke="#ddd"/>
+  <circle cx="70" cy="1375" r="6" fill="#4CAF50"/>
+  <text x="85" y="1380" class="small-text">Deuda saldada</text>
+  
+  <circle cx="250" cy="1375" r="6" fill="#F44336"/>
+  <text x="265" y="1380" class="small-text">Deuda pendiente</text>
+  
+  <circle cx="430" cy="1375" r="6" fill="#2196F3"/>
+  <text x="445" y="1380" class="small-text">Proceso normal</text>
+  
+  <circle cx="610" cy="1375" r="6" fill="#FF9800"/>
+  <text x="625" y="1380" class="small-text">Requiere decisión</text>
+</svg>

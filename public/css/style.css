@@ -34,19 +34,17 @@ body {
 .sidebar-logo {
     text-align: center;
     margin-bottom: 30px;
-    padding-bottom: 20px;
+    padding: 10px 0 20px 0;
     border-bottom: 2px solid rgba(255,255,255,0.3);
 }
 
-.sidebar-logo h2 {
-    font-size: 18px;
-    margin-bottom: 8px;
-    font-weight: 700;
+.sidebar-logo img {
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.15));
+    transition: transform 0.3s ease;
 }
 
-.sidebar-logo p {
-    font-size: 12px;
-    color: rgba(255,255,255,0.8);
+.sidebar-logo img:hover {
+    transform: scale(1.02);
 }
 
 .nav-tabs {
@@ -242,6 +240,18 @@ button {
 .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(33, 146, 184, 0.3);
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-primary:disabled:hover {
+    transform: none;
+    box-shadow: none;
 }
 
 .btn-secondary {
@@ -979,6 +989,29 @@ button {
     100% { transform: rotate(360deg); }
 }
 
+/* Animaciones para notificaciones */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+@keyframes slideOut {
+    from {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+    to {
+        opacity: 0;
+        transform: translate(-50%, -40%);
+    }
+}
+
 .loading-spinner-text {
     font-size: 15px;
     color: #2192B8;
@@ -1344,5 +1377,468 @@ button {
 
     .reparacion-problema-costo {
         font-size: 14px;
+    }
+}
+
+
+/* ==================== ESTILOS PARA BOTONES DE FOTO DEL EQUIPO ==================== */
+
+.btn-foto-equipo {
+    padding: 12px 20px;
+    background: white;
+    color: #2192B8;
+    border: 2px solid #2192B8;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-foto-equipo:hover {
+    background: #2192B8;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(33, 146, 184, 0.3);
+}
+
+.btn-foto-equipo:active {
+    transform: translateY(0);
+}
+
+.btn-foto-equipo i {
+    font-size: 18px;
+}
+
+/* Contador de fotos */
+#contadorFotos {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    background: #e3f2fd;
+    border-radius: 6px;
+    display: inline-block;
+    font-size: 13px;
+    color: #1976D2;
+    font-weight: 600;
+}
+
+/* Contenedor de fotos en grid */
+#contenedorPreviewFotos {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 10px;
+}
+
+/* Responsive: 1 columna en móviles */
+@media (max-width: 600px) {
+    #contenedorPreviewFotos {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Modal de cámara */
+#modalCamaraEquipo {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+#modalCamaraEquipo video {
+    width: 100%;
+    border-radius: 8px;
+    background: #000;
+}
+
+/* Responsive para botones de foto */
+@media (max-width: 768px) {
+    .btn-foto-equipo {
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+    
+    .btn-foto-equipo i {
+        font-size: 16px;
+    }
+}
+
+/* ==================== MODAL ENTREGA EMPRESARIAL ==================== */
+
+#modalEntregaServicio .modal-content {
+    max-width: 780px;
+    max-height: 92vh;
+    overflow-y: auto;
+    padding: 0;
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+
+/* Header con acento celeste */
+.entrega-header {
+    padding: 20px 24px 16px;
+    border-bottom: 2px solid #2192B8;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.entrega-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.entrega-header-icon {
+    font-size: 22px;
+    color: #2192B8;
+}
+
+.entrega-header-text h2 {
+    color: #2192B8 !important;
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    border: none !important;
+    padding: 0 !important;
+}
+
+.entrega-header-text span {
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+.entrega-header .close-btn {
+    color: #6b7280;
+    font-size: 24px;
+}
+
+/* Body */
+.entrega-body {
+    padding: 20px 24px 24px;
+}
+
+/* Info cards (Servicio, Equipo, Cliente) - listado vertical */
+.entrega-info-list {
+    margin-bottom: 20px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.entrega-info-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.entrega-info-item:last-child {
+    border-bottom: none;
+}
+
+.entrega-info-item i {
+    font-size: 16px;
+    color: #2192B8;
+    width: 20px;
+    text-align: center;
+}
+
+.entrega-info-item .info-label {
+    font-size: 12px;
+    color: #9ca3af;
+    min-width: 80px;
+}
+
+.entrega-info-item .info-value {
+    font-size: 13px;
+    color: #111827;
+    font-weight: 600;
+}
+
+.entrega-info-item .info-sub {
+    font-size: 12px;
+    color: #6b7280;
+    margin-left: 4px;
+}
+
+/* Secciones */
+.entrega-section {
+    margin-bottom: 18px;
+}
+
+.entrega-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 14px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.entrega-section-title i {
+    font-size: 14px;
+    color: #2192B8;
+}
+
+/* Form fields dentro del modal */
+.entrega-section .form-group {
+    margin-bottom: 12px;
+}
+
+.entrega-section .form-group label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 5px;
+}
+
+.entrega-section .form-group label i {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.entrega-section input,
+.entrega-section select,
+.entrega-section textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #111827;
+    background: #fff;
+    font-family: inherit;
+    transition: border-color 0.2s;
+}
+
+.entrega-section input:focus,
+.entrega-section select:focus,
+.entrega-section textarea:focus {
+    outline: none;
+    border-color: #2192B8;
+    box-shadow: 0 0 0 2px rgba(33,146,184,0.12);
+}
+
+/* Fotos */
+.entrega-fotos-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.entrega-foto-counter {
+    padding: 4px 10px;
+    background: #e8f6fa;
+    border-radius: 12px;
+    font-size: 12px;
+    color: #2192B8;
+    font-weight: 600;
+}
+
+.entrega-foto-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.entrega-foto-btn {
+    padding: 10px 14px;
+    background: #f9fafb;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.entrega-foto-btn:hover {
+    background: #e8f6fa;
+    border-color: #2192B8;
+    color: #1976a2;
+}
+
+.entrega-foto-btn i {
+    font-size: 14px;
+    color: #2192B8;
+}
+
+/* Resumen financiero - 3 líneas horizontales */
+.entrega-finance-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.entrega-finance-row:last-child {
+    border-bottom: none;
+}
+
+.entrega-finance-row .fin-label {
+    font-size: 13px;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.entrega-finance-row .fin-label i {
+    font-size: 13px;
+}
+
+.entrega-finance-row .fin-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.entrega-finance-row.pendiente .fin-value {
+    color: #dc2626;
+}
+
+/* Input monto con borde verde */
+.entrega-monto-input {
+    border-color: #22c55e !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+}
+
+.entrega-monto-input:focus {
+    border-color: #16a34a !important;
+    box-shadow: 0 0 0 2px rgba(34,197,94,0.15) !important;
+}
+
+/* Banner de estado deuda */
+.entrega-indicador {
+    padding: 10px 14px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 13px;
+    margin: 12px 0;
+}
+
+.entrega-indicador.saldada {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.entrega-indicador.parcial {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+.entrega-indicador.con-deuda {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.entrega-indicador i {
+    font-size: 16px;
+}
+
+.entrega-indicador .indicador-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.entrega-indicador .indicador-text small {
+    font-weight: 400;
+    font-size: 11px;
+    opacity: 0.8;
+}
+
+/* Botones de acción */
+.entrega-actions {
+    display: flex;
+    gap: 10px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.entrega-btn-cancel,
+.entrega-btn-confirm {
+    flex: 1;
+    padding: 11px 20px;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.entrega-btn-confirm {
+    background: #2192B8;
+    color: #fff;
+    border-color: #1976a2;
+}
+
+.entrega-btn-cancel:hover {
+    background: #e5e7eb;
+}
+
+.entrega-btn-confirm:hover {
+    background: #1976a2;
+}
+
+.entrega-btn-cancel i,
+.entrega-btn-confirm i {
+    font-size: 13px;
+}
+
+/* Responsive modal entrega */
+@media (max-width: 768px) {
+    #modalEntregaServicio .modal-content {
+        max-width: 95%;
+        margin: 10px;
+    }
+    
+    .entrega-foto-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .entrega-actions {
+        flex-direction: column;
     }
 }

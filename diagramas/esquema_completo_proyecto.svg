@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 2200">
+  <defs>
+    <style>
+      .title { font: bold 32px sans-serif; fill: #1a1a1a; }
+      .subtitle { font: bold 20px sans-serif; fill: #2c3e50; }
+      .text { font: 14px sans-serif; fill: #34495e; }
+      .small-text { font: 12px sans-serif; fill: #7f8c8d; }
+      .box { fill: #ecf0f1; stroke: #34495e; stroke-width: 2; }
+      .frontend { fill: #3498db; stroke: #2980b9; stroke-width: 2; }
+      .backend { fill: #e74c3c; stroke: #c0392b; stroke-width: 2; }
+      .database { fill: #2ecc71; stroke: #27ae60; stroke-width: 2; }
+      .module { fill: #9b59b6; stroke: #8e44ad; stroke-width: 2; }
+      .function { fill: #f39c12; stroke: #e67e22; stroke-width: 2; }
+      .white-text { fill: white; font: bold 14px sans-serif; }
+      .arrow { stroke: #34495e; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .dashed { stroke-dasharray: 5,5; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#34495e" />
+    </marker>
+  </defs>
+  
+  <!-- Título -->
+  <text x="800" y="40" text-anchor="middle" class="title">Sistema Doctor PC - Esquema Completo</text>
+  <text x="800" y="70" text-anchor="middle" class="small-text">Sistema de Gestión de Servicios Técnicos</text>
+
+  <!-- CAPA 1: FRONTEND -->
+  <g id="frontend-layer">
+    <rect x="50" y="100" width="1500" height="280" class="frontend" rx="10"/>
+    <text x="800" y="130" text-anchor="middle" class="white-text">FRONTEND - Cliente Web (HTML/CSS/JavaScript)</text>
+    
+    <!-- Páginas -->
+    <rect x="80" y="150" width="200" height="200" class="box" rx="5"/>
+    <text x="180" y="175" text-anchor="middle" class="subtitle">Páginas</text>
+    <text x="180" y="200" text-anchor="middle" class="text">index.html</text>
+    <text x="180" y="220" text-anchor="middle" class="text">dashboard.html</text>
+    <text x="180" y="240" text-anchor="middle" class="small-text">Login</text>
+    <text x="180" y="260" text-anchor="middle" class="small-text">Panel Principal</text>
+    
+    <!-- Módulos JS -->
+    <rect x="320" y="150" width="220" height="200" class="box" rx="5"/>
+    <text x="430" y="175" text-anchor="middle" class="subtitle">Módulos JS</text>
+    <text x="430" y="200" text-anchor="middle" class="text">clientes.js</text>
+    <text x="430" y="220" text-anchor="middle" class="text">equipos.js</text>
+    <text x="430" y="240" text-anchor="middle" class="text">servicios.js</text>
+    <text x="430" y="260" text-anchor="middle" class="text">diagnostico.js</text>
+    <text x="430" y="280" text-anchor="middle" class="text">deudas.js</text>
+    <text x="430" y="300" text-anchor="middle" class="text">usuarios.js</text>
+    <text x="430" y="320" text-anchor="middle" class="text">cancelacion.js</text>
+    
+    <!-- Core JS -->
+    <rect x="580" y="150" width="200" height="200" class="box" rx="5"/>
+    <text x="680" y="175" text-anchor="middle" class="subtitle">Core JS</text>
+    <text x="680" y="200" text-anchor="middle" class="text">api.js</text>
+    <text x="680" y="220" text-anchor="middle" class="text">auth.js</text>
+    <text x="680" y="240" text-anchor="middle" class="text">main.js</text>
+    <text x="680" y="260" text-anchor="middle" class="text">ui.js</text>
+    <text x="680" y="280" text-anchor="middle" class="text">utils.js</text>
+    <text x="680" y="300" text-anchor="middle" class="text">helpers.js</text>
+    
+    <!-- Estilos CSS -->
+    <rect x="820" y="150" width="200" height="200" class="box" rx="5"/>
+    <text x="920" y="175" text-anchor="middle" class="subtitle">Estilos CSS</text>
+    <text x="920" y="200" text-anchor="middle" class="text">style.css</text>
+    <text x="920" y="220" text-anchor="middle" class="text">diagnostico.css</text>
+    <text x="920" y="240" text-anchor="middle" class="text">deudas.css</text>
+    <text x="920" y="260" text-anchor="middle" class="text">cancelacion.css</text>
+    <text x="920" y="280" text-anchor="middle" class="text">reporte.css</text>
+
+    <!-- Generación PDF -->
+    <rect x="1060" y="150" width="200" height="200" class="box" rx="5"/>
+    <text x="1160" y="175" text-anchor="middle" class="subtitle">Reportes</text>
+    <text x="1160" y="200" text-anchor="middle" class="text">reporte.js</text>
+    <text x="1160" y="220" text-anchor="middle" class="small-text">jsPDF</text>
+    <text x="1160" y="240" text-anchor="middle" class="small-text">Generación PDF</text>
+    <text x="1160" y="260" text-anchor="middle" class="small-text">en navegador</text>
+    
+    <!-- Assets -->
+    <rect x="1300" y="150" width="200" height="200" class="box" rx="5"/>
+    <text x="1400" y="175" text-anchor="middle" class="subtitle">Assets</text>
+    <text x="1400" y="200" text-anchor="middle" class="text">images/</text>
+    <text x="1400" y="220" text-anchor="middle" class="small-text">logo-doctorpc.png</text>
+    <text x="1400" y="250" text-anchor="middle" class="text">animations.js</text>
+  </g>
+
+  <!-- Flecha Frontend -> Backend -->
+  <path d="M 800 380 L 800 450" class="arrow"/>
+  <text x="820" y="420" class="small-text">HTTP/REST API</text>
+  <text x="820" y="435" class="small-text">JWT Auth</text>
+
+  <!-- CAPA 2: BACKEND / SERVERLESS FUNCTIONS -->
+  <g id="backend-layer">
+    <rect x="50" y="460" width="1500" height="400" class="backend" rx="10"/>
+    <text x="800" y="490" text-anchor="middle" class="white-text">BACKEND - Netlify Serverless Functions (Node.js + Express)</text>
+    
+    <!-- Autenticación -->
+    <rect x="80" y="510" width="180" height="320" class="function" rx="5"/>
+    <text x="170" y="535" text-anchor="middle" class="white-text">Autenticación</text>
+    <text x="170" y="560" text-anchor="middle" class="text">auth.js</text>
+    <line x1="90" y1="570" x2="250" y2="570" stroke="#34495e" stroke-width="1"/>
+    <text x="170" y="590" text-anchor="middle" class="small-text">POST /login</text>
+    <text x="170" y="610" text-anchor="middle" class="small-text">GET /verificar</text>
+    <text x="170" y="630" text-anchor="middle" class="small-text">JWT Tokens</text>
+    <text x="170" y="650" text-anchor="middle" class="small-text">bcrypt hash</text>
+    <text x="170" y="670" text-anchor="middle" class="small-text">Rate limiting</text>
+    <text x="170" y="690" text-anchor="middle" class="small-text">10 intentos/15min</text>
+    
+    <!-- Usuarios -->
+    <rect x="280" y="510" width="180" height="320" class="function" rx="5"/>
+    <text x="370" y="535" text-anchor="middle" class="white-text">Usuarios</text>
+    <text x="370" y="560" text-anchor="middle" class="text">usuarios.js</text>
+    <line x1="290" y1="570" x2="450" y2="570" stroke="#34495e" stroke-width="1"/>
+    <text x="370" y="590" text-anchor="middle" class="small-text">GET /usuarios</text>
+    <text x="370" y="610" text-anchor="middle" class="small-text">POST /usuarios</text>
+    <text x="370" y="630" text-anchor="middle" class="small-text">PUT /usuarios/:id</text>
+    <text x="370" y="650" text-anchor="middle" class="small-text">DELETE /usuarios/:id</text>
+    <text x="370" y="670" text-anchor="middle" class="small-text">Roles: admin/usuario</text>
+    <text x="370" y="690" text-anchor="middle" class="small-text">Solo Admin</text>
+
+    <!-- Clientes -->
+    <rect x="480" y="510" width="180" height="320" class="function" rx="5"/>
+    <text x="570" y="535" text-anchor="middle" class="white-text">Clientes</text>
+    <text x="570" y="560" text-anchor="middle" class="text">clientes.js</text>
+    <line x1="490" y1="570" x2="650" y2="570" stroke="#34495e" stroke-width="1"/>
+    <text x="570" y="590" text-anchor="middle" class="small-text">GET /clientes</text>
+    <text x="570" y="610" text-anchor="middle" class="small-text">GET /clientes/:id</text>
+    <text x="570" y="630" text-anchor="middle" class="small-text">POST /clientes</text>
+    <text x="570" y="650" text-anchor="middle" class="small-text">PUT /clientes/:id</text>
+    <text x="570" y="670" text-anchor="middle" class="small-text">DELETE /clientes/:id</text>
+    <text x="570" y="690" text-anchor="middle" class="small-text">PUT /restaurar</text>
+    <text x="570" y="710" text-anchor="middle" class="small-text">Soft Delete</text>
+    <text x="570" y="730" text-anchor="middle" class="small-text">DNI único</text>
+    
+    <!-- Equipos -->
+    <rect x="680" y="510" width="180" height="320" class="function" rx="5"/>
+    <text x="770" y="535" text-anchor="middle" class="white-text">Equipos</text>
+    <text x="770" y="560" text-anchor="middle" class="text">equipos.js</text>
+    <line x1="690" y1="570" x2="850" y2="570" stroke="#34495e" stroke-width="1"/>
+    <text x="770" y="590" text-anchor="middle" class="small-text">GET /equipos</text>
+    <text x="770" y="610" text-anchor="middle" class="small-text">GET /equipos/:id</text>
+    <text x="770" y="630" text-anchor="middle" class="small-text">POST /equipos</text>
+    <text x="770" y="650" text-anchor="middle" class="small-text">PUT /equipos/:id</text>
+    <text x="770" y="670" text-anchor="middle" class="small-text">DELETE /equipos/:id</text>
+    <text x="770" y="690" text-anchor="middle" class="small-text">Laptop/Desktop</text>
+    <text x="770" y="710" text-anchor="middle" class="small-text">Tablet/All-in-One</text>
+    <text x="770" y="730" text-anchor="middle" class="small-text">N° Serie único</text>
+    
+    <!-- Servicios -->
+    <rect x="880" y="510" width="180" height="320" class="function" rx="5"/>
+    <text x="970" y="535" text-anchor="middle" class="white-text">Servicios</text>
+    <text x="970" y="560" text-anchor="middle" class="text">servicios.js</text>
+    <line x1="890" y1="570" x2="1050" y2="570" stroke="#34495e" stroke-width="1"/>
+    <text x="970" y="590" text-anchor="middle" class="small-text">GET /servicios</text>
+    <text x="970" y="610" text-anchor="middle" class="small-text">GET /servicios/:id</text>
+    <text x="970" y="630" text-anchor="middle" class="small-text">POST /servicios</text>
+    <text x="970" y="650" text-anchor="middle" class="small-text">PUT /servicios/:id</text>
+    <text x="970" y="670" text-anchor="middle" class="small-text">DELETE /servicios/:id</text>
+    <text x="970" y="690" text-anchor="middle" class="small-text">GET /proximo-numero</text>
+    <text x="970" y="710" text-anchor="middle" class="small-text">Paginación</text>
+    <text x="970" y="730" text-anchor="middle" class="small-text">Búsqueda</text>
+
+    <!-- Servicio-Equipo -->
+    <rect x="1080" y="510" width="200" height="320" class="function" rx="5"/>
+    <text x="1180" y="535" text-anchor="middle" class="white-text">Órdenes Servicio</text>
+    <text x="1180" y="560" text-anchor="middle" class="text">servicio-equipo.js</text>
+    <line x1="1090" y1="570" x2="1270" y2="570" stroke="#34495e" stroke-width="1"/>
+    <text x="1180" y="590" text-anchor="middle" class="small-text">GET /servicio-equipo</text>
+    <text x="1180" y="610" text-anchor="middle" class="small-text">GET /:id</text>
+    <text x="1180" y="630" text-anchor="middle" class="small-text">POST /servicio-equipo</text>
+    <text x="1180" y="650" text-anchor="middle" class="small-text">PUT /:id</text>
+    <text x="1180" y="670" text-anchor="middle" class="small-text">DELETE /:id</text>
+    <text x="1180" y="690" text-anchor="middle" class="small-text">N° Orden: SRV-2026-001</text>
+    <text x="1180" y="710" text-anchor="middle" class="small-text">Estados workflow</text>
+    <text x="1180" y="730" text-anchor="middle" class="small-text">Diagnóstico</text>
+    <text x="1180" y="750" text-anchor="middle" class="small-text">Pagos/Adelantos</text>
+    
+    <!-- Otros Endpoints -->
+    <rect x="1300" y="510" width="200" height="320" class="function" rx="5"/>
+    <text x="1400" y="535" text-anchor="middle" class="white-text">Otros</text>
+    <line x1="1310" y1="545" x2="1490" y2="545" stroke="#34495e" stroke-width="1"/>
+    <text x="1400" y="565" text-anchor="middle" class="text">pagos.js</text>
+    <text x="1400" y="585" text-anchor="middle" class="small-text">Gestión pagos</text>
+    <line x1="1310" y1="595" x2="1490" y2="595" stroke="#34495e" stroke-width="1"/>
+    <text x="1400" y="615" text-anchor="middle" class="text">generar-pdf.js</text>
+    <text x="1400" y="635" text-anchor="middle" class="small-text">Reportes PDF</text>
+    <line x1="1310" y1="645" x2="1490" y2="645" stroke="#34495e" stroke-width="1"/>
+    <text x="1400" y="665" text-anchor="middle" class="text">upload-imagen.js</text>
+    <text x="1400" y="685" text-anchor="middle" class="small-text">Subir fotos equipos</text>
+    <line x1="1310" y1="695" x2="1490" y2="695" stroke="#34495e" stroke-width="1"/>
+    <text x="1400" y="715" text-anchor="middle" class="text">whatsapp-sender.js</text>
+    <text x="1400" y="735" text-anchor="middle" class="small-text">Envío WhatsApp</text>
+    <line x1="1310" y1="745" x2="1490" y2="745" stroke="#34495e" stroke-width="1"/>
+    <text x="1400" y="765" text-anchor="middle" class="text">health.js</text>
+    <text x="1400" y="785" text-anchor="middle" class="small-text">Health check</text>
+    <text x="1400" y="805" text-anchor="middle" class="text">debug.js</text>
+    <text x="1400" y="820" text-anchor="middle" class="small-text">Debugging</text>
+  </g>
+
+  <!-- Flecha Backend -> Database -->
+  <path d="M 800 860 L 800 930" class="arrow"/>
+  <text x="820" y="900" class="small-text">MongoDB Driver</text>
+
+  <!-- CAPA 3: BASE DE DATOS -->
+  <g id="database-layer">
+    <rect x="50" y="940" width="1500" height="380" class="database" rx="10"/>
+    <text x="800" y="970" text-anchor="middle" class="white-text">BASE DE DATOS - MongoDB Atlas (Cloud)</text>
+    
+    <!-- Colección Usuarios -->
+    <rect x="80" y="990" width="220" height="300" class="box" rx="5"/>
+    <text x="190" y="1015" text-anchor="middle" class="subtitle">usuarios</text>
+    <line x1="90" y1="1025" x2="290" y2="1025" stroke="#34495e" stroke-width="1"/>
+    <text x="190" y="1045" text-anchor="middle" class="small-text">_id: ObjectId</text>
+    <text x="190" y="1065" text-anchor="middle" class="small-text">usuario: String (unique)</text>
+    <text x="190" y="1085" text-anchor="middle" class="small-text">correo: String (unique)</text>
+    <text x="190" y="1105" text-anchor="middle" class="small-text">clave: String (hash)</text>
+    <text x="190" y="1125" text-anchor="middle" class="small-text">rol: String</text>
+    <text x="190" y="1145" text-anchor="middle" class="small-text">fecha_creacion: Date</text>
+    <text x="190" y="1165" text-anchor="middle" class="small-text">fecha_actualizacion: Date</text>
+    <line x1="90" y1="1175" x2="290" y2="1175" stroke="#34495e" stroke-width="1"/>
+    <text x="190" y="1195" text-anchor="middle" class="small-text">Índices:</text>
+    <text x="190" y="1215" text-anchor="middle" class="small-text">usuario (unique)</text>
+    <text x="190" y="1235" text-anchor="middle" class="small-text">correo (unique)</text>
+    
+    <!-- Colección Clientes -->
+    <rect x="320" y="990" width="220" height="300" class="box" rx="5"/>
+    <text x="430" y="1015" text-anchor="middle" class="subtitle">clientes</text>
+    <line x1="330" y1="1025" x2="530" y2="1025" stroke="#34495e" stroke-width="1"/>
+    <text x="430" y="1045" text-anchor="middle" class="small-text">_id: ObjectId</text>
+    <text x="430" y="1065" text-anchor="middle" class="small-text">nombre: String</text>
+    <text x="430" y="1085" text-anchor="middle" class="small-text">dni: String (unique)</text>
+    <text x="430" y="1105" text-anchor="middle" class="small-text">email: String</text>
+    <text x="430" y="1125" text-anchor="middle" class="small-text">telefono: String</text>
+    <text x="430" y="1145" text-anchor="middle" class="small-text">direccion: String</text>
+    <text x="430" y="1165" text-anchor="middle" class="small-text">estado: String</text>
+    <text x="430" y="1185" text-anchor="middle" class="small-text">eliminado: Boolean</text>
+    <line x1="330" y1="1195" x2="530" y2="1195" stroke="#34495e" stroke-width="1"/>
+    <text x="430" y="1215" text-anchor="middle" class="small-text">Índices:</text>
+    <text x="430" y="1235" text-anchor="middle" class="small-text">dni, email, estado</text>
+    
+    <!-- Colección Equipos -->
+    <rect x="560" y="990" width="220" height="300" class="box" rx="5"/>
+    <text x="670" y="1015" text-anchor="middle" class="subtitle">equipos</text>
+    <line x1="570" y1="1025" x2="770" y2="1025" stroke="#34495e" stroke-width="1"/>
+    <text x="670" y="1045" text-anchor="middle" class="small-text">_id: ObjectId</text>
+    <text x="670" y="1065" text-anchor="middle" class="small-text">cliente_id: ObjectId</text>
+    <text x="670" y="1085" text-anchor="middle" class="small-text">tipo_equipo: String</text>
+    <text x="670" y="1105" text-anchor="middle" class="small-text">marca: String</text>
+    <text x="670" y="1125" text-anchor="middle" class="small-text">modelo: String</text>
+    <text x="670" y="1145" text-anchor="middle" class="small-text">numero_serie: String</text>
+    <text x="670" y="1165" text-anchor="middle" class="small-text">estado: String</text>
+    <text x="670" y="1185" text-anchor="middle" class="small-text">foto_url: String</text>
+    <line x1="570" y1="1195" x2="770" y2="1195" stroke="#34495e" stroke-width="1"/>
+    <text x="670" y="1215" text-anchor="middle" class="small-text">Índices:</text>
+    <text x="670" y="1235" text-anchor="middle" class="small-text">cliente_id, numero_serie</text>
+
+    <!-- Colección Servicios -->
+    <rect x="800" y="990" width="220" height="300" class="box" rx="5"/>
+    <text x="910" y="1015" text-anchor="middle" class="subtitle">servicios</text>
+    <line x1="810" y1="1025" x2="1010" y2="1025" stroke="#34495e" stroke-width="1"/>
+    <text x="910" y="1045" text-anchor="middle" class="small-text">_id: ObjectId</text>
+    <text x="910" y="1065" text-anchor="middle" class="small-text">nombre_servicio: String</text>
+    <text x="910" y="1085" text-anchor="middle" class="small-text">categoria: String</text>
+    <text x="910" y="1105" text-anchor="middle" class="small-text">descripcion: String</text>
+    <text x="910" y="1125" text-anchor="middle" class="small-text">costo_base: Number</text>
+    <text x="910" y="1145" text-anchor="middle" class="small-text">tiempo_estimado: Number</text>
+    <text x="910" y="1165" text-anchor="middle" class="small-text">estado: String</text>
+    <line x1="810" y1="1175" x2="1010" y2="1175" stroke="#34495e" stroke-width="1"/>
+    <text x="910" y="1195" text-anchor="middle" class="small-text">Índices:</text>
+    <text x="910" y="1215" text-anchor="middle" class="small-text">estado, fecha_creacion</text>
+    
+    <!-- Colección Servicio-Equipo -->
+    <rect x="1040" y="990" width="240" height="300" class="box" rx="5"/>
+    <text x="1160" y="1015" text-anchor="middle" class="subtitle">servicio_equipo</text>
+    <line x1="1050" y1="1025" x2="1270" y2="1025" stroke="#34495e" stroke-width="1"/>
+    <text x="1160" y="1045" text-anchor="middle" class="small-text">_id: ObjectId</text>
+    <text x="1160" y="1065" text-anchor="middle" class="small-text">numero_orden: String (unique)</text>
+    <text x="1160" y="1085" text-anchor="middle" class="small-text">cliente_id: ObjectId</text>
+    <text x="1160" y="1105" text-anchor="middle" class="small-text">equipo_id: ObjectId</text>
+    <text x="1160" y="1125" text-anchor="middle" class="small-text">estado: String</text>
+    <text x="1160" y="1145" text-anchor="middle" class="small-text">diagnostico: Object</text>
+    <text x="1160" y="1165" text-anchor="middle" class="small-text">costo_total: Number</text>
+    <text x="1160" y="1185" text-anchor="middle" class="small-text">adelanto: Number</text>
+    <line x1="1050" y1="1195" x2="1270" y2="1195" stroke="#34495e" stroke-width="1"/>
+    <text x="1160" y="1215" text-anchor="middle" class="small-text">Índices:</text>
+    <text x="1160" y="1235" text-anchor="middle" class="small-text">numero_orden, cliente_id</text>
+    <text x="1160" y="1255" text-anchor="middle" class="small-text">equipo_id, estado</text>
+    
+    <!-- Colección Pagos -->
+    <rect x="1300" y="990" width="220" height="300" class="box" rx="5"/>
+    <text x="1410" y="1015" text-anchor="middle" class="subtitle">pagos</text>
+    <line x1="1310" y1="1025" x2="1510" y2="1025" stroke="#34495e" stroke-width="1"/>
+    <text x="1410" y="1045" text-anchor="middle" class="small-text">_id: ObjectId</text>
+    <text x="1410" y="1065" text-anchor="middle" class="small-text">servicio_id: ObjectId</text>
+    <text x="1410" y="1085" text-anchor="middle" class="small-text">cliente_id: ObjectId</text>
+    <text x="1410" y="1105" text-anchor="middle" class="small-text">monto: Number</text>
+    <text x="1410" y="1125" text-anchor="middle" class="small-text">metodo_pago: String</text>
+    <text x="1410" y="1145" text-anchor="middle" class="small-text">fecha_pago: Date</text>
+    <text x="1410" y="1165" text-anchor="middle" class="small-text">tipo: String</text>
+    <text x="1410" y="1185" text-anchor="middle" class="small-text">estado: String</text>
+    <line x1="1310" y1="1195" x2="1510" y2="1195" stroke="#34495e" stroke-width="1"/>
+    <text x="1410" y="1215" text-anchor="middle" class="small-text">Índices:</text>
+    <text x="1410" y="1235" text-anchor="middle" class="small-text">servicio_id, cliente_id</text>
+  </g>
+
+  <!-- CAPA 4: INFRAESTRUCTURA Y SERVICIOS EXTERNOS -->
+  <g id="infrastructure-layer">
+    <rect x="50" y="1350" width="1500" height="200" class="box" rx="10"/>
+    <text x="800" y="1380" text-anchor="middle" class="subtitle">INFRAESTRUCTURA Y SERVICIOS</text>
+    
+    <!-- Netlify -->
+    <rect x="100" y="1400" width="280" height="120" class="module" rx="5"/>
+    <text x="240" y="1425" text-anchor="middle" class="white-text">Netlify</text>
+    <line x1="110" y1="1435" x2="370" y2="1435" stroke="white" stroke-width="1"/>
+    <text x="240" y="1455" text-anchor="middle" class="text">Hosting Frontend</text>
+    <text x="240" y="1475" text-anchor="middle" class="text">Serverless Functions</text>
+    <text x="240" y="1495" text-anchor="middle" class="text">CI/CD Automático</text>
+    
+    <!-- MongoDB Atlas -->
+    <rect x="400" y="1400" width="280" height="120" class="module" rx="5"/>
+    <text x="540" y="1425" text-anchor="middle" class="white-text">MongoDB Atlas</text>
+    <line x1="410" y1="1435" x2="670" y2="1435" stroke="white" stroke-width="1"/>
+    <text x="540" y="1455" text-anchor="middle" class="text">Base de Datos Cloud</text>
+    <text x="540" y="1475" text-anchor="middle" class="text">Backups Automáticos</text>
+    <text x="540" y="1495" text-anchor="middle" class="text">Escalabilidad</text>
+    
+    <!-- WhatsApp Cloud API -->
+    <rect x="700" y="1400" width="280" height="120" class="module" rx="5"/>
+    <text x="840" y="1425" text-anchor="middle" class="white-text">WhatsApp Cloud API</text>
+    <line x1="710" y1="1435" x2="970" y2="1435" stroke="white" stroke-width="1"/>
+    <text x="840" y="1455" text-anchor="middle" class="text">Envío de Mensajes</text>
+    <text x="840" y="1475" text-anchor="middle" class="text">Envío de PDFs</text>
+    <text x="840" y="1495" text-anchor="middle" class="small-text">(En desarrollo)</text>
+    
+    <!-- Seguridad -->
+    <rect x="1000" y="1400" width="280" height="120" class="module" rx="5"/>
+    <text x="1140" y="1425" text-anchor="middle" class="white-text">Seguridad</text>
+    <line x1="1010" y1="1435" x2="1270" y2="1435" stroke="white" stroke-width="1"/>
+    <text x="1140" y="1455" text-anchor="middle" class="text">JWT Authentication</text>
+    <text x="1140" y="1475" text-anchor="middle" class="text">bcrypt (12 rounds)</text>
+    <text x="1140" y="1495" text-anchor="middle" class="text">Rate Limiting</text>
+    
+    <!-- Variables de Entorno -->
+    <rect x="1300" y="1400" width="220" height="120" class="module" rx="5"/>
+    <text x="1410" y="1425" text-anchor="middle" class="white-text">Config</text>
+    <line x1="1310" y1="1435" x2="1510" y2="1435" stroke="white" stroke-width="1"/>
+    <text x="1410" y="1455" text-anchor="middle" class="small-text">MONGODB_URI</text>
+    <text x="1410" y="1475" text-anchor="middle" class="small-text">JWT_SECRET</text>
+    <text x="1410" y="1495" text-anchor="middle" class="small-text">ADMIN_PASSWORD</text>
+  </g>
+
+  <!-- FLUJO DE DATOS Y RELACIONES -->
+  <g id="data-flow">
+    <text x="800" y="1600" text-anchor="middle" class="subtitle">FLUJO DE DATOS Y RELACIONES</text>
+    
+    <!-- Relaciones entre colecciones -->
+    <rect x="100" y="1620" width="1420" height="280" class="box" rx="5"/>
+    
+    <!-- Cliente -> Equipos -->
+    <circle cx="200" cy="1700" r="50" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+    <text x="200" y="1705" text-anchor="middle" class="white-text">Cliente</text>
+    <path d="M 250 1700 L 330 1700" class="arrow"/>
+    <text x="290" y="1690" class="small-text">1:N</text>
+    <circle cx="380" cy="1700" r="50" fill="#9b59b6" stroke="#8e44ad" stroke-width="2"/>
+    <text x="380" y="1705" text-anchor="middle" class="white-text">Equipos</text>
+    
+    <!-- Cliente -> Órdenes -->
+    <path d="M 200 1750 L 200 1800 L 580 1800" class="arrow"/>
+    <text x="390" y="1790" class="small-text">1:N</text>
+    <circle cx="630" cy="1800" r="50" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+    <text x="630" y="1800" text-anchor="middle" class="white-text">Órdenes</text>
+    <text x="630" y="1815" text-anchor="middle" class="white-text">Servicio</text>
+    
+    <!-- Equipo -> Órdenes -->
+    <path d="M 380 1750 L 380 1800 L 580 1800" class="arrow"/>
+    <text x="480" y="1790" class="small-text">1:N</text>
+    
+    <!-- Órdenes -> Servicios -->
+    <path d="M 680 1800 L 830 1800" class="arrow"/>
+    <text x="755" y="1790" class="small-text">N:M</text>
+    <circle cx="880" cy="1800" r="50" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+    <text x="880" y="1805" text-anchor="middle" class="white-text">Servicios</text>
+    
+    <!-- Órdenes -> Pagos -->
+    <path d="M 630 1850 L 630 1870 L 1080 1870" class="arrow"/>
+    <text x="855" y="1860" class="small-text">1:N</text>
+    <circle cx="1130" cy="1870" r="50" fill="#f39c12" stroke="#e67e22" stroke-width="2"/>
+    <text x="1130" y="1875" text-anchor="middle" class="white-text">Pagos</text>
+    
+    <!-- Usuario -> Auditoría -->
+    <circle cx="1350" cy="1700" r="50" fill="#34495e" stroke="#2c3e50" stroke-width="2"/>
+    <text x="1350" y="1705" text-anchor="middle" class="white-text">Usuario</text>
+    <path d="M 1350 1750 L 1350 1820 L 1180 1870" class="arrow dashed"/>
+    <text x="1265" y="1810" class="small-text">Auditoría</text>
+    
+    <!-- Estados del Servicio -->
+    <rect x="120" y="1640" width="300" height="40" fill="#ecf0f1" stroke="#34495e" stroke-width="1" rx="3"/>
+    <text x="270" y="1665" text-anchor="middle" class="small-text">Estados: Pendiente → En diagnóstico → En reparación</text>
+    
+    <rect x="120" y="1685" width="300" height="40" fill="#ecf0f1" stroke="#34495e" stroke-width="1" rx="3"/>
+    <text x="270" y="1710" text-anchor="middle" class="small-text">→ Completado → Entregado / Cancelado</text>
+    
+    <!-- Leyenda -->
+    <text x="1100" y="1650" class="small-text">Leyenda:</text>
+    <line x1="1100" y1="1660" x2="1150" y2="1660" class="arrow"/>
+    <text x="1160" y="1665" class="small-text">Relación directa</text>
+    <line x1="1100" y1="1680" x2="1150" y2="1680" class="arrow dashed"/>
+    <text x="1160" y="1685" class="small-text">Relación indirecta</text>
+    <text x="1100" y="1705" class="small-text">1:N = Uno a muchos</text>
+    <text x="1100" y="1725" class="small-text">N:M = Muchos a muchos</text>
+  </g>
+
+  <!-- CARACTERÍSTICAS TÉCNICAS -->
+  <g id="technical-features">
+    <text x="800" y="1950" text-anchor="middle" class="subtitle">CARACTERÍSTICAS TÉCNICAS</text>
+    
+    <rect x="50" y="1970" width="1500" height="200" class="box" rx="5"/>
+    
+    <!-- Columna 1 -->
+    <text x="100" y="2000" class="text">🔐 Autenticación y Seguridad:</text>
+    <text x="120" y="2020" class="small-text">• JWT con expiración 8 horas</text>
+    <text x="120" y="2040" class="small-text">• bcrypt hash (12 rounds)</text>
+    <text x="120" y="2060" class="small-text">• Rate limiting (10 intentos/15min)</text>
+    <text x="120" y="2080" class="small-text">• Roles: admin / usuario</text>
+    <text x="120" y="2100" class="small-text">• CORS configurado</text>
+    <text x="120" y="2120" class="small-text">• Validación de datos</text>
+    
+    <!-- Columna 2 -->
+    <text x="450" y="2000" class="text">📊 Base de Datos:</text>
+    <text x="470" y="2020" class="small-text">• MongoDB Atlas (Cloud)</text>
+    <text x="470" y="2040" class="small-text">• Índices optimizados</text>
+    <text x="470" y="2060" class="small-text">• Soft delete en clientes/equipos</text>
+    <text x="470" y="2080" class="small-text">• Backups automáticos</text>
+    <text x="470" y="2100" class="small-text">• Relaciones por ObjectId</text>
+    <text x="470" y="2120" class="small-text">• Validación de esquemas</text>
+    
+    <!-- Columna 3 -->
+    <text x="800" y="2000" class="text">⚡ Performance:</text>
+    <text x="820" y="2020" class="small-text">• Serverless Functions</text>
+    <text x="820" y="2040" class="small-text">• Paginación en listados</text>
+    <text x="820" y="2060" class="small-text">• Búsqueda con regex</text>
+    <text x="820" y="2080" class="small-text">• Filtros por estado</text>
+    <text x="820" y="2100" class="small-text">• PDF generado en cliente</text>
+    <text x="820" y="2120" class="small-text">• Caché de consultas</text>
+    
+    <!-- Columna 4 -->
+    <text x="1150" y="2000" class="text">📱 Frontend:</text>
+    <text x="1170" y="2020" class="small-text">• Diseño responsive</text>
+    <text x="1170" y="2040" class="small-text">• JavaScript vanilla</text>
+    <text x="1170" y="2060" class="small-text">• Modular (ES6)</text>
+    <text x="1170" y="2080" class="small-text">• Font Awesome icons</text>
+    <text x="1170" y="2100" class="small-text">• CSS Grid + Flexbox</text>
+    <text x="1170" y="2120" class="small-text">• jsPDF para reportes</text>
+  </g>
+
+  <!-- FOOTER -->
+  <g id="footer">
+    <rect x="50" y="2180" width="1500" height="1" fill="#bdc3c7"/>
+    <text x="800" y="2195" text-anchor="middle" class="small-text">Doctor PC - Sistema de Gestión de Servicios Técnicos | Arquitectura Full-Stack</text>
+  </g>
+
+</svg>

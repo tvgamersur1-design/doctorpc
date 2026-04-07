@@ -1,0 +1,320 @@
+<svg viewBox="0 0 1600 2200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo -->
+  <rect width="1600" height="2200" fill="#f8f9fa"/>
+  
+  <!-- Título Principal -->
+  <text x="800" y="50" font-family="Segoe UI, Arial" font-size="32" font-weight="300" fill="#1a1a1a" text-anchor="middle">DISEÑO EMPRESARIAL PROFESIONAL</text>
+  <text x="800" y="85" font-family="Segoe UI, Arial" font-size="16" font-weight="300" fill="#666" text-anchor="middle">Modal de Detalles del Servicio - Estilo Corporativo</text>
+  
+  <!-- Mockup del Modal Empresarial -->
+  <g id="modal-empresarial">
+    <!-- Contenedor principal -->
+    <rect x="100" y="120" width="1400" height="2000" fill="white" stroke="#dee2e6" stroke-width="1" rx="4" filter="url(#shadowSoft)"/>
+    
+    <!-- Header Empresarial -->
+    <rect x="100" y="120" width="1400" height="100" fill="#ffffff" stroke-bottom="#e9ecef" rx="4 4 0 0"/>
+    <rect x="100" y="219" width="1400" height="1" fill="#e9ecef"/>
+    
+    <!-- Logo/Icono empresa -->
+    <rect x="130" y="145" width="50" height="50" fill="#0d6efd" rx="4"/>
+    <text x="155" y="178" font-family="Segoe UI" font-size="24" fill="white" text-anchor="middle" font-weight="bold">DP</text>
+    
+    <!-- Título y número de servicio -->
+    <text x="200" y="160" font-family="Segoe UI" font-size="14" fill="#6c757d" font-weight="400">ORDEN DE SERVICIO</text>
+    <text x="200" y="190" font-family="Segoe UI" font-size="28" fill="#212529" font-weight="600">SRV-2026-004</text>
+    
+    <!-- Badge de estado -->
+    <rect x="450" y="155" width="140" height="36" fill="#d1e7dd" rx="18"/>
+    <circle cx="475" cy="173" r="5" fill="#0f5132"/>
+    <text x="488" y="178" font-family="Segoe UI" font-size="13" fill="#0f5132" font-weight="600">ENTREGADO</text>
+    
+    <!-- Botones de acción minimalistas -->
+    <g id="action-buttons-minimal">
+      <rect x="1050" y="155" width="100" height="40" fill="white" stroke="#dee2e6" stroke-width="1" rx="4"/>
+      <text x="1100" y="180" font-family="Segoe UI" font-size="12" fill="#495057" text-anchor="middle" font-weight="500">📄 PDF</text>
+      
+      <rect x="1160" y="155" width="110" height="40" fill="white" stroke="#dee2e6" stroke-width="1" rx="4"/>
+      <text x="1215" y="180" font-family="Segoe UI" font-size="12" fill="#495057" text-anchor="middle" font-weight="500">🖨️ Imprimir</text>
+      
+      <rect x="1280" y="155" width="120" height="40" fill="#0d6efd" stroke="#0d6efd" stroke-width="1" rx="4"/>
+      <text x="1340" y="180" font-family="Segoe UI" font-size="12" fill="white" text-anchor="middle" font-weight="600">💬 WhatsApp</text>
+      
+      <circle cx="1455" cy="175" r="20" fill="white" stroke="#dee2e6" stroke-width="1"/>
+      <text x="1455" y="183" font-family="Segoe UI" font-size="20" fill="#6c757d" text-anchor="middle">×</text>
+    </g>
+    
+    <!-- Contenido en 3 columnas -->
+    <g id="three-column-layout">
+      <!-- COLUMNA 1: Información General (400px) -->
+      <g id="col-info-general">
+        <rect x="130" y="250" width="400" height="1800" fill="#f8f9fa" rx="4"/>
+        
+        <!-- Sección Cliente -->
+        <text x="150" y="285" font-family="Segoe UI" font-size="11" fill="#6c757d" font-weight="600" letter-spacing="1">INFORMACIÓN DEL CLIENTE</text>
+        <rect x="150" y="295" width="360" height="1" fill="#dee2e6"/>
+        
+        <text x="150" y="325" font-family="Segoe UI" font-size="18" fill="#212529" font-weight="600">JESUS FERNANDO</text>
+        
+        <g id="cliente-details">
+          <text x="150" y="360" font-family="Segoe UI" font-size="12" fill="#6c757d">DNI</text>
+          <text x="150" y="380" font-family="Segoe UI" font-size="14" fill="#212529" font-weight="500">60160048</text>
+          
+          <text x="150" y="415" font-family="Segoe UI" font-size="12" fill="#6c757d">Teléfono</text>
+          <text x="150" y="435" font-family="Segoe UI" font-size="14" fill="#212529" font-weight="500">921709774</text>
+        </g>
+        
+        <!-- Sección Equipo -->
+        <rect x="150" y="470" width="360" height="1" fill="#dee2e6"/>
+        <text x="150" y="500" font-family="Segoe UI" font-size="11" fill="#6c757d" font-weight="600" letter-spacing="1">EQUIPO</text>
+        
+        <text x="150" y="530" font-family="Segoe UI" font-size="16" fill="#212529" font-weight="600">Impresora EPSON L220</text>
+        
+        <g id="equipo-specs">
+          <rect x="150" y="550" width="360" height="50" fill="white" rx="4"/>
+          <text x="165" y="570" font-family="Segoe UI" font-size="11" fill="#6c757d">Marca</text>
+          <text x="165" y="588" font-family="Segoe UI" font-size="13" fill="#212529" font-weight="500">EPSON</text>
+          
+          <text x="280" y="570" font-family="Segoe UI" font-size="11" fill="#6c757d">Modelo</text>
+          <text x="280" y="588" font-family="Segoe UI" font-size="13" fill="#212529" font-weight="500">L220</text>
+        </g>
+        
+        <!-- Sección Ubicación y Fechas -->
+        <rect x="150" y="625" width="360" height="1" fill="#dee2e6"/>
+        <text x="150" y="655" font-family="Segoe UI" font-size="11" fill="#6c757d" font-weight="600" letter-spacing="1">UBICACIÓN Y FECHAS</text>
+        
+        <rect x="150" y="675" width="360" height="120" fill="white" rx="4"/>
+        <text x="165" y="700" font-family="Segoe UI" font-size="11" fill="#6c757d">Sucursal</text>
+        <text x="165" y="720" font-family="Segoe UI" font-size="14" fill="#212529" font-weight="600">CHICLAYO</text>
+        
+        <text x="165" y="750" font-family="Segoe UI" font-size="11" fill="#6c757d">Fecha de Ingreso</text>
+        <text x="165" y="770" font-family="Segoe UI" font-size="13" fill="#212529">07/04/2026 - 12:23</text>
+        
+        <!-- Resumen Financiero -->
+        <rect x="150" y="820" width="360" height="1" fill="#dee2e6"/>
+        <text x="150" y="850" font-family="Segoe UI" font-size="11" fill="#6c757d" font-weight="600" letter-spacing="1">RESUMEN FINANCIERO</text>
+        
+        <rect x="150" y="870" width="360" height="200" fill="white" rx="4"/>
+        
+        <!-- Total -->
+        <rect x="165" y="885" width="330" height="50" fill="#f8f9fa" rx="4"/>
+        <text x="180" y="905" font-family="Segoe UI" font-size="11" fill="#6c757d">MONTO TOTAL</text>
+        <text x="475" y="915" font-family="Segoe UI" font-size="20" fill="#0d6efd" text-anchor="end" font-weight="700">$300.00</text>
+        
+        <!-- Adelanto -->
+        <rect x="165" y="945" width="330" height="50" fill="#f8f9fa" rx="4"/>
+        <text x="180" y="965" font-family="Segoe UI" font-size="11" fill="#6c757d">ADELANTO</text>
+        <text x="475" y="975" font-family="Segoe UI" font-size="20" fill="#198754" text-anchor="end" font-weight="700">$0.00</text>
+        
+        <!-- Saldo -->
+        <rect x="165" y="1005" width="330" height="50" fill="#fff3cd" rx="4"/>
+        <text x="180" y="1025" font-family="Segoe UI" font-size="11" fill="#856404">SALDO PENDIENTE</text>
+        <text x="475" y="1035" font-family="Segoe UI" font-size="20" fill="#dc3545" text-anchor="end" font-weight="700">$300.00</text>
+        
+        <!-- Información adicional -->
+        <rect x="150" y="1095" width="360" height="1" fill="#dee2e6"/>
+        <text x="150" y="1125" font-family="Segoe UI" font-size="11" fill="#6c757d" font-weight="600" letter-spacing="1">INFORMACIÓN ADICIONAL</text>
+        
+        <rect x="150" y="1145" width="360" height="80" fill="white" rx="4"/>
+        <text x="165" y="1170" font-family="Segoe UI" font-size="11" fill="#6c757d">Técnico Asignado</text>
+        <text x="165" y="1190" font-family="Segoe UI" font-size="13" fill="#212529" font-weight="500">Jesus Lucero</text>
+        
+        <text x="165" y="1215" font-family="Segoe UI" font-size="11" fill="#6c757d">Garantía Hasta</text>
+        <text x="165" y="1235" font-family="Segoe UI" font-size="13" fill="#212529" font-weight="500">07/05/2026</text>
+      </g>
+      
+      <!-- COLUMNA 2: Proceso del Servicio (550px) -->
+      <g id="col-proceso">
+        <!-- Problema Reportado -->
+        <rect x="560" y="250" width="550" height="180" fill="white" stroke="#dee2e6" stroke-width="1" rx="4"/>
+        <rect x="560" y="250" width="550" height="40" fill="#fff3cd" rx="4 4 0 0"/>
+        <text x="580" y="275" font-family="Segoe UI" font-size="12" fill="#856404" font-weight="600">⚠️ PROBLEMA REPORTADO</text>
+        
+        <text x="580" y="315" font-family="Segoe UI" font-size="15" fill="#212529" font-weight="400">"Pantalla rota, No enciende"</text>
+        
+        <rect x="580" y="345" width="510" height="60" fill="#f8f9fa" rx="4"/>
+        <text x="595" y="365" font-family="Segoe UI" font-size="11" fill="#6c757d">Observaciones</text>
+        <text x="595" y="385" font-family="Segoe UI" font-size="13" fill="#495057">niguna</text>
+        
+        <!-- Diagnóstico -->
+        <rect x="560" y="450" width="550" height="220" fill="white" stroke="#dee2e6" stroke-width="1" rx="4"/>
+        <rect x="560" y="450" width="550" height="40" fill="#cfe2ff" rx="4 4 0 0"/>
+        <text x="580" y="475" font-family="Segoe UI" font-size="12" fill="#084298" font-weight="600">🔍 DIAGNÓSTICO REALIZADO</text>
+        
+        <text x="580" y="510" font-family="Segoe UI" font-size="11" fill="#6c757d">Técnico Diagnosticador</text>
+        <text x="580" y="530" font-family="Segoe UI" font-size="14" fill="#212529" font-weight="500">Jesus Lucero</text>
+        
+        <rect x="580" y="550" width="510" height="90" fill="#f8f9fa" rx="4"/>
+        <text x="595" y="575" font-family="Segoe UI" font-size="13" fill="#212529" font-weight="600">Pantalla rota</text>
+        <text x="595" y="600" font-family="Segoe UI" font-size="12" fill="#6c757d">Solución: Pantalla NUEVA</text>
+        
+        <text x="1055" y="625" font-family="Segoe UI" font-size="18" fill="#0d6efd" text-anchor="end" font-weight="700">$300.00</text>
+        
+        <rect x="580" y="650" width="510" height="1" fill="#dee2e6"/>
+        <text x="1055" y="670" font-family="Segoe UI" font-size="12" fill="#6c757d" text-anchor="end">Costo Total del Diagnóstico</text>
+        
+        <!-- Reparación -->
+        <rect x="560" y="690" width="550" height="160" fill="white" stroke="#dee2e6" stroke-width="1" rx="4"/>
+        <rect x="560" y="690" width="550" height="40" fill="#d1e7dd" rx="4 4 0 0"/>
+        <text x="580" y="715" font-family="Segoe UI" font-size="12" fill="#0f5132" font-weight="600">✅ REPARACIÓN COMPLETADA</text>
+        
+        <text x="580" y="755" font-family="Segoe UI" font-size="14" fill="#212529" font-weight="600">Cambio de Pantalla NUEVA</text>
+        
+        <rect x="580" y="775" width="240" height="50" fill="#f8f9fa" rx="4"/>
+        <text x="595" y="795" font-family="Segoe UI" font-size="11" fill="#6c757d">Fecha de Completación</text>
+        <text x="595" y="815" font-family="Segoe UI" font-size="13" fill="#212529">07/04/2026 12:49:30</text>
+        
+        <rect x="830" y="775" width="260" height="50" fill="#f8f9fa" rx="4"/>
+        <text x="845" y="795" font-family="Segoe UI" font-size="11" fill="#6c757d">Comentarios</text>
+        <text x="845" y="815" font-family="Segoe UI" font-size="13" fill="#212529">DFSF</text>
+        
+        <!-- Timeline Vertical -->
+        <rect x="560" y="870" width="550" height="280" fill="white" stroke="#dee2e6" stroke-width="1" rx="4"/>
+        <text x="580" y="900" font-family="Segoe UI" font-size="12" fill="#6c757d" font-weight="600" letter-spacing="1">LÍNEA DE TIEMPO</text>
+        
+        <line x1="600" y1="920" x2="600" y2="1120" stroke="#dee2e6" stroke-width="2"/>
+        
+        <!-- Ingreso -->
+        <circle cx="600" cy="940" r="8" fill="#0d6efd"/>
+        <rect x="620" y="925" width="470" height="40" fill="#f8f9fa" rx="4"/>
+        <text x="635" y="945" font-family="Segoe UI" font-size="12" fill="#212529" font-weight="500">Ingreso del Equipo</text>
+        <text x="1055" y="945" font-family="Segoe UI" font-size="11" fill="#6c757d" text-anchor="end">07/04/2026 12:23</text>
+        
+        <!-- Diagnóstico -->
+        <circle cx="600" cy="1000" r="8" fill="#0dcaf0"/>
+        <rect x="620" y="985" width="470" height="40" fill="#f8f9fa" rx="4"/>
+        <text x="635" y="1005" font-family="Segoe UI" font-size="12" fill="#212529" font-weight="500">Diagnóstico Realizado</text>
+        <text x="1055" y="1005" font-family="Segoe UI" font-size="11" fill="#6c757d" text-anchor="end">Jesus Lucero</text>
+        
+        <!-- Reparación -->
+        <circle cx="600" cy="1060" r="8" fill="#6f42c1"/>
+        <rect x="620" y="1045" width="470" height="40" fill="#f8f9fa" rx="4"/>
+        <text x="635" y="1065" font-family="Segoe UI" font-size="12" fill="#212529" font-weight="500">Reparación Completada</text>
+        <text x="1055" y="1065" font-family="Segoe UI" font-size="11" fill="#6c757d" text-anchor="end">07/04/2026 12:49</text>
+        
+        <!-- Entrega -->
+        <circle cx="600" cy="1120" r="8" fill="#198754"/>
+        <rect x="620" y="1105" width="470" height="40" fill="#d1e7dd" rx="4"/>
+        <text x="635" y="1125" font-family="Segoe UI" font-size="12" fill="#0f5132" font-weight="600">Entregado al Cliente</text>
+        <text x="1055" y="1125" font-family="Segoe UI" font-size="11" fill="#0f5132" text-anchor="end">07/04/2026 14:41</text>
+      </g>
+      
+      <!-- COLUMNA 3: Evidencia y Entrega (450px) -->
+      <g id="col-evidencia">
+        <!-- Evidencia Fotográfica -->
+        <rect x="1140" y="250" width="330" height="450" fill="white" stroke="#dee2e6" stroke-width="1" rx="4"/>
+        <text x="1160" y="280" font-family="Segoe UI" font-size="12" fill="#6c757d" font-weight="600" letter-spacing="1">EVIDENCIA FOTOGRÁFICA</text>
+        <rect x="1160" y="290" width="290" height="1" fill="#dee2e6"/>
+        
+        <!-- Fotos de ingreso -->
+        <text x="1160" y="315" font-family="Segoe UI" font-size="11" fill="#6c757d">Fotos al Ingresar (2)</text>
+        
+        <rect x="1160" y="330" width="130" height="130" fill="#e9ecef" rx="4" stroke="#dee2e6" stroke-width="1"/>
+        <text x="1225" y="400" font-family="Segoe UI" font-size="10" fill="#6c757d" text-anchor="middle">Foto 1</text>
+        
+        <rect x="1300" y="330" width="130" height="130" fill="#e9ecef" rx="4" stroke="#dee2e6" stroke-width="1"/>
+        <text x="1365" y="400" font-family="Segoe UI" font-size="10" fill="#6c757d" text-anchor="middle">Foto 2</text>
+        
+        <!-- Foto de entrega -->
+        <rect x="1160" y="475" width="290" height="1" fill="#dee2e6"/>
+        <text x="1160" y="500" font-family="Segoe UI" font-size="11" fill="#6c757d">Foto de Entrega (1)</text>
+        
+        <rect x="1160" y="515" width="130" height="130" fill="#d1e7dd" rx="4" stroke="#198754" stroke-width="2"/>
+        <text x="1225" y="585" font-family="Segoe UI" font-size="10" fill="#0f5132" text-anchor="middle">Conformidad</text>
+        
+        <rect x="1300" y="515" width="130" height="130" fill="#f8f9fa" rx="4"/>
+        <text x="1365" y="570" font-family="Segoe UI" font-size="9" fill="#6c757d" text-anchor="middle">Estado:</text>
+        <text x="1365" y="590" font-family="Segoe UI" font-size="10" fill="#198754" text-anchor="middle" font-weight="600">Funcionando</text>
+        <text x="1365" y="605" font-family="Segoe UI" font-size="10" fill="#198754" text-anchor="middle" font-weight="600">correctamente</text>
+        
+        <text x="1305" y="665" font-family="Segoe UI" font-size="9" fill="#6c757d">🔍 Click para ampliar</text>
+        
+        <!-- Datos de Entrega -->
+        <rect x="1140" y="720" width="330" height="430" fill="white" stroke="#dee2e6" stroke-width="1" rx="4"/>
+        <rect x="1140" y="720" width="330" height="40" fill="#d1e7dd" rx="4 4 0 0"/>
+        <text x="1160" y="745" font-family="Segoe UI" font-size="12" fill="#0f5132" font-weight="600">📦 DATOS DE ENTREGA</text>
+        
+        <g id="entrega-details">
+          <rect x="1160" y="775" width="290" height="50" fill="#f8f9fa" rx="4"/>
+          <text x="1175" y="795" font-family="Segoe UI" font-size="11" fill="#6c757d">Recibido por</text>
+          <text x="1175" y="815" font-family="Segoe UI" font-size="13" fill="#212529" font-weight="500">Jesus Fernando</text>
+          
+          <rect x="1160" y="835" width="140" height="50" fill="#f8f9fa" rx="4"/>
+          <text x="1175" y="855" font-family="Segoe UI" font-size="11" fill="#6c757d">Fecha</text>
+          <text x="1175" y="875" font-family="Segoe UI" font-size="12" fill="#212529">07/04/2026</text>
+          
+          <rect x="1310" y="835" width="140" height="50" fill="#f8f9fa" rx="4"/>
+          <text x="1325" y="855" font-family="Segoe UI" font-size="11" fill="#6c757d">Hora</text>
+          <text x="1325" y="875" font-family="Segoe UI" font-size="12" fill="#212529">14:41</text>
+          
+          <rect x="1160" y="895" width="290" height="50" fill="#f8f9fa" rx="4"/>
+          <text x="1175" y="915" font-family="Segoe UI" font-size="11" fill="#6c757d">Encargado de Entrega</text>
+          <text x="1175" y="935" font-family="Segoe UI" font-size="13" fill="#212529" font-weight="500">Jesus Lucero</text>
+          
+          <rect x="1160" y="955" width="290" height="50" fill="#fff3cd" rx="4"/>
+          <text x="1175" y="975" font-family="Segoe UI" font-size="11" fill="#856404">Monto Cobrado</text>
+          <text x="1420" y="990" font-family="Segoe UI" font-size="18" fill="#dc3545" text-anchor="end" font-weight="700">$300.00</text>
+          
+          <rect x="1160" y="1015" width="140" height="50" fill="#f8f9fa" rx="4"/>
+          <text x="1175" y="1035" font-family="Segoe UI" font-size="11" fill="#6c757d">Método</text>
+          <text x="1175" y="1055" font-family="Segoe UI" font-size="12" fill="#212529">Efectivo</text>
+          
+          <rect x="1310" y="1015" width="140" height="50" fill="#f8f9fa" rx="4"/>
+          <text x="1325" y="1035" font-family="Segoe UI" font-size="11" fill="#6c757d">Comprobante</text>
+          <text x="1325" y="1055" font-family="Segoe UI" font-size="12" fill="#212529">N9991</text>
+          
+          <rect x="1160" y="1075" width="290" height="50" fill="#f8f9fa" rx="4"/>
+          <text x="1175" y="1095" font-family="Segoe UI" font-size="11" fill="#6c757d">Garantía Hasta</text>
+          <text x="1175" y="1115" font-family="Segoe UI" font-size="13" fill="#212529" font-weight="500">07/05/2026</text>
+        </g>
+      </g>
+    </g>
+  </g>
+  
+  <!-- Características del Diseño Empresarial -->
+  <g id="caracteristicas">
+    <rect x="100" y="2140" width="1400" height="1" fill="#dee2e6"/>
+    
+    <text x="800" y="2180" font-family="Segoe UI" font-size="18" fill="#212529" text-anchor="middle" font-weight="600">CARACTERÍSTICAS DEL DISEÑO EMPRESARIAL</text>
+    
+    <g id="features-grid">
+      <!-- Columna 1 -->
+      <rect x="130" y="2210" width="420" height="1" fill="#0d6efd"/>
+      <text x="130" y="2240" font-family="Segoe UI" font-size="13" fill="#212529" font-weight="600">🎨 Estilo Visual</text>
+      <text x="130" y="2265" font-family="Segoe UI" font-size="11" fill="#6c757d">• Paleta de colores corporativa (azul, gris, verde)</text>
+      <text x="130" y="2285" font-family="Segoe UI" font-size="11" fill="#6c757d">• Tipografía Segoe UI (profesional)</text>
+      <text x="130" y="2305" font-family="Segoe UI" font-size="11" fill="#6c757d">• Espaciado generoso y limpio</text>
+      <text x="130" y="2325" font-family="Segoe UI" font-size="11" fill="#6c757d">• Bordes sutiles y sombras suaves</text>
+      
+      <!-- Columna 2 -->
+      <rect x="580" y="2210" width="420" height="1" fill="#0d6efd"/>
+      <text x="580" y="2240" font-family="Segoe UI" font-size="13" fill="#212529" font-weight="600">📐 Estructura</text>
+      <text x="580" y="2265" font-family="Segoe UI" font-size="11" fill="#6c757d">• Layout de 3 columnas balanceadas</text>
+      <text x="580" y="2285" font-family="Segoe UI" font-size="11" fill="#6c757d">• Jerarquía visual clara</text>
+      <text x="580" y="2305" font-family="Segoe UI" font-size="11" fill="#6c757d">• Secciones con headers de color</text>
+      <text x="580" y="2325" font-family="Segoe UI" font-size="11" fill="#6c757d">• Timeline vertical profesional</text>
+      
+      <!-- Columna 3 -->
+      <rect x="1030" y="2210" width="420" height="1" fill="#0d6efd"/>
+      <text x="1030" y="2240" font-family="Segoe UI" font-size="13" fill="#212529" font-weight="600">💼 Enfoque Empresarial</text>
+      <text x="1030" y="2265" font-family="Segoe UI" font-size="11" fill="#6c757d">• Información financiera destacada</text>
+      <text x="1030" y="2285" font-family="Segoe UI" font-size="11" fill="#6c757d">• Datos organizados por categorías</text>
+      <text x="1030" y="2305" font-family="Segoe UI" font-size="11" fill="#6c757d">• Evidencia fotográfica profesional</text>
+      <text x="1030" y="2325" font-family="Segoe UI" font-size="11" fill="#6c757d">• Trazabilidad completa del servicio</text>
+    </g>
+  </g>
+  
+  <!-- Definiciones -->
+  <defs>
+    <filter id="shadowSoft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="4"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.15"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+</svg>

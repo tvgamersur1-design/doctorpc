@@ -254,7 +254,11 @@ export async function abrirModalNuevoServicio() {
         document.getElementById('cliente_id').value = '';
         document.getElementById('clienteSeleccionado').value = '';
 
-        document.getElementById('btnBuscarEquipo').disabled = false;
+        // Deshabilitar botón de buscar equipo hasta que se seleccione un cliente
+        const btnBuscarEquipo = document.getElementById('btnBuscarEquipo');
+        if (btnBuscarEquipo) {
+            btnBuscarEquipo.disabled = true;
+        }
 
         // Limpiar selección de equipo
         document.getElementById('equipo_id').value = '';
@@ -380,7 +384,14 @@ export async function guardarServicioReal(servicio) {
                 fecha_inicio: servicio.fecha,
                 fecha_cierre: '',
                 estado: 'Pendiente de evaluación',
-                costo: servicio.monto || 0,
+                monto: parseFloat(servicio.monto) || 0,
+                adelanto: parseFloat(servicio.adelanto) || 0,
+                problemas_reportados: servicio.problemas || '',
+                observaciones: servicio.observaciones || '',
+                local: servicio.local || '',
+                fecha: servicio.fecha || '',
+                hora: servicio.hora || '',
+                numero_servicio: servicio.numero_servicio || '',
                 fotos: []
             };
 
@@ -621,6 +632,25 @@ async function mostrarResumenServicio(servicio) {
                     </div>
                 </div>
                 
+                <!-- Fotos del Equipo si existen -->
+                ${fotosEquipoBase64.length > 0 ? `
+                    <div style="background: white; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                        <h4 style="color: #333; margin-bottom: 10px;">
+                            <i class="fas fa-images" style="color: #2192B8;"></i> Fotos del Equipo (${fotosEquipoBase64.length})
+                        </h4>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                            ${fotosEquipoBase64.map((foto, index) => `
+                                <div style="position: relative;">
+                                    <img src="${foto}" alt="Foto ${index + 1}" style="width: 100%; border-radius: 8px; border: 2px solid #e0e0e0; cursor: pointer;" onclick="verFotoCompleta('${foto}', ${index + 1})">
+                                    <div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                                        Foto ${index + 1}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+                
                 <!-- Problemas -->
                 <div style="background: white; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
                     <h4 style="color: #333; margin-bottom: 10px;">Problema Reportado</h4>
@@ -676,7 +706,7 @@ async function mostrarResumenServicio(servicio) {
  * Confirmar guardar servicio
  */
 export function confirmarGuardarServicio() {
-    guardarServicioReal(servicioParaGuardar || window.servicioParaGuardar);
+    guardarServicioRealConFoto(servicioParaGuardar || window.servicioParaGuardar);
 }
 
 /**
@@ -748,4 +778,438 @@ function renderPaginacionServicios(pagination) {
             </span>
         </div>`;
     return html;
+}
+
+
+// ==================== FUNCIONES PARA FOTO DEL EQUIPO ====================
+
+/**
+ * Array para almacenar las fotos del equipo en base64 (máximo 2)
+ */
+let fotosEquipoBase64 = [];
+let streamCamara = null;
+const MAX_FOTOS = 2;
+
+/**
+ * Actualizar contador de fotos y visibilidad de botones
+ */
+function actualizarContadorFotos() {
+    const numeroFotos = document.getElementById('numeroFotos');
+    const botonesAgregar = document.getElementById('botonesAgregarFoto');
+    
+    if (numeroFotos) {
+        numeroFotos.textContent = fotosEquipoBase64.length;
+    }
+    
+    // Ocultar botones si ya hay 2 fotos
+    if (botonesAgregar) {
+        if (fotosEquipoBase64.length >= MAX_FOTOS) {
+            botonesAgregar.style.display = 'none';
+        } else {
+            botonesAgregar.style.display = 'grid';
+        }
+    }
+}
+
+/**
+ * Renderizar todas las fotos en el contenedor
+ */
+function renderizarFotos() {
+    const contenedor = document.getElementById('contenedorPreviewFotos');
+    if (!contenedor) return;
+    
+    contenedor.innerHTML = '';
+    
+    fotosEquipoBase64.forEach((foto, index) => {
+        const divFoto = document.createElement('div');
+        divFoto.style.cssText = 'position: relative;';
+        divFoto.innerHTML = `
+            <img src="${foto}" alt="Foto ${index + 1}" style="width: 100%; border-radius: 8px; border: 2px solid #e0e0e0;">
+            <button type="button" onclick="eliminarFotoEquipo(${index})" style="position: absolute; top: 10px; right: 10px; background: #d32f2f; color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                <i class="fas fa-times"></i>
+            </button>
+            <div style="position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                Foto ${index + 1}
+            </div>
+        `;
+        contenedor.appendChild(divFoto);
+    });
+    
+    actualizarContadorFotos();
+}
+
+/**
+ * Abrir cámara para tomar foto del equipo
+ */
+export async function abrirCamaraEquipo() {
+    // Verificar límite de fotos
+    if (fotosEquipoBase64.length >= MAX_FOTOS) {
+        alert(`⚠️ Ya has agregado el máximo de ${MAX_FOTOS} fotos`);
+        return;
+    }
+    
+    const modal = document.getElementById('modalCamaraEquipo');
+    const video = document.getElementById('videoCamaraEquipo');
+    
+    try {
+        // Solicitar acceso a la cámara
+        streamCamara = await navigator.mediaDevices.getUserMedia({ 
+            video: { 
+                facingMode: 'environment', // Usar cámara trasera en móviles
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+            } 
+        });
+        
+        video.srcObject = streamCamara;
+        modal.style.display = 'flex';
+    } catch (error) {
+        console.error('Error al acceder a la cámara:', error);
+        alert('⚠️ No se pudo acceder a la cámara. Por favor, verifica los permisos o usa la opción "Subir Archivo".');
+    }
+}
+
+/**
+ * Cerrar cámara
+ */
+export function cerrarCamaraEquipo() {
+    const modal = document.getElementById('modalCamaraEquipo');
+    const video = document.getElementById('videoCamaraEquipo');
+    
+    // Detener stream de cámara
+    if (streamCamara) {
+        streamCamara.getTracks().forEach(track => track.stop());
+        streamCamara = null;
+    }
+    
+    video.srcObject = null;
+    modal.style.display = 'none';
+}
+
+/**
+ * Capturar foto desde la cámara
+ */
+export function capturarFotoEquipo() {
+    // Verificar límite de fotos
+    if (fotosEquipoBase64.length >= MAX_FOTOS) {
+        alert(`⚠️ Ya has agregado el máximo de ${MAX_FOTOS} fotos`);
+        cerrarCamaraEquipo();
+        return;
+    }
+    
+    const video = document.getElementById('videoCamaraEquipo');
+    const canvas = document.getElementById('canvasCamaraEquipo');
+    const context = canvas.getContext('2d');
+    
+    // Configurar tamaño del canvas igual al video
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    
+    // Dibujar frame actual del video en el canvas
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    // Convertir a base64
+    const fotoBase64 = canvas.toDataURL('image/jpeg', 0.8);
+    
+    // Agregar foto al array
+    fotosEquipoBase64.push(fotoBase64);
+    
+    // Renderizar fotos
+    renderizarFotos();
+    
+    // Cerrar modal de cámara
+    cerrarCamaraEquipo();
+    
+    console.log(`✅ Foto ${fotosEquipoBase64.length} capturada desde cámara`);
+}
+
+/**
+ * Previsualizar foto del equipo desde archivo
+ */
+export function previsualizarFotoEquipo(event) {
+    // Verificar límite de fotos
+    if (fotosEquipoBase64.length >= MAX_FOTOS) {
+        alert(`⚠️ Ya has agregado el máximo de ${MAX_FOTOS} fotos`);
+        event.target.value = '';
+        return;
+    }
+    
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validar tipo de archivo
+    if (!file.type.startsWith('image/')) {
+        alert('⚠️ Por favor seleccione un archivo de imagen válido');
+        event.target.value = '';
+        return;
+    }
+
+    // Validar tamaño (máximo 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+        alert('⚠️ La imagen no debe superar los 5MB');
+        event.target.value = '';
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        // Agregar foto al array
+        fotosEquipoBase64.push(e.target.result);
+        
+        // Renderizar fotos
+        renderizarFotos();
+        
+        // Limpiar input para permitir seleccionar la misma imagen de nuevo
+        event.target.value = '';
+        
+        console.log(`✅ Foto ${fotosEquipoBase64.length} cargada desde archivo`);
+    };
+    reader.readAsDataURL(file);
+}
+
+/**
+ * Eliminar foto del equipo por índice
+ */
+export function eliminarFotoEquipo(index) {
+    if (index >= 0 && index < fotosEquipoBase64.length) {
+        fotosEquipoBase64.splice(index, 1);
+        renderizarFotos();
+        console.log(`🗑️ Foto ${index + 1} eliminada`);
+    }
+}
+
+/**
+ * Limpiar todas las fotos
+ */
+export function limpiarTodasLasFotos() {
+    fotosEquipoBase64 = [];
+    renderizarFotos();
+    console.log('🗑️ Todas las fotos eliminadas');
+}
+
+/**
+ * Subir foto a Cloudinary
+ */
+async function subirFotoEquipo(fotoBase64) {
+    if (!fotoBase64) {
+        return null;
+    }
+
+    try {
+        console.log('📤 Subiendo foto del equipo a Cloudinary...');
+        
+        // Extraer solo la parte base64 (sin el prefijo data:image/...)
+        const base64Data = fotoBase64.split(',')[1] || fotoBase64;
+        
+        const response = await fetch('/api/upload-imagen', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                imagen: base64Data,
+                carpeta: 'equipos'
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al subir imagen');
+        }
+
+        const data = await response.json();
+        console.log('✅ Foto subida exitosamente:', data.url);
+        return data.url;
+    } catch (error) {
+        console.error('❌ Error al subir foto:', error);
+        throw error;
+    }
+}
+
+/**
+ * Subir todas las fotos a Cloudinary
+ */
+async function subirTodasLasFotos() {
+    if (fotosEquipoBase64.length === 0) {
+        return [];
+    }
+
+    try {
+        console.log(`📤 Subiendo ${fotosEquipoBase64.length} foto(s) a Cloudinary...`);
+        
+        const urlsPromises = fotosEquipoBase64.map((foto, index) => {
+            mostrarModalCarga(`Subiendo foto ${index + 1} de ${fotosEquipoBase64.length}...`);
+            return subirFotoEquipo(foto);
+        });
+        
+        const urls = await Promise.all(urlsPromises);
+        console.log(`✅ ${urls.length} foto(s) subida(s) exitosamente`);
+        return urls;
+    } catch (error) {
+        console.error('❌ Error al subir fotos:', error);
+        throw error;
+    }
+}
+
+// Modificar la función guardarServicioReal para incluir las fotos
+export async function guardarServicioRealConFoto(servicio) {
+    try {
+        mostrarModalCarga('Guardando...');
+        
+        // Subir fotos si existen
+        let fotosUrls = [];
+        if (fotosEquipoBase64.length > 0) {
+            try {
+                mostrarModalCarga(`Subiendo ${fotosEquipoBase64.length} foto(s) del equipo...`);
+                fotosUrls = await subirTodasLasFotos();
+            } catch (error) {
+                console.error('Error al subir fotos:', error);
+                const continuar = confirm(`⚠️ No se pudieron subir las fotos del equipo. ¿Desea continuar sin las fotos?`);
+                if (!continuar) {
+                    cerrarModalCarga();
+                    return;
+                }
+            }
+        }
+        
+        mostrarModalCarga('Guardando servicio...');
+        
+        // Guardar servicio
+        const servicioRes = await fetch(`${API_SERVICIOS}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(servicio)
+        });
+
+        if (!servicioRes.ok) {
+            const errorData = await servicioRes.json();
+            cerrarModalCarga();
+            throw new Error(`${servicioRes.status}: ${errorData.error || 'Error desconocido'} ${errorData.detalles ? '- ' + errorData.detalles.join(', ') : ''}`);
+        }
+
+        const servicioGuardado = await servicioRes.json();
+
+        // Guardar relación servicio-equipo si hay equipo seleccionado
+        if (servicio.equipo_id) {
+            const servicioEquipo = {
+                servicio_id: servicioGuardado._id,
+                equipo_id: servicio.equipo_id,
+                cliente_id: servicio.cliente_id,
+                diagnostico: '',
+                trabajo_realizado: '',
+                fecha_inicio: servicio.fecha,
+                fecha_cierre: '',
+                estado: 'Pendiente de evaluación',
+                monto: parseFloat(servicio.monto) || 0,
+                adelanto: parseFloat(servicio.adelanto) || 0,
+                problemas_reportados: servicio.problemas || '',
+                observaciones: servicio.observaciones || '',
+                local: servicio.local || '',
+                fecha: servicio.fecha || '',
+                hora: servicio.hora || '',
+                numero_servicio: servicio.numero_servicio || '',
+                fotos: fotosUrls // Array con las URLs de las fotos
+            };
+
+            console.log(`📤 Enviando servicio-equipo con ${fotosUrls.length} foto(s):`, servicioEquipo);
+            const seRes = await fetch(`${API_SERVICIO_EQUIPO}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(servicioEquipo)
+            });
+            
+            if (!seRes.ok) {
+                const errorData = await seRes.json();
+                console.error('❌ Error al guardar servicio-equipo:', errorData);
+                cerrarModalCarga();
+                throw new Error(`Error al guardar servicio-equipo: ${errorData.error}`);
+            }
+            
+            console.log(`✅ Servicio-equipo guardado con ${fotosUrls.length} foto(s)`);
+        }
+
+        // Limpiar fotos después de guardar
+        limpiarTodasLasFotos();
+        
+        // Cerrar modal de resumen
+        if (typeof cerrarModalResumen === 'function') {
+            cerrarModalResumen();
+        }
+        
+        // Cerrar modal de carga
+        cerrarModalCarga();
+        
+        // Limpiar formulario
+        document.getElementById('formServicio').reset();
+        
+        // Cerrar modal de nuevo servicio
+        cerrarModalNuevoServicio();
+        
+        // Mostrar notificación de éxito
+        const mensajeExito = fotosUrls.length > 0 
+            ? `Servicio guardado con ${fotosUrls.length} foto(s)` 
+            : 'Servicio guardado';
+        mostrarNotificacionExito(mensajeExito);
+
+        // Recargar servicios
+        cargarServicios();
+    } catch (error) {
+        cerrarModalCarga();
+        console.error('Error:', error);
+        alert('Error al guardar servicio: ' + error.message);
+    }
+}
+
+// Exportar las funciones para uso global
+window.previsualizarFotoEquipo = previsualizarFotoEquipo;
+window.eliminarFotoEquipo = eliminarFotoEquipo;
+window.abrirCamaraEquipo = abrirCamaraEquipo;
+window.cerrarCamaraEquipo = cerrarCamaraEquipo;
+window.capturarFotoEquipo = capturarFotoEquipo;
+window.limpiarTodasLasFotos = limpiarTodasLasFotos;
+window.verFotoCompleta = verFotoCompleta;
+window.cerrarFotoCompleta = cerrarFotoCompleta;
+
+
+/**
+ * Ver foto en tamaño completo
+ */
+export function verFotoCompleta(fotoSrc, numeroFoto) {
+    const modal = document.createElement('div');
+    modal.id = 'modalFotoCompleta';
+    modal.style.cssText = 'display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center;';
+    
+    modal.innerHTML = `
+        <div style="position: relative; max-width: 90%; max-height: 90%; display: flex; flex-direction: column; align-items: center;">
+            <div style="background: white; padding: 10px 20px; border-radius: 8px 8px 0 0; margin-bottom: 10px;">
+                <h3 style="margin: 0; color: #2192B8;">
+                    <i class="fas fa-image"></i> Foto ${numeroFoto} del Equipo
+                </h3>
+            </div>
+            <img src="${fotoSrc}" alt="Foto ${numeroFoto}" style="max-width: 100%; max-height: 80vh; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+            <button onclick="cerrarFotoCompleta()" style="position: absolute; top: -10px; right: -10px; background: #d32f2f; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    
+    // Cerrar al hacer clic fuera de la imagen
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            cerrarFotoCompleta();
+        }
+    });
+    
+    document.body.appendChild(modal);
+}
+
+/**
+ * Cerrar modal de foto completa
+ */
+export function cerrarFotoCompleta() {
+    const modal = document.getElementById('modalFotoCompleta');
+    if (modal) {
+        modal.remove();
+    }
 }

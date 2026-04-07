@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1100">
+  <defs>
+    <style>
+      .title { font: bold 20px sans-serif; fill: #1a237e; }
+      .subtitle { font: bold 14px sans-serif; fill: #424242; }
+      .text { font: 13px sans-serif; fill: #333; }
+      .small-text { font: 11px sans-serif; fill: #666; }
+      .label { font: bold 12px sans-serif; fill: #333; }
+      .value { font: bold 16px sans-serif; fill: #333; }
+      .box { fill: #fff; stroke: #ddd; stroke-width: 1; }
+      .box-header { fill: #2196F3; }
+      .box-success { fill: #E8F5E9; stroke: #4CAF50; stroke-width: 2; }
+      .box-warning { fill: #FFF3E0; stroke: #FF9800; stroke-width: 2; }
+      .box-info { fill: #E3F2FD; stroke: #2196F3; stroke-width: 1; }
+      .input { fill: #fff; stroke: #4CAF50; stroke-width: 2; }
+      .button { fill: #4CAF50; }
+      .button-text { font: bold 13px sans-serif; fill: #fff; }
+    </style>
+  </defs>
+
+  <!-- Título -->
+  <text x="450" y="30" text-anchor="middle" class="title">MODAL DE ENTREGA MEJORADO</text>
+  <text x="450" y="50" text-anchor="middle" class="small-text">Vista previa del nuevo diseño con gestión de deuda</text>
+
+  <!-- Modal Container -->
+  <rect x="50" y="70" width="800" height="1000" rx="8" fill="#fff" stroke="#333" stroke-width="2"/>
+  
+  <!-- Header -->
+  <rect x="50" y="70" width="800" height="50" rx="8" class="box-header"/>
+  <text x="70" y="102" class="title" fill="#fff">🚚 Entrega de Servicio</text>
+  <text x="780" y="105" class="title" fill="#fff" text-anchor="end">×</text>
+
+  <!-- Información del Servicio -->
+  <rect x="70" y="140" width="760" height="80" rx="6" class="box"/>
+  <text x="85" y="165" class="subtitle">📋 Información del Servicio</text>
+  <text x="85" y="185" class="small-text">Número: SRV-2024-001</text>
+  <text x="85" y="205" class="small-text">Cliente: Juan Pérez - DNI: 12345678</text>
+  <text x="450" y="185" class="small-text">Equipo: Laptop HP Pavilion</text>
+  <text x="450" y="205" class="small-text">Fecha: 15/01/2024</text>
+
+  <!-- Resumen Financiero -->
+  <rect x="70" y="240" width="760" height="180" rx="6" class="box-info"/>
+  <text x="85" y="265" class="subtitle" fill="#1976D2">💰 Resumen Financiero</text>
+  
+  <!-- Tarjetas de montos -->
+  <rect x="85" y="280" width="230" height="70" rx="4" fill="#fff" stroke="#4CAF50" stroke-width="2"/>
+  <text x="95" y="300" class="small-text" fill="#666">Monto Total</text>
+  <text x="95" y="330" class="value" fill="#333">S/ 150.00</text>
+  
+  <rect x="335" y="280" width="230" height="70" rx="4" fill="#fff" stroke="#FF9800" stroke-width="2"/>
+  <text x="345" y="300" class="small-text" fill="#666">Pagado Hasta Ahora</text>
+  <text x="345" y="330" class="value" fill="#333">S/ 50.00</text>
+  
+  <rect x="585" y="280" width="230" height="70" rx="4" fill="#fff" stroke="#F44336" stroke-width="2"/>
+  <text x="595" y="300" class="small-text" fill="#666">Saldo Pendiente</text>
+  <text x="595" y="330" class="value" fill="#F44336">S/ 100.00</text>
+
+  <!-- Campos de pago -->
+  <rect x="85" y="370" width="360" height="35" rx="4" fill="#fff" stroke="#ddd"/>
+  <text x="95" y="385" class="label">💵 Monto a Cobrar Hoy *</text>
+  <rect x="95" y="390" width="340" height="8" rx="2" class="input"/>
+  <text x="105" y="397" class="text" font-weight="bold">100.00</text>
+  
+  <rect x="455" y="370" width="360" height="35" rx="4" fill="#fff" stroke="#ddd"/>
+  <text x="465" y="385" class="label">💳 Método de Pago</text>
+  <rect x="465" y="390" width="340" height="8" rx="2" fill="#fff" stroke="#ddd"/>
+  <text x="475" y="397" class="text">Efectivo ▼</text>
+
+  <!-- Indicador de Deuda SALDADA -->
+  <rect x="70" y="440" width="760" height="50" rx="6" class="box-success"/>
+  <text x="450" y="470" text-anchor="middle" class="subtitle" fill="#2E7D32">
+    ✅ DEUDA SALDADA - Cliente no deberá nada
+  </text>
+
+  <!-- Datos de Entrega -->
+  <rect x="70" y="510" width="760" height="200" rx="6" class="box"/>
+  <text x="85" y="535" class="subtitle">📝 Datos de Entrega</text>
+  
+  <!-- Grid de campos -->
+  <rect x="85" y="550" width="360" height="35" rx="4" fill="#fff" stroke="#ddd"/>
+  <text x="95" y="565" class="label">📅 Fecha de Entrega *</text>
+  <rect x="95" y="570" width="340" height="8" rx="2" fill="#fff" stroke="#ddd"/>
+  <text x="105" y="577" class="text">15/01/2024</text>
+  
+  <rect x="455" y="550" width="360" height="35" rx="4" fill="#fff" stroke="#ddd"/>
+  <text x="465" y="565" class="label">🕐 Hora de Entrega *</text>
+  <rect x="465" y="570" width="340" height="8" rx="2" fill="#fff" stroke="#ddd"/>
+  <text x="475" y="577" class="text">14:30</text>
+  
+  <rect x="85" y="595" width="360" height="35" rx="4" fill="#fff" stroke="#ddd"/>
+  <text x="95" y="610" class="label">👤 Encargado *</text>
+  <rect x="95" y="615" width="340" height="8" rx="2" fill="#fff" stroke="#ddd"/>
+  <text x="105" y="622" class="text">Juan Técnico</text>
+  
+  <rect x="455" y="595" width="360" height="35" rx="4" fill="#fff" stroke="#ddd"/>
+  <text x="465" y="610" class="label">✅ Estado del Equipo *</text>
+  <rect x="465" y="615" width="340" height="8" rx="2" fill="#fff" stroke="#ddd"/>
+  <text x="475" y="622" class="text">Funcionando correctamente ▼</text>
+  
+  <rect x="85" y="640" width="730" height="35" rx="4" fill="#fff" stroke="#ddd"/>
+  <text x="95" y="655" class="label">📝 Observaciones (Opcional)</text>
+  <rect x="95" y="660" width="710" height="8" rx="2" fill="#fff" stroke="#ddd"/>
+
+  <!-- Información Adicional -->
+  <rect x="70" y="730" width="760" height="120" rx="6" class="box"/>
+  <text x="85" y="755" class="subtitle">🛡️ Información Adicional</text>
+  
+  <rect x="85" y="770" width="360" height="35" rx="4" fill="#fff" stroke="#ddd"/>
+  <text x="95" y="785" class="label">📅 Garantía Hasta</text>
+  <rect x="95" y="790" width="340" height="8" rx="2" fill="#fff" stroke="#ddd"/>
+  <text x="105" y="797" class="text">15/02/2024</text>
+  
+  <rect x="455" y="770" width="360" height="35" rx="4" fill="#fff" stroke="#ddd"/>
+  <text x="465" y="785" class="label">💡 Recomendaciones</text>
+  <rect x="465" y="790" width="340" height="8" rx="2" fill="#fff" stroke="#ddd"/>
+  <text x="475" y="797" class="text">Mantenimiento en 6 meses</text>
+  
+  <rect x="85" y="815" width="730" height="20" rx="4" fill="#fff" stroke="#ddd"/>
+  <text x="95" y="830" class="label">🧾 Comprobante/Referencia</text>
+
+  <!-- Botones -->
+  <rect x="85" y="880" width="340" height="45" rx="6" fill="#6c757d"/>
+  <text x="255" y="907" text-anchor="middle" class="button-text">✏️ Revisar Datos</text>
+  
+  <rect x="455" y="880" width="360" height="45" rx="6" class="button"/>
+  <text x="635" y="907" text-anchor="middle" class="button-text">✅ Confirmar Entrega</text>
+
+  <!-- Leyenda de estados -->
+  <rect x="70" y="950" width="760" height="100" rx="6" fill="#f5f5f5" stroke="#ddd"/>
+  <text x="85" y="975" class="subtitle">🎨 Indicadores de Estado:</text>
+  
+  <rect x="85" y="990" width="220" height="30" rx="4" class="box-success"/>
+  <text x="95" y="1010" class="small-text" fill="#2E7D32">✅ Deuda Saldada</text>
+  
+  <rect x="325" y="990" width="220" height="30" rx="4" class="box-warning"/>
+  <text x="335" y="1010" class="small-text" fill="#E65100">⚠️ Pago Parcial</text>
+  
+  <rect x="565" y="990" width="250" height="30" rx="4" fill="#FFEBEE" stroke="#F44336" stroke-width="2"/>
+  <text x="575" y="1010" class="small-text" fill="#C62828">❌ No Paga / Error</text>
+
+  <!-- Nota al pie -->
+  <text x="450" y="1065" text-anchor="middle" class="small-text" fill="#999">
+    * Campos obligatorios | El indicador cambia automáticamente según el monto ingresado
+  </text>
+</svg>

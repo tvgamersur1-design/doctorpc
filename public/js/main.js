@@ -7,7 +7,9 @@ import {
     updateMenuToggleVisibility,
     mostrarModalCarga,
     cerrarModalCarga,
-    mostrarNotificacionExito
+    mostrarNotificacionExito,
+    mostrarModalNotificacion,
+    cerrarModalNotificacion
 } from './ui.js';
 import * as Clientes from './modules/clientes.js';
 import * as Equipos from './modules/equipos.js';
@@ -16,6 +18,7 @@ import * as Diagnostico from './modules/diagnostico.js';
 import * as Usuarios from './modules/usuarios.js';
 import * as Cancelacion from './modules/cancelacion.js';
 import * as Estado from './modules/estado.js';
+import * as Deudas from './modules/deudas.js';
 import * as Helpers from './helpers.js';
 
 // Verificar sesión al cargar (solo si no estamos en index.html)
@@ -25,7 +28,7 @@ if (!window.location.pathname.includes('index.html') && window.location.pathname
 
 // Inicializar aplicación cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Inicializando aplicación modular...');
+    console.log(' Inicializando aplicación modular...');
     inicializarAplicacion();
 });
 
@@ -115,7 +118,9 @@ function configurarEventListeners() {
                 'modalVerEquipo',
                 'modalNuevoUsuario',
                 'modalEditarUsuario',
-                'modalImagenCompleta'
+                'modalImagenCompleta',
+                'modalRegistrarPago',
+                'modalHistorialCliente'
             ];
             
             modales.forEach(modalId => {
@@ -125,6 +130,24 @@ function configurarEventListeners() {
             });
         }
     });
+    
+    // Agregar event listener al botón de buscar equipo como respaldo
+    const btnBuscarEquipo = document.getElementById('btnBuscarEquipo');
+    if (btnBuscarEquipo) {
+        btnBuscarEquipo.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('🔘 Click en btnBuscarEquipo detectado');
+            if (window.abrirModalSeleccionarEquipo) {
+                window.abrirModalSeleccionarEquipo();
+            } else {
+                console.error('❌ window.abrirModalSeleccionarEquipo no está definida');
+                alert('Error: La función no está disponible. Por favor recarga la página.');
+            }
+        });
+        console.log('✅ Event listener agregado a btnBuscarEquipo');
+    } else {
+        console.warn('⚠️ btnBuscarEquipo no encontrado en el DOM');
+    }
 }
 
 /**
@@ -144,6 +167,8 @@ function cargarDatosIniciales() {
         Servicios.cargarServicios();
     } else if (tabActivo.id === 'usuariosTab') {
         Usuarios.cargarUsuarios();
+    } else if (tabActivo.id === 'deudasTab') {
+        Deudas.cargarDeudas();
     }
 }
 
@@ -151,9 +176,9 @@ function cargarDatosIniciales() {
  * Manejar cambio de tab
  * @param {string} tabName 
  */
-function handleSwitchTab(tabName, event) {
+function handleSwitchTab(tabName) {
     // Cambiar tab en la UI
-    switchTab(tabName, event);
+    switchTab(tabName);
     
     // Cargar datos del nuevo tab
     if (tabName === 'clientes') {
@@ -164,6 +189,8 @@ function handleSwitchTab(tabName, event) {
         Servicios.cargarServicios();
     } else if (tabName === 'usuarios') {
         Usuarios.cargarUsuarios();
+    } else if (tabName === 'deudas') {
+        Deudas.cargarDeudas();
     }
 }
 
@@ -179,10 +206,9 @@ window.cerrarSesion = cerrarSesion;
 window.mostrarModalCarga = mostrarModalCarga;
 window.cerrarModalCarga = cerrarModalCarga;
 window.mostrarNotificacionExito = mostrarNotificacionExito;
-window.cerrarModal = function(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) modal.classList.remove('show');
-};
+window.mostrarModalNotificacion = mostrarModalNotificacion;
+window.cerrarModalNotificacion = cerrarModalNotificacion;
+// No sobrescribir cerrarModal de app.js (cierra confirmModal sin parámetro)
 
 // Módulo de Clientes
 window.abrirModalNuevoCliente = Clientes.abrirModalNuevoCliente;
@@ -197,6 +223,7 @@ window.confirmarEliminarClienteDesdeModal = Clientes.confirmarEliminarClienteDes
 window.restaurarCliente = Clientes.restaurarCliente;
 window.consultarDecolecta = Clientes.consultarDecolecta;
 window.cargarClientes = Clientes.cargarClientes; // ✅ AGREGADO: Para el checkbox de eliminados
+window.actualizarSelectsClientes = Clientes.actualizarSelectsClientes; // ✅ AGREGADO: Para actualizar selects
 
 // ✅ Exponer módulo completo para funciones auxiliares
 window.Clientes = Clientes;
@@ -226,6 +253,14 @@ window.cargarServicios = Servicios.cargarServicios;
 window.buscarServiciosConDebounce = Servicios.buscarServiciosConDebounce;
 window.confirmarGuardarServicio = Servicios.confirmarGuardarServicio;
 window.cerrarModalResumen = Servicios.cerrarModalResumen;
+window.previsualizarFotoEquipo = Servicios.previsualizarFotoEquipo;
+window.eliminarFotoEquipo = Servicios.eliminarFotoEquipo;
+window.abrirCamaraEquipo = Servicios.abrirCamaraEquipo;
+window.cerrarCamaraEquipo = Servicios.cerrarCamaraEquipo;
+window.capturarFotoEquipo = Servicios.capturarFotoEquipo;
+window.limpiarTodasLasFotos = Servicios.limpiarTodasLasFotos;
+window.verFotoCompleta = Servicios.verFotoCompleta;
+window.cerrarFotoCompleta = Servicios.cerrarFotoCompleta;
 
 // ✅ Exponer módulo completo
 window.Servicios = Servicios;
@@ -233,6 +268,7 @@ window.Servicios = Servicios;
 // Módulo de Diagnóstico
 window.abrirModalDiagnostico = Diagnostico.abrirModalDiagnostico;
 window.cerrarModalDiagnostico = Diagnostico.cerrarModalDiagnostico;
+window.cerrarConfirmacionDiagnostico = Diagnostico.cerrarConfirmacionDiagnostico;
 window.agregarProblemaFila = Diagnostico.agregarProblemaFila;
 window.eliminarProblemaFila = Diagnostico.eliminarProblemaFila;
 window.calcularMontoTotal = Diagnostico.calcularMontoTotal;
@@ -263,26 +299,78 @@ window.confirmarCancelacionServicio = Cancelacion.confirmarCancelacionServicio;
 // ✅ Exponer módulo completo
 window.Cancelacion = Cancelacion;
 
-// Módulo de Estado (cambio de estado, detalles, ver diagnóstico)
+// Módulo de Estado (cambio de estado, ver diagnóstico)
 window.abrirModalCambiarEstado = Estado.abrirModalCambiarEstado;
+window.cerrarModalCambiarEstado = Estado.cerrarModalCambiarEstado;
+window.abrirModalCambiarEstado = Estado.abrirModalCambiarEstado;
+window.cerrarModalCambiarEstado = Estado.cerrarModalCambiarEstado;
+window.confirmarCambioEstado = Estado.confirmarCambioEstado;
+window.abrirModalConfirmarReparacion = Estado.abrirModalConfirmarReparacion;
+window.cerrarModalConfirmarReparacion = Estado.cerrarModalConfirmarReparacion;
+window.verificarTodosReparados = Estado.verificarTodosReparados;
+window.confirmarReparacionCompleta = Estado.confirmarReparacionCompleta;
+window.abrirModalIniciarReparacion = Estado.abrirModalIniciarReparacion;
+window.cerrarModalIniciarReparacion = Estado.cerrarModalIniciarReparacion;
+window.confirmarInicioReparacion = Estado.confirmarInicioReparacion;
+window.abrirModalConfirmarReparacion = Estado.abrirModalConfirmarReparacion;
+window.abrirModalEntrega = Estado.abrirModalEntrega;
+window.cerrarModalEntrega = Estado.cerrarModalEntrega;
 window.cambiarEstadoServicio = Estado.cambiarEstadoServicio;
 window.verDiagnostico = Estado.verDiagnostico;
-window.abrirModalDetallesServicio = Estado.abrirModalDetallesServicio;
 window.obtenerEstadosPermitidos = Estado.obtenerEstadosPermitidos;
+window.abrirModalDetallesServicio = Estado.abrirModalDetallesServicio;
+window.cerrarModalDetallesServicio = Estado.cerrarModalDetallesServicio;
+window.verFotoCompletaModal = Estado.verFotoCompletaModal;
+window.cerrarFotoCompletaModal = Estado.cerrarFotoCompletaModal;
+window.verFotoEntregaModal = Estado.verFotoEntregaModal;
+window.agregarFotoEntrega = Estado.agregarFotoEntrega;
+window.abrirCamaraEntrega = Estado.abrirCamaraEntrega;
+window.cerrarCamaraEntrega = Estado.cerrarCamaraEntrega;
+window.capturarFotoEntrega = Estado.capturarFotoEntrega;
+window.eliminarFotoEntrega = Estado.eliminarFotoEntrega;
+window.limpiarFotosEntrega = Estado.limpiarFotosEntrega;
+window.actualizarContadorFotosEntrega = Estado.actualizarContadorFotosEntrega;
+window.abrirImagenCompletaEntrega = Estado.abrirImagenCompletaEntrega;
+window.cerrarImagenCompletaEntrega = Estado.cerrarImagenCompletaEntrega;
+window.confirmarEntregaServicio = Estado.confirmarEntregaServicio;
+window.recalcularSaldoEntrega = Estado.recalcularSaldoEntrega;
+window.actualizarIndicadorDeuda = Estado.actualizarIndicadorDeuda;
 
 // ✅ Exponer módulo completo
 window.Estado = Estado;
+
+// Módulo de Deudas
+window.cargarDeudas = Deudas.cargarDeudas;
+window.filtrarPorEstadoPago = Deudas.filtrarPorEstadoPago;
+window.buscarClienteDeuda = Deudas.buscarClienteDeuda;
+window.abrirModalRegistrarPago = Deudas.abrirModalRegistrarPago;
+window.cerrarModalRegistrarPago = Deudas.cerrarModalRegistrarPago;
+window.guardarPago = Deudas.guardarPago;
+window.verHistorialCliente = Deudas.verHistorialCliente;
+window.cerrarModalHistorialCliente = Deudas.cerrarModalHistorialCliente;
+
+// ✅ Exponer módulo completo
+window.Deudas = Deudas;
 
 // Funciones auxiliares (helpers)
 window.agregarProblemaAtajo = Helpers.agregarProblemaAtajo;
 window.abrirModalSeleccionarCliente = Helpers.abrirModalSeleccionarCliente;
 window.cerrarModalSeleccionarCliente = Helpers.cerrarModalSeleccionarCliente;
 window.buscarClientePorDNI = Helpers.buscarClientePorDNI;
+window.buscarClientesPorDNI = Helpers.buscarClientePorDNI; // Alias para compatibilidad
 window.seleccionarClienteExistente = Helpers.seleccionarClienteExistente;
 window.abrirModalSeleccionarEquipo = Helpers.abrirModalSeleccionarEquipo;
 window.cerrarModalSeleccionarEquipo = Helpers.cerrarModalSeleccionarEquipo;
 window.buscarEquiposPorCliente = Helpers.buscarEquiposPorCliente;
 window.seleccionarEquipo = Helpers.seleccionarEquipo;
+window.abrirModalSeleccionarClienteEquipo = Helpers.abrirModalSeleccionarClienteEquipo;
+window.cerrarModalSeleccionarClienteEquipo = Helpers.cerrarModalSeleccionarClienteEquipo;
+window.buscarClientesPorDNIEquipo = Helpers.buscarClientesPorDNIEquipo;
+window.seleccionarClienteEquipo = Helpers.seleccionarClienteEquipo;
+window.abrirModalSeleccionarClienteEquipoEditar = Helpers.abrirModalSeleccionarClienteEquipoEditar;
+window.abrirFormularioNuevoEquipoModal = Helpers.abrirFormularioNuevoEquipoModal;
+window.consultarReniecServicio = Helpers.consultarReniecServicio;
+window.agregarClienteDesdeReniecServicio = Helpers.agregarClienteDesdeReniecServicio;
 
 console.log('📦 Módulos cargados:', {
     clientes: '✅',
@@ -292,6 +380,7 @@ console.log('📦 Módulos cargados:', {
     usuarios: '✅',
     cancelacion: '✅',
     estado: '✅',
+    deudas: '✅',
     helpers: '✅'
 });
 

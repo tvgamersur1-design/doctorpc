@@ -87,5 +87,20 @@ from = "/api/generar-pdf"
 to = "/.netlify/functions/generar-pdf"
 status = 200
 
+[[redirects]]
+from = "/api/pagos"
+to = "/.netlify/functions/pagos"
+status = 200
+
+[[redirects]]
+from = "/api/pagos/*"
+to = "/.netlify/functions/pagos"
+status = 200
+
+[[redirects]]
+from = "/api/upload-imagen"
+to = "/.netlify/functions/upload-imagen"
+status = 200
+
 [context.production.environment]
 NODE_ENV = "production"

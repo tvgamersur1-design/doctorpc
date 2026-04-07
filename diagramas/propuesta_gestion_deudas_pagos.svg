@@ -1,0 +1,288 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1800">
+  <defs>
+    <style>
+      .title { font: bold 24px sans-serif; fill: #1a1a1a; }
+      .subtitle { font: bold 18px sans-serif; fill: #2c3e50; }
+      .text { font: 14px sans-serif; fill: #333; }
+      .small-text { font: 12px sans-serif; fill: #555; }
+      .box { fill: #fff; stroke: #3498db; stroke-width: 2; }
+      .box-header { fill: #3498db; }
+      .box-success { fill: #e8f5e9; stroke: #4caf50; stroke-width: 2; }
+      .box-warning { fill: #fff3e0; stroke: #ff9800; stroke-width: 2; }
+      .box-danger { fill: #ffebee; stroke: #f44336; stroke-width: 2; }
+      .arrow { fill: none; stroke: #34495e; stroke-width: 2; marker-end: url(#arrowhead); }
+      .label-bg { fill: #ecf0f1; stroke: #95a5a6; stroke-width: 1; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#34495e" />
+    </marker>
+  </defs>
+
+  <!-- Título -->
+  <text x="700" y="40" class="title" text-anchor="middle">SISTEMA DE GESTIÓN DE DEUDAS Y PAGOS</text>
+  
+  <!-- SECCIÓN 1: ESTRUCTURA DE DATOS -->
+  <text x="50" y="90" class="subtitle">1. ESTRUCTURA DE BASE DE DATOS</text>
+
+  
+  <!-- Colección Clientes -->
+  <rect x="50" y="110" width="280" height="140" class="box"/>
+  <rect x="50" y="110" width="280" height="35" class="box-header"/>
+  <text x="190" y="133" class="text" fill="#fff" text-anchor="middle">CLIENTES (existente)</text>
+  <text x="60" y="165" class="small-text">• _id, dni, nombre</text>
+  <text x="60" y="185" class="small-text">• email, teléfono</text>
+  <text x="60" y="205" class="small-text">• dirección, empresa</text>
+  <text x="60" y="225" class="small-text">• estado, fecha_creacion</text>
+
+  <!-- Colección Servicio_Equipo -->
+  <rect x="380" y="110" width="320" height="220" class="box"/>
+  <rect x="380" y="110" width="320" height="35" class="box-header"/>
+  <text x="540" y="133" class="text" fill="#fff" text-anchor="middle">SERVICIO_EQUIPO (modificado)</text>
+  <text x="390" y="165" class="small-text">• _id, numero_orden, cliente_id</text>
+  <text x="390" y="185" class="small-text">• equipo_id, servicio_id</text>
+  <text x="390" y="205" class="small-text">• monto_total (nuevo)</text>
+  <text x="390" y="225" class="small-text">• monto_pagado (nuevo)</text>
+  <text x="390" y="245" class="small-text">• saldo_pendiente (nuevo)</text>
+  <text x="390" y="265" class="small-text">• estado_pago (nuevo)</text>
+  <text x="390" y="285" class="small-text">• fecha_vencimiento (nuevo)</text>
+  <text x="390" y="305" class="small-text">• descuento, notas_pago</text>
+
+  <!-- Colección Pagos (NUEVA) -->
+  <rect x="750" y="110" width="300" height="220" class="box-success"/>
+  <rect x="750" y="110" width="300" height="35" style="fill: #4caf50;"/>
+  <text x="900" y="133" class="text" fill="#fff" text-anchor="middle">PAGOS (NUEVA)</text>
+  <text x="760" y="165" class="small-text">• _id, servicio_equipo_id</text>
+  <text x="760" y="185" class="small-text">• cliente_id</text>
+  <text x="760" y="205" class="small-text">• monto_pagado</text>
+  <text x="760" y="225" class="small-text">• metodo_pago (efectivo, etc)</text>
+  <text x="760" y="245" class="small-text">• numero_referencia</text>
+  <text x="760" y="265" class="small-text">• fecha_pago</text>
+  <text x="760" y="285" class="small-text">• registrado_por</text>
+  <text x="760" y="305" class="small-text">• estado, notas</text>
+
+  <!-- Flechas de relación -->
+  <path d="M 330 180 L 380 180" class="arrow"/>
+  <path d="M 700 220 L 750 220" class="arrow"/>
+  
+  <!-- SECCIÓN 2: FLUJO DE TRABAJO -->
+  <text x="50" y="390" class="subtitle">2. FLUJO DE TRABAJO</text>
+
+
+  <!-- Paso 1: Crear Servicio -->
+  <rect x="100" y="420" width="250" height="100" class="box"/>
+  <rect x="100" y="420" width="250" height="30" style="fill: #9b59b6;"/>
+  <text x="225" y="440" class="text" fill="#fff" text-anchor="middle">1. CREAR SERVICIO</text>
+  <text x="110" y="465" class="small-text">• Registrar monto_total</text>
+  <text x="110" y="485" class="small-text">• Registrar adelanto (si hay)</text>
+  <text x="110" y="505" class="small-text">• Calcular saldo_pendiente</text>
+
+  <!-- Paso 2: Registrar Pago -->
+  <rect x="420" y="420" width="250" height="100" class="box"/>
+  <rect x="420" y="420" width="250" height="30" style="fill: #27ae60;"/>
+  <text x="545" y="440" class="text" fill="#fff" text-anchor="middle">2. REGISTRAR PAGO</text>
+  <text x="430" y="465" class="small-text">• Crear registro en Pagos</text>
+  <text x="430" y="485" class="small-text">• Actualizar monto_pagado</text>
+  <text x="430" y="505" class="small-text">• Recalcular saldo_pendiente</text>
+
+  <!-- Paso 3: Consultar Deuda -->
+  <rect x="740" y="420" width="250" height="100" class="box"/>
+  <rect x="740" y="420" width="250" height="30" style="fill: #e67e22;"/>
+  <text x="865" y="440" class="text" fill="#fff" text-anchor="middle">3. CONSULTAR DEUDA</text>
+  <text x="750" y="465" class="small-text">• Filtrar por cliente</text>
+  <text x="750" y="485" class="small-text">• Mostrar saldo > 0</text>
+  <text x="750" y="505" class="small-text">• Calcular días vencidos</text>
+
+  <!-- Flechas entre pasos -->
+  <path d="M 350 470 L 420 470" class="arrow"/>
+  <path d="M 670 470 L 740 470" class="arrow"/>
+
+  <!-- SECCIÓN 3: INTERFAZ - PANEL DE DEUDAS -->
+  <text x="50" y="580" class="subtitle">3. INTERFAZ - PANEL DE DEUDAS</text>
+
+  <!-- Panel de Deudas -->
+  <rect x="50" y="610" width="1300" height="280" class="box"/>
+  <rect x="50" y="610" width="1300" height="40" style="fill: #34495e;"/>
+  <text x="700" y="635" class="text" fill="#fff" text-anchor="middle" font-size="16">GESTIÓN DE DEUDAS - PANEL PRINCIPAL</text>
+  
+  <!-- Filtros -->
+  <rect x="70" y="670" width="1260" height="40" class="label-bg"/>
+  <text x="80" y="693" class="small-text">🔍 Buscar cliente: [________]  📅 Desde: [____] Hasta: [____]  📊 Estado: [Todos ▼]  [Buscar]</text>
+
+
+  <!-- Tabla de deudas -->
+  <rect x="70" y="730" width="1260" height="30" style="fill: #bdc3c7;"/>
+  <text x="90" y="750" class="small-text" font-weight="bold">Cliente</text>
+  <text x="250" y="750" class="small-text" font-weight="bold">Servicio</text>
+  <text x="420" y="750" class="small-text" font-weight="bold">Fecha</text>
+  <text x="550" y="750" class="small-text" font-weight="bold">Monto Total</text>
+  <text x="690" y="750" class="small-text" font-weight="bold">Pagado</text>
+  <text x="820" y="750" class="small-text" font-weight="bold">Saldo</text>
+  <text x="950" y="750" class="small-text" font-weight="bold">Estado</text>
+  <text x="1100" y="750" class="small-text" font-weight="bold">Acciones</text>
+
+  <!-- Fila 1 - Deuda vencida -->
+  <rect x="70" y="760" width="1260" height="30" class="box-danger"/>
+  <text x="90" y="780" class="small-text">Juan García</text>
+  <text x="250" y="780" class="small-text">Reparación Laptop</text>
+  <text x="420" y="780" class="small-text">15/02/2024</text>
+  <text x="550" y="780" class="small-text">S/ 500.00</text>
+  <text x="690" y="780" class="small-text">S/ 150.00</text>
+  <text x="820" y="780" class="small-text" fill="#c0392b" font-weight="bold">S/ 350.00</text>
+  <text x="950" y="780" class="small-text" fill="#c0392b">⚠️ Vencido (15d)</text>
+  <text x="1100" y="780" class="small-text" fill="#2980b9" style="cursor:pointer">[💰 Pagar] [👁️ Ver]</text>
+
+  <!-- Fila 2 - Pago parcial -->
+  <rect x="70" y="790" width="1260" height="30" class="box-warning"/>
+  <text x="90" y="810" class="small-text">María López</text>
+  <text x="250" y="810" class="small-text">Mantenimiento PC</text>
+  <text x="420" y="810" class="small-text">01/03/2024</text>
+  <text x="550" y="810" class="small-text">S/ 300.00</text>
+  <text x="690" y="810" class="small-text">S/ 200.00</text>
+  <text x="820" y="810" class="small-text" fill="#d68910" font-weight="bold">S/ 100.00</text>
+  <text x="950" y="810" class="small-text" fill="#d68910">⏳ Parcial</text>
+  <text x="1100" y="810" class="small-text" fill="#2980b9" style="cursor:pointer">[💰 Pagar] [👁️ Ver]</text>
+
+  <!-- Fila 3 - Pendiente -->
+  <rect x="70" y="820" width="1260" height="30" style="fill: #fff; stroke: #95a5a6; stroke-width: 1;"/>
+  <text x="90" y="840" class="small-text">Carlos Ruiz</text>
+  <text x="250" y="840" class="small-text">Instalación Software</text>
+  <text x="420" y="840" class="small-text">10/03/2024</text>
+  <text x="550" y="840" class="small-text">S/ 200.00</text>
+  <text x="690" y="840" class="small-text">S/ 0.00</text>
+  <text x="820" y="840" class="small-text" fill="#7f8c8d" font-weight="bold">S/ 200.00</text>
+  <text x="950" y="840" class="small-text" fill="#7f8c8d">⏱️ Pendiente</text>
+  <text x="1100" y="840" class="small-text" fill="#2980b9" style="cursor:pointer">[💰 Pagar] [👁️ Ver]</text>
+
+  <!-- Totales -->
+  <rect x="70" y="860" width="1260" height="30" style="fill: #34495e;"/>
+  <text x="550" y="880" class="small-text" fill="#fff" font-weight="bold">TOTALES:</text>
+  <text x="690" y="880" class="small-text" fill="#fff">S/ 350.00</text>
+  <text x="820" y="880" class="small-text" fill="#fff" font-weight="bold">S/ 650.00</text>
+
+
+  <!-- SECCIÓN 4: MODAL DE HISTORIAL DEL CLIENTE -->
+  <text x="50" y="950" class="subtitle">4. MODAL - HISTORIAL DEL CLIENTE</text>
+
+  <!-- Modal -->
+  <rect x="200" y="980" width="1000" height="450" class="box" style="stroke-width: 3;"/>
+  <rect x="200" y="980" width="1000" height="45" style="fill: #2c3e50;"/>
+  <text x="700" y="1008" class="text" fill="#fff" text-anchor="middle" font-size="16">HISTORIAL DE SERVICIOS - Juan García</text>
+  <text x="1170" y="1008" class="text" fill="#fff" style="cursor:pointer">✕</text>
+
+  <!-- Info del cliente -->
+  <rect x="220" y="1040" width="960" height="60" class="label-bg"/>
+  <text x="240" y="1060" class="small-text">📧 juan.garcia@email.com</text>
+  <text x="240" y="1080" class="small-text">📱 987-654-321</text>
+  <text x="550" y="1060" class="small-text">🏢 Empresa ABC</text>
+  <text x="550" y="1080" class="small-text">📍 Av. Principal 123</text>
+  <text x="900" y="1060" class="small-text" font-weight="bold" fill="#c0392b">💰 Deuda Total: S/ 350.00</text>
+  <text x="900" y="1080" class="small-text" font-weight="bold" fill="#27ae60">✅ Total Pagado: S/ 650.00</text>
+
+  <!-- Tabla de servicios -->
+  <rect x="220" y="1120" width="960" height="25" style="fill: #95a5a6;"/>
+  <text x="240" y="1137" class="small-text" fill="#fff" font-weight="bold">Fecha</text>
+  <text x="360" y="1137" class="small-text" fill="#fff" font-weight="bold">Servicio</text>
+  <text x="600" y="1137" class="small-text" fill="#fff" font-weight="bold">Equipo</text>
+  <text x="820" y="1137" class="small-text" fill="#fff" font-weight="bold">Monto</text>
+  <text x="930" y="1137" class="small-text" fill="#fff" font-weight="bold">Pagado</text>
+  <text x="1040" y="1137" class="small-text" fill="#fff" font-weight="bold">Estado</text>
+
+  <!-- Servicio 1 -->
+  <rect x="220" y="1145" width="960" height="25" style="fill: #ffebee;"/>
+  <text x="240" y="1162" class="small-text">15/02/24</text>
+  <text x="360" y="1162" class="small-text">Reparación Laptop</text>
+  <text x="600" y="1162" class="small-text">Dell Latitude</text>
+  <text x="820" y="1162" class="small-text">S/ 500</text>
+  <text x="930" y="1162" class="small-text">S/ 150</text>
+  <text x="1040" y="1162" class="small-text" fill="#c0392b">⚠️ Debe S/ 350</text>
+
+  <!-- Servicio 2 -->
+  <rect x="220" y="1170" width="960" height="25" style="fill: #e8f5e9;"/>
+  <text x="240" y="1187" class="small-text">10/01/24</text>
+  <text x="360" y="1187" class="small-text">Mantenimiento</text>
+  <text x="600" y="1187" class="small-text">HP Desktop</text>
+  <text x="820" y="1187" class="small-text">S/ 200</text>
+  <text x="930" y="1187" class="small-text">S/ 200</text>
+  <text x="1040" y="1187" class="small-text" fill="#27ae60">✅ Pagado</text>
+
+  <!-- Servicio 3 -->
+  <rect x="220" y="1195" width="960" height="25" style="fill: #e8f5e9;"/>
+  <text x="240" y="1212" class="small-text">05/12/23</text>
+  <text x="360" y="1212" class="small-text">Instalación Office</text>
+  <text x="600" y="1212" class="small-text">Dell Latitude</text>
+  <text x="820" y="1212" class="small-text">S/ 150</text>
+  <text x="930" y="1212" class="small-text">S/ 150</text>
+  <text x="1040" y="1212" class="small-text" fill="#27ae60">✅ Pagado</text>
+
+  <!-- Servicio 4 -->
+  <rect x="220" y="1220" width="960" height="25" style="fill: #e8f5e9;"/>
+  <text x="240" y="1237" class="small-text">20/11/23</text>
+  <text x="360" y="1237" class="small-text">Diagnóstico</text>
+  <text x="600" y="1237" class="small-text">Impresora Canon</text>
+  <text x="820" y="1237" class="small-text">S/ 50</text>
+  <text x="930" y="1237" class="small-text">S/ 50</text>
+  <text x="1040" y="1237" class="small-text" fill="#27ae60">✅ Pagado</text>
+
+
+  <!-- Resumen -->
+  <rect x="220" y="1260" width="960" height="80" style="fill: #ecf0f1; stroke: #34495e; stroke-width: 2;"/>
+  <text x="240" y="1280" class="small-text" font-weight="bold">RESUMEN FINANCIERO:</text>
+  <text x="240" y="1305" class="small-text">📊 Total de servicios: 4</text>
+  <text x="500" y="1305" class="small-text">💵 Monto total facturado: S/ 900.00</text>
+  <text x="240" y="1325" class="small-text" fill="#27ae60" font-weight="bold">✅ Total pagado: S/ 550.00</text>
+  <text x="500" y="1325" class="small-text" fill="#c0392b" font-weight="bold">⚠️ Saldo pendiente: S/ 350.00</text>
+
+  <!-- Botones -->
+  <rect x="220" y="1360" width="200" height="40" style="fill: #27ae60; stroke: #1e8449; stroke-width: 2; cursor: pointer;"/>
+  <text x="320" y="1385" class="text" fill="#fff" text-anchor="middle">💰 Registrar Pago</text>
+
+  <rect x="450" y="1360" width="200" height="40" style="fill: #3498db; stroke: #2874a6; stroke-width: 2; cursor: pointer;"/>
+  <text x="550" y="1385" class="text" fill="#fff" text-anchor="middle">📄 Generar Reporte</text>
+
+  <rect x="680" y="1360" width="200" height="40" style="fill: #95a5a6; stroke: #7f8c8d; stroke-width: 2; cursor: pointer;"/>
+  <text x="780" y="1385" class="text" fill="#fff" text-anchor="middle">📧 Enviar Estado</text>
+
+  <rect x="910" y="1360" width="200" height="40" style="fill: #e74c3c; stroke: #c0392b; stroke-width: 2; cursor: pointer;"/>
+  <text x="1010" y="1385" class="text" fill="#fff" text-anchor="middle">✕ Cerrar</text>
+
+  <!-- SECCIÓN 5: MODAL DE REGISTRO DE PAGO -->
+  <text x="50" y="1490" class="subtitle">5. MODAL - REGISTRAR PAGO</text>
+
+  <!-- Modal de pago -->
+  <rect x="350" y="1520" width="700" height="250" class="box" style="stroke-width: 3;"/>
+  <rect x="350" y="1520" width="700" height="40" style="fill: #27ae60;"/>
+  <text x="700" y="1545" class="text" fill="#fff" text-anchor="middle" font-size="16">REGISTRAR PAGO - Orden #ORD-2024-0001</text>
+
+  <!-- Formulario -->
+  <text x="380" y="1585" class="small-text" font-weight="bold">Servicio:</text>
+  <text x="550" y="1585" class="small-text">Reparación Laptop - Juan García</text>
+
+  <text x="380" y="1610" class="small-text" font-weight="bold">Monto Total:</text>
+  <text x="550" y="1610" class="small-text">S/ 500.00</text>
+  <text x="750" y="1610" class="small-text" font-weight="bold">Pagado:</text>
+  <text x="850" y="1610" class="small-text" fill="#27ae60">S/ 150.00</text>
+
+  <text x="380" y="1635" class="small-text" font-weight="bold" fill="#c0392b">Saldo Pendiente:</text>
+  <text x="550" y="1635" class="small-text" fill="#c0392b" font-weight="bold">S/ 350.00</text>
+
+  <rect x="380" y="1650" width="640" height="1" style="fill: #bdc3c7;"/>
+
+  <text x="380" y="1675" class="small-text" font-weight="bold">Monto a Pagar: *</text>
+  <rect x="550" y="1660" width="200" height="25" class="label-bg"/>
+  <text x="560" y="1678" class="small-text">S/ [_______]</text>
+
+  <text x="380" y="1710" class="small-text" font-weight="bold">Método de Pago: *</text>
+  <rect x="550" y="1695" width="200" height="25" class="label-bg"/>
+  <text x="560" y="1713" class="small-text">[Efectivo ▼]</text>
+
+  <text x="780" y="1710" class="small-text">Referencia:</text>
+  <rect x="880" y="1695" width="140" height="25" class="label-bg"/>
+
+  <!-- Botones -->
+  <rect x="550" y="1730" width="150" height="30" style="fill: #27ae60; stroke: #1e8449; stroke-width: 2; cursor: pointer;"/>
+  <text x="625" y="1750" class="text" fill="#fff" text-anchor="middle">✓ Guardar Pago</text>
+
+  <rect x="720" y="1730" width="150" height="30" style="fill: #95a5a6; stroke: #7f8c8d; stroke-width: 2; cursor: pointer;"/>
+  <text x="795" y="1750" class="text" fill="#fff" text-anchor="middle">✕ Cancelar</text>
+
+</svg>

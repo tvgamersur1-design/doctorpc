@@ -171,6 +171,28 @@ export function cerrarModalDiagnostico(acabaDeGuardar = false) {
 }
 
 /**
+ * Manejar respuesta de confirmación de cierre de diagnóstico
+ */
+export function cerrarConfirmacionDiagnostico(accion) {
+    const modalConfirmacion = document.getElementById('modalConfirmarCierreDiagnostico');
+    if (modalConfirmacion) {
+        modalConfirmacion.classList.remove('show');
+    }
+    
+    if (accion === 'confirmar') {
+        // Cerrar diagnóstico sin guardar
+        const modalDiagnostico = document.getElementById('modalDiagnostico');
+        if (modalDiagnostico) {
+            modalDiagnostico.classList.remove('show');
+        }
+        servicioActualDiagnostico = null;
+        window.servicioActualDiagnostico = null;
+        console.log('✅ Modal de diagnóstico cerrado sin guardar');
+    }
+    // Si es 'cancelar', solo cierra el modal de confirmación y vuelve al diagnóstico
+}
+
+/**
  * Agregar fila de problema
  */
 export function agregarProblemaFila() {
@@ -207,8 +229,11 @@ export function agregarProblemaFila() {
             
             <!-- Costo -->
             <div class="campo-grupo">
-                <label>Costo:</label>
-                <input type="number" class="costoInput" placeholder="0.00" step="0.01" min="0" onchange="calcularMontoTotal()">
+                <label>Costo (S/):</label>
+                <div style="position: relative;">
+                    <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-weight: 600; color: #666; font-size: 14px; z-index: 1;">S/</span>
+                    <input type="number" class="costoInput" placeholder="0.00" step="0.01" min="0" style="padding-left: 35px;" onchange="calcularMontoTotal()">
+                </div>
             </div>
         </div>
     `;
@@ -451,10 +476,11 @@ async function guardarDiagnosticoInterno(finalizarDiag = false) {
         const servicioGuardado = await response.json();
         console.log('✅ Diagnóstico guardado exitosamente:', servicioGuardado);
 
-        // Generar mensaje de WhatsApp solo si finaliza
-        if (finalizarDiag) {
-            generarMensajeWhatsApp(problemas, montoTotal, nombreTecnico);
-        }
+        // ❌ NO abrir WhatsApp automáticamente
+        // El usuario puede enviar el mensaje manualmente desde el modal de detalles
+        // if (finalizarDiag) {
+        //     generarMensajeWhatsApp(problemas, montoTotal, nombreTecnico);
+        // }
 
         // Cerrar y recargar
         cerrarModalDiagnostico(true);

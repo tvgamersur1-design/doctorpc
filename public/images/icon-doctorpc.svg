@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Fondo circular -->
+  <circle cx="100" cy="100" r="95" fill="#2192B8"/>
+  
+  <!-- Personaje Doctor PC -->
+  <g transform="translate(100, 100)">
+    <!-- Cuerpo (bata blanca) -->
+    <ellipse cx="0" cy="25" rx="35" ry="45" fill="#ffffff"/>
+    
+    <!-- Brazos -->
+    <ellipse cx="-30" cy="30" rx="12" ry="35" fill="#87CEEB" transform="rotate(-20 -30 30)"/>
+    <ellipse cx="30" cy="30" rx="12" ry="35" fill="#87CEEB" transform="rotate(20 30 30)"/>
+    
+    <!-- Manos -->
+    <circle cx="-35" cy="55" r="8" fill="#87CEEB"/>
+    <circle cx="35" cy="55" r="8" fill="#87CEEB"/>
+    
+    <!-- Destornillador en mano derecha -->
+    <g transform="translate(35, 55) rotate(45)">
+      <rect x="-2" y="5" width="4" height="20" fill="#FFD700" rx="1"/>
+      <rect x="-1" y="25" width="2" height="15" fill="#666666"/>
+    </g>
+    
+    <!-- Corbata roja -->
+    <path d="M 0 5 L -5 15 L 0 35 L 5 15 Z" fill="#DC3545"/>
+    
+    <!-- Cabeza -->
+    <circle cx="0" cy="-15" r="25" fill="#87CEEB"/>
+    
+    <!-- Ojo (visor médico) -->
+    <ellipse cx="8" cy="-18" rx="12" ry="10" fill="#ffffff" opacity="0.9"/>
+    <circle cx="8" cy="-18" r="5" fill="#333333"/>
+    <circle cx="10" cy="-20" r="2" fill="#ffffff"/>
+    
+    <!-- Banda del visor -->
+    <ellipse cx="0" cy="-25" rx="28" ry="8" fill="#4A5568"/>
+    
+    <!-- Estetoscopio -->
+    <path d="M -15 10 Q -25 10 -25 20" stroke="#FFD700" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="-25" cy="23" r="4" fill="#FFD700"/>
+    
+    <!-- Bolsillo de la bata con cruz -->
+    <rect x="-12" y="15" width="24" height="18" rx="2" fill="#E3F2FD"/>
+    <g transform="translate(0, 24)">
+      <rect x="-1.5" y="-5" width="3" height="10" fill="#2192B8"/>
+      <rect x="-5" y="-1.5" width="10" height="3" fill="#2192B8"/>
+    </g>
+    
+    <!-- Botones de la bata -->
+    <circle cx="0" cy="5" r="2" fill="#2192B8"/>
+    <circle cx="0" cy="45" r="2" fill="#2192B8"/>
+  </g>
+  
+  <!-- Texto "Dr. PC" en la parte inferior (opcional) -->
+  <text x="100" y="185" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#ffffff" text-anchor="middle">
+    Dr. PC
+  </text>
+</svg>
