@@ -1,13 +1,16 @@
 // ==================== MÓDULO DE SERVICIOS ====================
 
-import { API_CLIENTES, API_SERVICIOS, API_EQUIPOS, API_SERVICIO_EQUIPO } from '../config.js';
+import { API_CLIENTES, API_SERVICIOS, API_EQUIPOS, API_SERVICIO_EQUIPO, API_BASE } from '../config.js';
 import { mostrarModalCarga, cerrarModalCarga, mostrarNotificacionExito } from '../ui.js';
 import { formatearFecha, formatearMoneda } from '../utils.js';
 import { getJSON, postJSON, putJSON } from '../api.js';
 
 // ==================== ESTADO DEL MÓDULO ====================
 
-let serviciosCache = [];
+export let serviciosCache = [];
+let clientesCache = [];
+let equiposCache = [];
+let serviciosEquipoCache = [];
 let serviciosPaginaActual = 1;
 let serviciosBusquedaActual = '';
 let serviciosLimitePorPagina = 10;
@@ -19,53 +22,132 @@ let servicioParaGuardar = null;
 /**
  * Cargar servicios con paginación y búsqueda
  */
-export async function cargarServicios(page = 1, busqueda = '') {
+export async function cargarServicios(page = 1, busqueda = '', forzarRecarga = false) {
     serviciosPaginaActual = page;
     serviciosBusquedaActual = busqueda;
     const container = document.getElementById('serviciosContainer');
-    container.innerHTML = `
-        <div class="loading-spinner-inline">
-            <div class="loading-spinner-circle"></div>
-            <p class="loading-spinner-text">Cargando servicios...</p>
-        </div>`;
+    
+    // Solo mostrar spinner si es una recarga forzada
+    if (forzarRecarga) {
+        container.innerHTML = `
+            <div class="loading-spinner-inline">
+                <div class="loading-spinner-circle"></div>
+                <p class="loading-spinner-text">Cargando servicios...</p>
+            </div>`;
+    }
+    
     try {
-        const clientesRes = await fetch(`${API_CLIENTES}`);
-        const clientes = await clientesRes.json();
+        // Cargar datos solo si no están en caché o si se fuerza la recarga
+        if (forzarRecarga || serviciosCache.length === 0) {
+            const clientesRes = await fetch(`${API_CLIENTES}`);
+            clientesCache = await clientesRes.json();
 
-        const equiposRes = await fetch(`${API_EQUIPOS}`);
-        const equipos = await equiposRes.json();
+            const equiposRes = await fetch(`${API_EQUIPOS}`);
+            equiposCache = await equiposRes.json();
 
-        // Verificar si se deben incluir servicios cancelados
-        const checkbox = document.getElementById('mostrarCancelados');
-        const mostrarCancelados = checkbox ? checkbox.checked : false;
+            // Verificar si se deben incluir servicios cancelados
+            const checkbox = document.getElementById('mostrarCancelados');
+            const mostrarCancelados = checkbox ? checkbox.checked : false;
+            
+            // Cargar TODOS los servicios sin paginación
+            const params = new URLSearchParams();
+            if (mostrarCancelados) params.set('incluir_cancelados', 'true');
+            
+            const serviciosRes = await fetch(`${API_SERVICIOS}?${params.toString()}`);
+            const respuesta = await serviciosRes.json();
+            
+            // Soporte para respuesta paginada o array directo
+            serviciosCache = respuesta.data || respuesta;
+
+            const servicioEquipoRes = await fetch(`${API_SERVICIO_EQUIPO}`);
+            serviciosEquipoCache = await servicioEquipoRes.json();
+        }
         
-        // Construir URL con paginación y búsqueda
-        const params = new URLSearchParams();
-        params.set('page', page);
-        params.set('limit', serviciosLimitePorPagina);
-        if (mostrarCancelados) params.set('incluir_cancelados', 'true');
-        if (busqueda) params.set('q', busqueda);
+        // Filtrar servicios localmente
+        let serviciosFiltrados = serviciosCache;
+        if (busqueda) {
+            const busquedaLower = busqueda.toLowerCase();
+            serviciosFiltrados = serviciosCache.filter(srv => {
+                const cliente = clientesCache.find(c => c._id == srv.cliente_id);
+                const clienteNombre = cliente ? cliente.nombre.toLowerCase() : '';
+                
+                // Buscar equipo
+                let equipo = null;
+                if (srv.equipo_id) {
+                    equipo = equiposCache.find(e => e._id == srv.equipo_id);
+                }
+                if (!equipo) {
+                    const servicioEquipo = serviciosEquipoCache.find(se => se.servicio_id == srv._id);
+                    if (servicioEquipo) {
+                        equipo = equiposCache.find(e => e._id == servicioEquipo.equipo_id);
+                    }
+                }
+                const equipoStr = equipo ? `${equipo.tipo_equipo} ${equipo.marca || ''}`.toLowerCase() : '';
+                
+                // Problemas reportados
+                const problemasRaw = srv.problemas_reportados || srv.problemas || '';
+                const problemasTexto = Array.isArray(problemasRaw) ? problemasRaw.join(' ') : String(problemasRaw);
+                const problemasLower = problemasTexto.toLowerCase();
+                
+                return (
+                    (srv.numero_servicio && srv.numero_servicio.toLowerCase().includes(busquedaLower)) ||
+                    (srv.descripcion && srv.descripcion.toLowerCase().includes(busquedaLower)) ||
+                    (srv.local && srv.local.toLowerCase().includes(busquedaLower)) ||
+                    clienteNombre.includes(busquedaLower) ||
+                    equipoStr.includes(busquedaLower) ||
+                    problemasLower.includes(busquedaLower)
+                );
+            });
+        }
         
-        const serviciosRes = await fetch(`${API_SERVICIOS}?${params.toString()}`);
-        const respuesta = await serviciosRes.json();
+        // Calcular paginación local
+        const totalServicios = serviciosFiltrados.length;
+        const totalPages = Math.ceil(totalServicios / serviciosLimitePorPagina);
+        const inicio = (page - 1) * serviciosLimitePorPagina;
+        const fin = inicio + serviciosLimitePorPagina;
+        const servicios = serviciosFiltrados.slice(inicio, fin);
         
-        // Soporte para respuesta paginada o array directo
-        const servicios = respuesta.data || respuesta;
-        const pagination = respuesta.pagination || null;
+        const pagination = {
+            page: page,
+            limit: serviciosLimitePorPagina,
+            total: totalServicios,
+            totalPages: totalPages
+        };
+        
+        const clientes = clientesCache;
+        const equipos = equiposCache;
+        const serviciosEquipo = serviciosEquipoCache;
 
-        const servicioEquipoRes = await fetch(`${API_SERVICIO_EQUIPO}`);
-        const serviciosEquipo = await servicioEquipoRes.json();
-
+        // Verificar si el input de búsqueda ya existe
+        const inputBusquedaExiste = document.getElementById('busquedaServicios');
+        
         if (servicios.length === 0) {
             let mensajeVacio = busqueda 
                 ? `<div class="no-records">No se encontraron servicios para "<strong>${busqueda}</strong>"</div>`
                 : '<div class="no-records">No hay servicios registrados</div>';
-            container.innerHTML = renderBarraBusquedaServicios(busqueda) + mensajeVacio;
+            
+            // Solo renderizar el input si no existe
+            if (!inputBusquedaExiste) {
+                container.innerHTML = renderBarraBusquedaServicios(busqueda) + mensajeVacio;
+            } else {
+                // Actualizar solo el contenido después del input
+                const barraDiv = container.querySelector('div[style*="margin-bottom: 20px"]');
+                if (barraDiv && barraDiv.nextSibling) {
+                    barraDiv.nextSibling.remove();
+                }
+                container.insertAdjacentHTML('beforeend', mensajeVacio);
+            }
+            
             if (pagination) container.innerHTML += renderPaginacionServicios(pagination);
             return;
         }
 
-        let html = renderBarraBusquedaServicios(busqueda);
+        let html = '';
+        
+        // Solo agregar el input de búsqueda si no existe
+        if (!inputBusquedaExiste) {
+            html += renderBarraBusquedaServicios(busqueda);
+        }
 
         html += `
             <table class="records-table" id="tablaServicios">
@@ -205,7 +287,23 @@ export async function cargarServicios(page = 1, busqueda = '') {
             html += renderPaginacionServicios(pagination);
         }
         
-        container.innerHTML = html;
+        // Si el input ya existe, solo actualizar la tabla y paginación
+        if (inputBusquedaExiste) {
+            // Eliminar tabla y paginación existentes
+            const tablaExistente = container.querySelector('#tablaServicios');
+            if (tablaExistente) {
+                tablaExistente.remove();
+            }
+            const paginacionExistente = container.querySelector('div[style*="display: flex; justify-content: center"]');
+            if (paginacionExistente) {
+                paginacionExistente.remove();
+            }
+            // Agregar nuevo contenido después del input
+            container.insertAdjacentHTML('beforeend', html);
+        } else {
+            // Primera carga, renderizar todo
+            container.innerHTML = html;
+        }
     } catch (error) {
         console.error('Error:', error);
         container.innerHTML = '<div class="error-message">Error al cargar servicios</div>';
@@ -401,7 +499,7 @@ export async function guardarServicioReal(servicio) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(servicioEquipo)
             });
-            
+
             if (!seRes.ok) {
                 const errorData = await seRes.json();
                 console.error('❌ Error al guardar servicio-equipo:', errorData);
@@ -410,6 +508,39 @@ export async function guardarServicioReal(servicio) {
             }
             
             console.log('✅ Servicio-equipo guardado');
+            
+            // ✅ NUEVO: Registrar adelanto inicial en historial de pagos
+            const adelantoInicial = parseFloat(servicio.adelanto) || 0;
+            if (adelantoInicial > 0) {
+                console.log('💰 Registrando adelanto inicial en historial:', adelantoInicial);
+                
+                const historialPago = {
+                    servicio_id: servicioGuardado._id,
+                    numero_servicio: servicio.numero_servicio,
+                    cliente_id: servicio.cliente_id,
+                    monto: adelantoInicial,
+                    metodo_pago: 'efectivo',
+                    referencia: '',
+                    notas: 'Adelanto inicial al registrar el servicio',
+                    usuario_registro: localStorage.getItem('usuario_nombre') || 'Sistema'
+                };
+                
+                try {
+                    const historialResponse = await fetch(`${API_BASE}/api/historial-pagos`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(historialPago)
+                    });
+                    
+                    if (historialResponse.ok) {
+                        console.log('✅ Adelanto inicial registrado en historial');
+                    } else {
+                        console.warn('⚠️ No se pudo registrar el adelanto en historial');
+                    }
+                } catch (error) {
+                    console.warn('⚠️ Error al registrar adelanto en historial:', error);
+                }
+            }
         }
 
         // Cerrar modal de resumen
@@ -427,8 +558,11 @@ export async function guardarServicioReal(servicio) {
         // Mostrar notificación de éxito
         mostrarNotificacionExito('Servicio guardado');
 
-        // Recargar servicios
-        cargarServicios();
+        // Agregar el nuevo servicio al caché (al inicio para que aparezca primero)
+        serviciosCache.unshift(servicioGuardado);
+        
+        // Actualizar la tabla sin recargar desde el servidor
+        renderTablaServicios(serviciosCache);
     } catch (error) {
         cerrarModalCarga();
         console.error('Error:', error);
@@ -437,14 +571,210 @@ export async function guardarServicioReal(servicio) {
 }
 
 /**
- * Buscar servicios con debounce
+ * Filtrar servicios por búsqueda (similar a filtrarClientes)
+ */
+export function filtrarServicios() {
+    const busqueda = document.getElementById('busquedaServicios').value.toLowerCase();
+    
+    try {
+        // Si no hay búsqueda, mostrar todos
+        if (!busqueda) {
+            renderTablaServicios(serviciosCache);
+            return;
+        }
+        
+        // Filtrar desde el caché
+        const filtrados = serviciosCache.filter(srv => {
+            const cliente = clientesCache.find(c => c._id == srv.cliente_id);
+            const clienteNombre = cliente ? cliente.nombre.toLowerCase() : '';
+            
+            // Buscar equipo
+            let equipo = null;
+            if (srv.equipo_id) {
+                equipo = equiposCache.find(e => e._id == srv.equipo_id);
+            }
+            if (!equipo) {
+                const servicioEquipo = serviciosEquipoCache.find(se => se.servicio_id == srv._id);
+                if (servicioEquipo) {
+                    equipo = equiposCache.find(e => e._id == servicioEquipo.equipo_id);
+                }
+            }
+            const equipoStr = equipo ? `${equipo.tipo_equipo} ${equipo.marca || ''}`.toLowerCase() : '';
+            
+            // Problemas reportados
+            const problemasRaw = srv.problemas_reportados || srv.problemas || '';
+            const problemasTexto = Array.isArray(problemasRaw) ? problemasRaw.join(' ') : String(problemasRaw);
+            const problemasLower = problemasTexto.toLowerCase();
+            
+            return (
+                (srv.numero_servicio && srv.numero_servicio.toLowerCase().includes(busqueda)) ||
+                (srv.descripcion && srv.descripcion.toLowerCase().includes(busqueda)) ||
+                (srv.local && srv.local.toLowerCase().includes(busqueda)) ||
+                clienteNombre.includes(busqueda) ||
+                equipoStr.includes(busqueda) ||
+                problemasLower.includes(busqueda)
+            );
+        });
+
+        if (filtrados.length === 0) {
+            document.getElementById('serviciosContainer').innerHTML = '<div class="no-records">No se encontraron servicios</div>';
+            return;
+        }
+
+        renderTablaServicios(filtrados);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+/**
+ * Renderizar tabla de servicios
+ */
+export function renderTablaServicios(servicios) {
+    const container = document.getElementById('serviciosContainer');
+    const clientes = clientesCache;
+    const equipos = equiposCache;
+    const serviciosEquipo = serviciosEquipoCache;
+    
+    let html = `
+        <table class="records-table" id="tablaServicios">
+            <thead>
+                <tr>
+                    <th>Número</th>
+                    <th>Fecha</th>
+                    <th>Local</th>
+                    <th>Cliente</th>
+                    <th>Equipo</th>
+                    <th>Descripción</th>
+                    <th>Estado</th>
+                    <th>Costo Total</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    servicios.forEach(srv => {
+        const cliente = clientes.find(c => c._id == srv.cliente_id);
+        
+        // Buscar equipo por equipo_id directo o por servicio_equipo
+        let equipo = null;
+        if (srv.equipo_id) {
+            equipo = equipos.find(e => e._id == srv.equipo_id);
+        }
+        if (!equipo) {
+            const servicioEquipo = serviciosEquipo.find(se => se.servicio_id == srv._id);
+            if (servicioEquipo) {
+                equipo = equipos.find(e => e._id == servicioEquipo.equipo_id);
+            }
+        }
+        
+        // Determinar color y ícono según estado
+        let estadoBadge = '<span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; font-weight: 600;">';
+        
+        switch(srv.estado) {
+            case 'Pendiente':
+            case 'Pendiente de evaluación':
+                estadoBadge += '<i class="fas fa-hourglass-half" style="color: #856404;"></i> Pendiente</span>';
+                estadoBadge = '<span style="background: #FFF3CD; color: #856404;' + estadoBadge.slice(6);
+                break;
+            case 'En diagnóstico':
+                estadoBadge += '<i class="fas fa-stethoscope" style="color: #1565C0;"></i> Diagnóstico</span>';
+                estadoBadge = '<span style="background: #E3F2FD; color: #1565C0;' + estadoBadge.slice(6);
+                break;
+            case 'En reparación':
+                estadoBadge += '<i class="fas fa-tools" style="color: #E65100;"></i> Reparación</span>';
+                estadoBadge = '<span style="background: #FFE0B2; color: #E65100;' + estadoBadge.slice(6);
+                break;
+            case 'Completado':
+                estadoBadge += '<i class="fas fa-check-circle" style="color: #155724;"></i> Completado</span>';
+                estadoBadge = '<span style="background: #D4EDDA; color: #155724;' + estadoBadge.slice(6);
+                break;
+            case 'Entregado':
+                estadoBadge += '<i class="fas fa-box-open" style="color: #6A1B9A;"></i> Entregado</span>';
+                estadoBadge = '<span style="background: #F3E5F5; color: #6A1B9A;' + estadoBadge.slice(6);
+                break;
+            case 'Cancelado':
+                estadoBadge += '<i class="fas fa-ban" style="color: #721C24;"></i> Cancelado</span>';
+                estadoBadge = '<span style="background: #F8D7DA; color: #721C24;' + estadoBadge.slice(6);
+                break;
+            case 'Diagnosticado':
+                estadoBadge += '<i class="fas fa-check-circle" style="color: #155724;"></i> Diagnosticado</span>';
+                estadoBadge = '<span style="background: #D4EDDA; color: #155724;' + estadoBadge.slice(6);
+                break;
+            default:
+                estadoBadge += srv.estado + '</span>';
+                estadoBadge = '<span style="background: #E0E0E0; color: #424242;' + estadoBadge.slice(6);
+        }
+
+        // Calcular costo total del diagnóstico
+        let costoTotal = 0;
+        if (srv.diagnostico) {
+            try {
+                const diagnostico = JSON.parse(srv.diagnostico);
+                costoTotal = diagnostico.reduce((sum, p) => sum + (p.costo || 0), 0);
+            } catch (e) {
+                costoTotal = 0;
+            }
+        }
+
+        const equipoStr = equipo ? `${equipo.tipo_equipo} ${equipo.marca || ''}`.trim() : 'N/A';
+        const problemasRaw = srv.problemas_reportados || srv.problemas || '';
+        const problemasTexto = Array.isArray(problemasRaw) ? problemasRaw.join(', ') : String(problemasRaw);
+        const descripcionStr = problemasTexto ? problemasTexto.substring(0, 40) + (problemasTexto.length > 40 ? '...' : '') : 'N/A';
+        
+        const estadoNormalizado = (srv.estado || '').trim();
+
+        html += `
+            <tr class="row-servicio">
+                <td data-label="Número"><strong>${srv.numero_servicio || 'N/A'}</strong></td>
+                <td data-label="Fecha">${new Date(srv.fecha).toLocaleDateString('es-PE')}</td>
+                <td data-label="Local"><span style="padding: 4px 8px; border-radius: 4px; font-weight: 600; ${srv.local === 'Ferreñafe' ? 'background: #C8E6C9; color: #2E7D32;' : 'background: #BBDEFB; color: #1565C0;'}">${srv.local || 'N/A'}</span></td>
+                <td data-label="Cliente">${cliente ? cliente.nombre : 'N/A'}</td>
+                <td data-label="Equipo">${equipoStr}</td>
+                <td data-label="Descripción" style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${problemasTexto}">${descripcionStr}</td>
+                <td data-label="Estado">${estadoBadge}</td>
+                <td data-label="Costo Total"><strong>${costoTotal > 0 ? 'S/ ' + costoTotal.toFixed(2) : '-'}</strong></td>
+                <td data-label="Acciones" class="actions">
+                    <button class="btn-edit" onclick="abrirModalDetallesServicio('${srv._id}')" style="padding: 6px 12px; font-size: 12px;" title="Ver todos los detalles">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                    ${estadoNormalizado === 'Pendiente' || estadoNormalizado === 'Pendiente de evaluación' ?
+                `<button class="btn-primary" onclick="abrirModalDiagnostico('${srv._id}', '${cliente ? cliente.nombre : 'N/A'}')" style="padding: 6px 12px; font-size: 12px;" title="Diagnosticar">
+                            <i class="fas fa-stethoscope"></i>
+                        </button>` :
+                estadoNormalizado === 'En diagnóstico' ?
+                `<button class="btn-success" onclick="abrirModalDiagnostico('${srv._id}', '${cliente ? cliente.nombre : 'N/A'}')" style="padding: 6px 12px; font-size: 12px; background: #4CAF50; border-color: #4CAF50;" title="Continuar diagnóstico">
+                            <i class="fas fa-stethoscope"></i>
+                        </button>` :
+                estadoNormalizado === 'Diagnosticado' ?
+                `<button class="btn-info" onclick="verDiagnostico('${srv._id}')" style="padding: 6px 12px; font-size: 12px; background: #2196F3; border-color: #2196F3;" title="Ver diagnóstico">
+                            <i class="fas fa-eye"></i>
+                        </button>` :
+                estadoNormalizado !== 'Cancelado' && estadoNormalizado !== 'Entregado' ?
+                `<button class="btn-warning" onclick="abrirModalCambiarEstado('${srv._id}')" style="padding: 6px 12px; font-size: 12px; background: #FF9800; border-color: #FF9800; color: white;" title="Cambiar estado">
+                            <i class="fas fa-arrow-right"></i>
+                        </button>` : ''
+                }
+                    ${estadoNormalizado !== 'Cancelado' && estadoNormalizado !== 'Entregado' ?
+                `<button class="btn-danger" onclick="abrirModalCancelarServicio('${srv._id}')" style="padding: 6px 12px; font-size: 12px;" title="Cancelar servicio">
+                            <i class="fas fa-ban"></i>
+                        </button>` : ''
+                }
+                </td>
+            </tr>
+        `;
+    });
+
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+}
+
+/**
+ * Buscar servicios con debounce (DEPRECADO - usar filtrarServicios)
  */
 export function buscarServiciosConDebounce() {
-    clearTimeout(serviciosBusquedaTimer);
-    serviciosBusquedaTimer = setTimeout(() => {
-        const texto = document.getElementById('busquedaServicios').value.trim();
-        cargarServicios(1, texto);
-    }, 400);
+    filtrarServicios();
 }
 
 // ==================== FUNCIONES AUXILIARES ====================
@@ -1127,6 +1457,39 @@ export async function guardarServicioRealConFoto(servicio) {
             }
             
             console.log(`✅ Servicio-equipo guardado con ${fotosUrls.length} foto(s)`);
+            
+            // ✅ Registrar adelanto inicial en historial de pagos
+            const adelantoInicial = parseFloat(servicio.adelanto) || 0;
+            if (adelantoInicial > 0) {
+                console.log('💰 Registrando adelanto inicial en historial:', adelantoInicial);
+                
+                const historialPago = {
+                    servicio_id: servicioGuardado._id,
+                    numero_servicio: servicio.numero_servicio,
+                    cliente_id: servicio.cliente_id,
+                    monto: adelantoInicial,
+                    metodo_pago: 'efectivo',
+                    referencia: '',
+                    notas: 'Adelanto inicial al registrar el servicio',
+                    usuario_registro: localStorage.getItem('usuario_nombre') || 'Sistema'
+                };
+                
+                try {
+                    const historialResponse = await fetch(`${API_BASE}/api/historial-pagos`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(historialPago)
+                    });
+                    
+                    if (historialResponse.ok) {
+                        console.log('✅ Adelanto inicial registrado en historial');
+                    } else {
+                        console.warn('⚠️ No se pudo registrar el adelanto en historial');
+                    }
+                } catch (error) {
+                    console.warn('⚠️ Error al registrar adelanto en historial:', error);
+                }
+            }
         }
 
         // Limpiar fotos después de guardar
@@ -1152,8 +1515,11 @@ export async function guardarServicioRealConFoto(servicio) {
             : 'Servicio guardado';
         mostrarNotificacionExito(mensajeExito);
 
-        // Recargar servicios
-        cargarServicios();
+        // Agregar el nuevo servicio al caché (al inicio para que aparezca primero)
+        serviciosCache.unshift(servicioGuardado);
+        
+        // Actualizar la tabla sin recargar desde el servidor
+        renderTablaServicios(serviciosCache);
     } catch (error) {
         cerrarModalCarga();
         console.error('Error:', error);

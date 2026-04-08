@@ -128,7 +128,7 @@ exports.handler = async (event, context) => {
       }
       
       // Obtener el servicio
-      const servicio = await db.collection('servicio_equipo').findOne({ _id: new ObjectId(servicio_equipo_id) });
+      const servicio = await db.collection('servicios').findOne({ _id: new ObjectId(servicio_equipo_id) });
       
       if (!servicio) {
         return {
@@ -169,11 +169,11 @@ exports.handler = async (event, context) => {
         estadoPago = 'parcial';
       }
       
-      await db.collection('servicio_equipo').updateOne(
+      await db.collection('servicios').updateOne(
         { _id: new ObjectId(servicio_equipo_id) },
         { 
           $set: { 
-            adelanto: nuevoMontoPagado,  // Actualizar adelanto (monto pagado)
+            adelanto: nuevoMontoPagado,
             saldo_pendiente: nuevoSaldoPendiente,
             estado_pago: estadoPago,
             fecha_actualizacion: new Date().toISOString()
@@ -213,7 +213,7 @@ exports.handler = async (event, context) => {
       await db.collection('pagos').deleteOne({ _id: new ObjectId(id) });
       
       // Actualizar el servicio restando el monto del pago eliminado
-      const servicio = await db.collection('servicio_equipo').findOne({ _id: pago.servicio_equipo_id });
+      const servicio = await db.collection('servicios').findOne({ _id: pago.servicio_equipo_id });
       
       if (servicio) {
         const montoTotalActual = parseFloat(servicio.monto || servicio.costo_total || 0);
@@ -230,7 +230,7 @@ exports.handler = async (event, context) => {
           estadoPago = 'parcial';
         }
         
-        await db.collection('servicio_equipo').updateOne(
+        await db.collection('servicios').updateOne(
           { _id: pago.servicio_equipo_id },
           { 
             $set: { 

@@ -170,6 +170,8 @@ exports.handler = async (event, context) => {
         observaciones: body.observaciones || '',
         monto: parseFloat(body.monto) || 0,
         adelanto: parseFloat(body.adelanto) || 0,
+        saldo_pendiente: (parseFloat(body.monto) || 0) - (parseFloat(body.adelanto) || 0),
+        estado_pago: (parseFloat(body.adelanto) || 0) >= (parseFloat(body.monto) || 0) && (parseFloat(body.monto) || 0) > 0 ? 'pagado' : (parseFloat(body.adelanto) || 0) > 0 ? 'parcial' : 'pendiente',
         estado: body.estado || 'Pendiente de evaluación',
         nombre_servicio: body.nombre_servicio?.trim() || '',
         categoria: body.categoria?.trim() || '',

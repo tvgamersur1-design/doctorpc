@@ -204,19 +204,28 @@ export async function cambiarEstadoServicio(servicioId, nuevoEstado, datosAdicio
             throw new Error('Error al cambiar estado');
         }
         
+        const servicioActualizado = await response.json();
+        
         cerrarModalCarga();
         
-        // Recargar servicios
-        if (window.cargarServicios) {
-            window.cargarServicios();
+        // Actualizar servicio en el caché y tabla
+        if (window.Servicios && window.Servicios.serviciosCache) {
+            const index = window.Servicios.serviciosCache.findIndex(s => s._id === servicioId);
+            if (index !== -1) {
+                window.Servicios.serviciosCache[index] = servicioActualizado;
+                window.Servicios.renderTablaServicios(window.Servicios.serviciosCache);
+            }
         }
         
         mostrarNotificacionExito(`Estado cambiado a: ${nuevoEstado}`);
+        
+        return servicioActualizado; // Retornar para uso en otras funciones
         
     } catch (error) {
         cerrarModalCarga();
         console.error('Error:', error);
         alert('Error al cambiar estado: ' + error.message);
+        return null;
     }
 }
 
@@ -1011,15 +1020,19 @@ export async function confirmarReparacionCompleta() {
         console.log('💾 Completando reparación:', datosReparacionCompleta);
         
         // Pasar datos completos al cambiar estado
-        await cambiarEstadoServicio(window.servicioEnReparacion.id, 'Completado', datosJSON);
+        const servicioActualizado = await cambiarEstadoServicio(window.servicioEnReparacion.id, 'Completado', datosJSON);
         cerrarModalConfirmarReparacion();
         
         // Mostrar notificación de éxito (sin alert)
         mostrarNotificacionExito('Reparación completada');
         
-        // Recargar servicios
-        if (window.cargarServicios) {
-            window.cargarServicios();
+        // Actualizar servicio en el caché y tabla
+        if (servicioActualizado && window.Servicios && window.Servicios.serviciosCache) {
+            const index = window.Servicios.serviciosCache.findIndex(s => s._id === servicioActualizado._id);
+            if (index !== -1) {
+                window.Servicios.serviciosCache[index] = servicioActualizado;
+                window.Servicios.renderTablaServicios(window.Servicios.serviciosCache);
+            }
         }
     } catch (error) {
         console.error('❌ Error:', error);
@@ -1039,6 +1052,8 @@ export async function abrirModalEntrega(servicioId, servicio) {
         // Guardar ID en memoria
         window.servicioEnEntrega = {
             id: servicioId,
+            numero_servicio: servicio.numero_servicio || servicio.nombre_servicio || '',
+            cliente_id: servicio.cliente_id || '',
             monto: servicio.monto || 0,
             adelanto: servicio.adelanto || 0
         };
@@ -1265,8 +1280,16 @@ export function actualizarIndicadorDeuda() {
  * Confirmar entrega del servicio
  */
 export async function confirmarEntregaServicio() {
+    console.log('📦 Confirmando entrega, servicioEnEntrega:', window.servicioEnEntrega);
+    
     if (!window.servicioEnEntrega) {
-        alert('Error: No hay servicio en entrega');
+        alert('❌ Error: No hay servicio en entrega. Por favor, cierra y vuelve a abrir el modal.');
+        return;
+    }
+    
+    if (!window.servicioEnEntrega.monto && window.servicioEnEntrega.monto !== 0) {
+        console.error('❌ Error: servicioEnEntrega no tiene monto:', window.servicioEnEntrega);
+        alert('❌ Error: Información del servicio incompleta. Por favor, cierra y vuelve a abrir el modal.');
         return;
     }
 
@@ -1383,6 +1406,38 @@ export async function confirmarEntregaServicio() {
         // Cambiar estado a 'Entregado' pasando datos de entrega
         await cambiarEstadoServicio(window.servicioEnEntrega.id, 'Entregado', datosEntregaJSON);
         
+        // Registrar pago de entrega en historial_pagos
+        if (montoCobraHoy > 0) {
+            console.log('💰 Registrando pago de entrega en historial:', montoCobraHoy);
+            
+            const historialPago = {
+                servicio_id: window.servicioEnEntrega.id,
+                numero_servicio: window.servicioEnEntrega.numero_servicio || '',
+                cliente_id: window.servicioEnEntrega.cliente_id || '',
+                monto: montoCobraHoy,
+                metodo_pago: datosEntrega.metodoPago || 'efectivo',
+                referencia: datosEntrega.comprobanteEntrega || '',
+                notas: 'Pago al momento de la entrega',
+                usuario_registro: localStorage.getItem('usuario_nombre') || 'Sistema'
+            };
+            
+            try {
+                const historialResponse = await fetch(`${API_URL}/api/historial-pagos`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(historialPago)
+                });
+                
+                if (historialResponse.ok) {
+                    console.log('✅ Pago de entrega registrado en historial');
+                } else {
+                    console.warn('⚠️ No se pudo registrar el pago de entrega en historial');
+                }
+            } catch (error) {
+                console.warn('⚠️ Error al registrar pago de entrega en historial:', error);
+            }
+        }
+        
         // Limpiar fotos
         limpiarFotosEntrega();
         
@@ -1390,11 +1445,11 @@ export async function confirmarEntregaServicio() {
         
         // Mostrar notificación según resultado financiero
         if (nuevoSaldo === 0) {
-            mostrarNotificacionExito('✅ Servicio entregado - Deuda saldada completamente');
+            mostrarNotificacionExito('Servicio entregado - Deuda saldada completamente');
         } else if (montoCobraHoy > 0) {
-            mostrarNotificacionAdvertencia(`⚠️ Servicio entregado - Deuda pendiente: S/ ${nuevoSaldo.toFixed(2)}`);
+            mostrarNotificacionAdvertencia(`Servicio entregado con saldo pendiente de S/ ${nuevoSaldo.toFixed(2)}`);
         } else {
-            mostrarNotificacionAdvertencia(`⚠️ Servicio entregado - Deuda total: S/ ${nuevoSaldo.toFixed(2)}`);
+            mostrarNotificacionAdvertencia(`Servicio entregado - Saldo pendiente: S/ ${nuevoSaldo.toFixed(2)}`);
         }
         
         // Recargar servicios

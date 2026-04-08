@@ -300,6 +300,14 @@ app.post('/api/auth/login', loginLimiter, async (req, res) => {
             });
         }
         
+        if (user.activo === false) {
+            return res.status(403).json({
+                error: 'Usuario desactivado',
+                mensaje: 'Tu cuenta ha sido desactivada. Contacta al administrador para más información.',
+                tipo: 'usuario_desactivado'
+            });
+        }
+
         const claveValida = await bcrypt.compare(clave, user.clave);
         
         if (!claveValida) {
@@ -396,6 +404,53 @@ app.post('/api/usuarios', autenticarToken, soloAdmin, async (req, res) => {
         } else {
             res.status(500).json({ error: error.message });
         }
+    }
+});
+
+// PATCH cambiar estado activo/inactivo de usuario
+app.patch('/api/usuarios/:id/estado', autenticarToken, soloAdmin, async (req, res) => {
+    try {
+        const { activo } = req.body;
+
+        if (typeof activo !== 'boolean') {
+            return res.status(400).json({ error: 'El campo activo debe ser boolean' });
+        }
+
+        const usuarioExistente = await db.collection('usuarios').findOne({
+            _id: new ObjectId(req.params.id)
+        });
+        if (!usuarioExistente) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        const updateData = {
+            activo,
+            fecha_actualizacion: new Date().toISOString()
+        };
+
+        if (!activo) {
+            updateData.fecha_desactivacion = new Date().toISOString();
+            updateData.desactivado_por = req.usuario.usuario;
+        } else if (usuarioExistente.activo === false) {
+            updateData.fecha_desactivacion = null;
+            updateData.desactivado_por = null;
+            updateData.fecha_reactivacion = new Date().toISOString();
+            updateData.reactivado_por = req.usuario.usuario;
+        }
+
+        await db.collection('usuarios').updateOne(
+            { _id: new ObjectId(req.params.id) },
+            { $set: updateData }
+        );
+
+        const usuarioActualizado = await db.collection('usuarios').findOne({
+            _id: new ObjectId(req.params.id)
+        });
+        const { clave: _, ...respuesta } = usuarioActualizado;
+        res.json(respuesta);
+    } catch (error) {
+        console.error('Error PATCH /api/usuarios/:id/estado:', error);
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -1654,6 +1709,57 @@ app.post('/api/pagos', async (req, res) => {
     res.status(201).json({ ...pago, _id: result.insertedId });
   } catch (error) {
     console.error('Error POST /api/pagos:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ==================== HISTORIAL DE PAGOS ====================
+
+// GET - Obtener historial de pagos de un servicio
+app.get('/api/historial-pagos/:servicioId', async (req, res) => {
+  try {
+    const { servicioId } = req.params;
+    console.log(`[historial-pagos] GET servicioId=${servicioId}`);
+    
+    const pagos = await db.collection('historial_pagos')
+      .find({ servicio_id: servicioId })
+      .sort({ fecha_pago: -1 })
+      .toArray();
+    
+    console.log(`[historial-pagos] ${pagos.length} pagos encontrados`);
+    res.json(pagos);
+  } catch (error) {
+    console.error('Error GET /api/historial-pagos:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST - Registrar pago en historial
+app.post('/api/historial-pagos', async (req, res) => {
+  try {
+    const pago = req.body;
+    console.log('[historial-pagos] POST - Recibiendo pago:', pago);
+    
+    const nuevoPago = {
+      servicio_id: pago.servicio_id,
+      numero_servicio: pago.numero_servicio || '',
+      cliente_id: pago.cliente_id || '',
+      monto: parseFloat(pago.monto),
+      metodo_pago: pago.metodo_pago || 'efectivo',
+      referencia: pago.referencia || '',
+      notas: pago.notas || '',
+      fecha_pago: new Date().toISOString(),
+      usuario_registro: pago.usuario_registro || 'Sistema',
+      fecha_creacion: new Date().toISOString()
+    };
+    
+    const result = await db.collection('historial_pagos').insertOne(nuevoPago);
+    nuevoPago._id = result.insertedId;
+    
+    console.log('[historial-pagos] ✅ Pago guardado con ID:', result.insertedId);
+    res.status(201).json(nuevoPago);
+  } catch (error) {
+    console.error('Error POST /api/historial-pagos:', error);
     res.status(500).json({ error: error.message });
   }
 });
