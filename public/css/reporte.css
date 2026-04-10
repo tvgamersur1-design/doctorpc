@@ -468,3 +468,210 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* ==================== TEMA OSCURO - MODAL REPORTE ==================== */
+
+body.dark-theme #modal-reporte {
+  background-color: rgba(0, 0, 0, 0.85);
+}
+
+body.dark-theme .modal-reporte-contenedor {
+  background: #1a2332;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Scrollbar oscuro */
+body.dark-theme .modal-reporte-contenedor::-webkit-scrollbar-track {
+  background: #0f1419;
+}
+
+body.dark-theme .modal-reporte-contenedor::-webkit-scrollbar-thumb {
+  background: #3bb4e5;
+}
+
+body.dark-theme .modal-reporte-contenedor::-webkit-scrollbar-thumb:hover {
+  background: #2192B8;
+}
+
+/* Header oscuro */
+body.dark-theme .reporte-header {
+  background: linear-gradient(135deg, #0d1b2a 0%, #1e2a3a 100%);
+  border-bottom-color: #2d3748;
+}
+
+body.dark-theme .reporte-header h2 {
+  color: #3bb4e5;
+}
+
+body.dark-theme .orden-numero {
+  color: #90cdf4;
+}
+
+body.dark-theme .orden-numero strong {
+  background: #243447;
+  color: #3bb4e5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Secciones oscuras */
+body.dark-theme .reporte-seccion {
+  background: linear-gradient(135deg, #1e2a3a 0%, #243447 100%);
+  border-left-color: #3bb4e5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-theme .reporte-seccion:hover {
+  box-shadow: 0 4px 12px rgba(59, 180, 229, 0.2);
+}
+
+body.dark-theme .reporte-seccion h3 {
+  color: #3bb4e5;
+}
+
+body.dark-theme .reporte-seccion p {
+  color: #cbd5e0;
+}
+
+body.dark-theme .reporte-seccion strong {
+  color: #90cdf4;
+}
+
+body.dark-theme .reporte-seccion ul li {
+  color: #a0aec0;
+}
+
+/* Tabla de costos oscura */
+body.dark-theme .tabla-costos {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-theme .tabla-costos tr {
+  border-bottom-color: #2d3748;
+}
+
+body.dark-theme .tabla-costos tr:hover {
+  background-color: #243447;
+}
+
+body.dark-theme .tabla-costos tr td {
+  color: #cbd5e0;
+}
+
+body.dark-theme .tabla-costos tr td:first-child {
+  color: #e2e8f0;
+}
+
+body.dark-theme .tabla-costos tr td:last-child {
+  color: #3bb4e5;
+}
+
+body.dark-theme .tabla-costos tr.total-row {
+  background: linear-gradient(135deg, #0d1b2a, #1e2a3a);
+}
+
+body.dark-theme .tabla-costos tr.total-row td {
+  color: #ffffff;
+}
+
+body.dark-theme .tabla-costos tr.total-row td:last-child {
+  color: #3bb4e5;
+}
+
+/* Área de acciones oscura */
+body.dark-theme .reporte-acciones {
+  background: linear-gradient(to top, #0f1419, transparent);
+}
+
+/* Estado de carga oscuro */
+body.dark-theme .reporte-cargando::after {
+  border-color: #2d3748;
+  border-top-color: #3bb4e5;
+}
+
+/* Badges de estado en tema oscuro */
+body.dark-theme .badge-entregado,
+body.dark-theme .badge-estado {
+  background: #1e4620;
+  color: #68d391;
+  border: 1px solid #2d5a2f;
+}
+
+body.dark-theme .badge-diagnostico {
+  background: #1e3a5f;
+  color: #63b3ed;
+  border: 1px solid #2c5282;
+}
+
+body.dark-theme .badge-reparacion {
+  background: #5f3a1e;
+  color: #f6ad55;
+  border: 1px solid #744210;
+}
+
+body.dark-theme .badge-pendiente {
+  background: #5f1e1e;
+  color: #fc8181;
+  border: 1px solid #742a2a;
+}
+
+/* Información adicional en tema oscuro */
+body.dark-theme .info-box {
+  background: #243447;
+  border: 1px solid #2d3748;
+  color: #cbd5e0;
+}
+
+body.dark-theme .info-box strong {
+  color: #3bb4e5;
+}
+
+/* Línea de tiempo en tema oscuro */
+body.dark-theme .timeline-item {
+  border-left-color: #2d3748;
+}
+
+body.dark-theme .timeline-item::before {
+  background: #3bb4e5;
+  border-color: #1a2332;
+}
+
+body.dark-theme .timeline-item h4 {
+  color: #3bb4e5;
+}
+
+body.dark-theme .timeline-item p {
+  color: #a0aec0;
+}
+
+body.dark-theme .timeline-item .timeline-date {
+  color: #718096;
+}
+
+/* Saldo pendiente destacado en tema oscuro */
+body.dark-theme .saldo-pendiente {
+  background: linear-gradient(135deg, #5f1e1e 0%, #742a2a 100%);
+  border: 2px solid #9b2c2c;
+  color: #feb2b2;
+}
+
+body.dark-theme .saldo-pendiente strong {
+  color: #fc8181;
+}
+
+/* Monto cobrado en tema oscuro */
+body.dark-theme .monto-cobrado {
+  background: linear-gradient(135deg, #1e4620 0%, #2d5a2f 100%);
+  border: 2px solid #38a169;
+  color: #9ae6b4;
+}
+
+body.dark-theme .monto-cobrado strong {
+  color: #68d391;
+}
+
+/* Responsive - ajustes adicionales para tema oscuro */
+@media (max-width: 768px) {
+  body.dark-theme .reporte-header {
+    background: linear-gradient(135deg, #0d1b2a 0%, #1e2a3a 100%);
+  }
+}

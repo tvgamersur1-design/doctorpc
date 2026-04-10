@@ -126,6 +126,19 @@ exports.handler = async (event, context) => {
         return { statusCode: 401, headers, body: JSON.stringify({ error: 'Usuario o contraseña incorrectos' }) };
       }
 
+      // ✅ NUEVO: Verificar si el usuario está activo
+      if (user.activo === false) {
+        return { 
+          statusCode: 403, 
+          headers, 
+          body: JSON.stringify({ 
+            error: 'Usuario desactivado',
+            mensaje: 'Tu cuenta ha sido desactivada. Contacta al administrador para más información.',
+            tipo: 'usuario_desactivado'
+          }) 
+        };
+      }
+
       const claveValida = await bcrypt.compare(clave, user.clave);
       if (!claveValida) {
         await db.collection('login_attempts').insertOne({ ip, timestamp: new Date() });
@@ -138,6 +151,9 @@ exports.handler = async (event, context) => {
         { expiresIn: '8h' }
       );
 
+      // Determinar el nombre a mostrar
+      const nombreMostrar = user.nombre || (user.usuario === 'admin' ? 'Admin' : user.usuario);
+
       return {
         statusCode: 200,
         headers,
@@ -146,6 +162,7 @@ exports.handler = async (event, context) => {
           usuario: {
             id: user._id.toString(),
             usuario: user.usuario,
+            nombre: nombreMostrar,
             correo: user.correo,
             rol: user.rol
           }

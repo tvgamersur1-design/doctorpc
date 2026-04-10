@@ -99,6 +99,27 @@ export async function putJSON(url, data) {
 }
 
 /**
+ * PATCH request con JSON
+ * @param {string} url 
+ * @param {Object} data 
+ * @returns {Promise<any>}
+ */
+export async function patchJSON(url, data) {
+    const response = await fetchAPI(url, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+    
+    if (!response.ok) {
+        const error = await response.json().catch(() => ({ error: 'Error desconocido' }));
+        throw new Error(error.error || `HTTP ${response.status}`);
+    }
+    
+    return response.json();
+}
+
+/**
  * DELETE request
  * @param {string} url 
  * @returns {Promise<any>}

@@ -23,7 +23,17 @@ export function cerrarModal(modalId) {
 }
 
 /**
- * Mostrar notificación de éxito centrada
+ * Cerrar modal de confirmación genérico
+ */
+export function cerrarModalConfirmacion() {
+    const modal = document.getElementById('confirmModal');
+    if (modal) {
+        modal.classList.remove('show');
+    }
+}
+
+/**
+ * Mostrar notificación de éxito en esquina superior derecha
  * @param {string} mensaje 
  */
 export function mostrarNotificacionExito(mensaje) {
@@ -31,29 +41,42 @@ export function mostrarNotificacionExito(mensaje) {
     const notif = document.createElement('div');
     notif.style.cssText = `
         position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: linear-gradient(135deg, #4CAF50, #45a049);
-        color: white;
-        padding: 30px 50px;
-        border-radius: 12px;
-        box-shadow: 0 8px 32px rgba(76, 175, 80, 0.4);
+        top: 20px;
+        right: 20px;
+        background: white;
+        color: #5f6368;
+        padding: 16px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        border-left: 4px solid #34a853;
         z-index: 10000;
-        font-size: 18px;
-        font-weight: 600;
-        text-align: center;
-        animation: slideIn 0.3s ease-out;
+        font-size: 15px;
+        font-weight: 500;
+        text-align: left;
+        max-width: 400px;
+        animation: slideInRight 0.3s ease-out;
     `;
-    notif.innerHTML = `<i class="fas fa-check-circle" style="font-size: 24px; margin-right: 10px;"></i>${mensaje}`;
+    notif.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 40px; height: 40px; background: #e8f5e9; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34a853" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+            </div>
+            <div style="flex: 1;">
+                <div style="font-weight: 600; color: #202124; margin-bottom: 4px;">Éxito</div>
+                <div style="font-size: 14px; color: #5f6368; line-height: 1.4;">${mensaje}</div>
+            </div>
+        </div>
+    `;
     
     document.body.appendChild(notif);
     
-    // Remover después de 2 segundos
+    // Remover después de 3 segundos
     setTimeout(() => {
-        notif.style.animation = 'slideOut 0.3s ease-in';
+        notif.style.animation = 'slideOutRight 0.3s ease-in';
         setTimeout(() => notif.remove(), 300);
-    }, 2000);
+    }, 3000);
 }
 
 /**
@@ -68,26 +91,42 @@ export function mostrarNotificacionAdvertencia(mensaje) {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background: linear-gradient(135deg, #FF9800, #F57C00);
-        color: white;
-        padding: 30px 50px;
-        border-radius: 12px;
-        box-shadow: 0 8px 32px rgba(255, 152, 0, 0.4);
+        background: white;
+        color: #5f6368;
+        padding: 24px 32px;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        border-left: 4px solid #f9a825;
         z-index: 10000;
-        font-size: 18px;
-        font-weight: 600;
-        text-align: center;
+        font-size: 15px;
+        font-weight: 500;
+        text-align: left;
+        max-width: 400px;
         animation: slideIn 0.3s ease-out;
     `;
-    notif.innerHTML = `<i class="fas fa-exclamation-triangle" style="font-size: 24px; margin-right: 10px;"></i>${mensaje}`;
+    notif.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 40px; height: 40px; background: #fff8e1; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f9a825" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+            </div>
+            <div style="flex: 1;">
+                <div style="font-weight: 600; color: #202124; margin-bottom: 4px;">Atención</div>
+                <div style="font-size: 14px; color: #5f6368; line-height: 1.4;">${mensaje}</div>
+            </div>
+        </div>
+    `;
     
     document.body.appendChild(notif);
     
-    // Remover después de 3 segundos (más tiempo para advertencias)
+    // Remover después de 4 segundos
     setTimeout(() => {
         notif.style.animation = 'slideOut 0.3s ease-in';
         setTimeout(() => notif.remove(), 300);
-    }, 3000);
+    }, 4000);
 }
 
 /**
@@ -175,6 +214,44 @@ export function toggleMenu() {
 
     if (sidebar) sidebar.classList.toggle('open');
     if (overlay) overlay.classList.toggle('show');
+}
+
+/**
+ * Toggle tema claro/oscuro
+ */
+export function toggleTheme() {
+    const body = document.body;
+    const themeIcon = document.querySelector('#themeToggle i');
+    
+    body.classList.toggle('dark-theme');
+    
+    // Cambiar icono
+    if (body.classList.contains('dark-theme')) {
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+        localStorage.setItem('theme', 'dark');
+    } else {
+        themeIcon.classList.remove('fa-sun');
+        themeIcon.classList.add('fa-moon');
+        localStorage.setItem('theme', 'light');
+    }
+}
+
+/**
+ * Cargar tema guardado
+ */
+export function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const body = document.body;
+    const themeIcon = document.querySelector('#themeToggle i');
+    
+    if (savedTheme === 'dark') {
+        body.classList.add('dark-theme');
+        if (themeIcon) {
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        }
+    }
 }
 
 /**

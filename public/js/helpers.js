@@ -46,6 +46,15 @@ export function abrirModalSeleccionarCliente() {
 // Función para cerrar modal seleccionar cliente
 export function cerrarModalSeleccionarCliente() {
     document.getElementById('modalSeleccionarCliente').classList.remove('show');
+    
+    // ✅ Habilitar botón de equipo si hay cliente seleccionado
+    const clienteIdInput = document.getElementById('cliente_id');
+    if (clienteIdInput && clienteIdInput.value) {
+        const btnBuscarEquipo = document.getElementById('btnBuscarEquipo');
+        if (btnBuscarEquipo) {
+            btnBuscarEquipo.disabled = false;
+        }
+    }
 }
 
 // Función para buscar cliente por DNI
@@ -257,10 +266,11 @@ export async function buscarClientesPorDNIEquipo() {
         return;
     }
     
-    if (dni.length < 8) {
+    // Autocompletado: mostrar resultados desde 3 caracteres
+    if (dni.length < 3) {
         container.innerHTML = `
             <div style="text-align: center; color: #999; padding: 20px;">
-                Ingrese al menos 8 dígitos
+                El DNI debe tener 8 dígitos
             </div>
         `;
         return;
@@ -269,9 +279,12 @@ export async function buscarClientesPorDNIEquipo() {
     try {
         container.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Buscando...</div>';
         
-        const clientes = await getJSON(`${API_CLIENTES}?dni=${dni}`);
+        const clientes = await getJSON(API_CLIENTES);
         
-        const clientesEncontrados = clientes.filter(c => c.dni.includes(dni) && !c.eliminado);
+        // Filtrar clientes que coincidan con el DNI ingresado (autocompletado)
+        const clientesEncontrados = clientes
+            .filter(c => c.dni && c.dni.startsWith(dni) && !c.eliminado)
+            .slice(0, 3); // Limitar a 3 resultados
         
         if (clientesEncontrados.length === 0) {
             container.innerHTML = `
@@ -308,6 +321,188 @@ export async function buscarClientesPorDNIEquipo() {
         console.error('Error:', error);
         container.innerHTML = '<div style="text-align: center; color: #d32f2f; padding: 20px;">Error al buscar clientes</div>';
     }
+}
+
+/**
+ * Buscar clientes por DNI para servicios (con autocompletado)
+ */
+export async function buscarClientesPorDNI() {
+    const dni = document.getElementById('dniClienteBusqueda').value.trim();
+    const btnReniec = document.getElementById('btnConsultarReniecServicio');
+    const container = document.getElementById('clientesBusquedaContainer');
+
+    if (!dni) {
+        container.innerHTML = '<div id="mensajeBusqueda" style="text-align: center; color: #999; padding: 20px;">Ingrese un DNI para buscar</div>';
+        btnReniec.style.display = 'none';
+        document.getElementById('resultadoReniec').style.display = 'none';
+        document.getElementById('errorReniec').style.display = 'none';
+        return;
+    }
+
+    try {
+        const clientes = await getJSON(API_CLIENTES);
+        
+        // Filtrar clientes que coincidan con el DNI ingresado (desde el primer dígito)
+        const coincidencias = clientes
+            .filter(c => c.dni && c.dni.startsWith(dni) && !c.eliminado)
+            .slice(0, 5); // Mostrar hasta 5 resultados
+
+        if (coincidencias.length > 0) {
+            // Si encuentra clientes, mostrarlos
+            let html = '<div style="max-height: 300px; overflow-y: auto;">';
+            coincidencias.forEach(cliente => {
+                const nombreCompleto = `${cliente.nombre} ${cliente.apellido_paterno || ''} ${cliente.apellido_materno || ''}`.trim();
+                html += `
+                    <div style="padding: 12px; border: 1px solid #ddd; margin-bottom: 8px; border-radius: 4px; cursor: pointer; background: #fff; transition: background 0.2s;" onclick="seleccionarClienteServicio('${cliente._id}', '${nombreCompleto.replace(/'/g, "\\'")}')" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='#fff'">
+                        <strong>${nombreCompleto}</strong><br>
+                        <small>DNI: ${cliente.dni} | Tel: ${cliente.telefono || 'N/A'}</small>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+            btnReniec.style.display = 'none';
+            document.getElementById('resultadoReniec').style.display = 'none';
+            document.getElementById('errorReniec').style.display = 'none';
+        } else {
+            // Si no encuentra, mostrar opción de consultar RENIEC
+            container.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">No se encontraron clientes con este DNI</div>';
+
+            // Validar que el DNI sea válido para RENIEC
+            if (/^\d{8}$/.test(dni)) {
+                btnReniec.style.display = 'inline-block';
+                document.getElementById('resultadoReniec').style.display = 'none';
+            } else {
+                btnReniec.style.display = 'none';
+            }
+            document.getElementById('errorReniec').style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        container.innerHTML = '<div style="text-align: center; color: #d32f2f; padding: 20px;">Error al buscar clientes</div>';
+    }
+}
+
+/**
+ * Seleccionar cliente desde la búsqueda para servicios
+ */
+export async function seleccionarClienteServicio(clienteId, clienteNombre) {
+    // Obtener datos del cliente para verificar teléfono
+    try {
+        const clientes = await getJSON(API_CLIENTES);
+        const cliente = clientes.find(c => String(c._id) === String(clienteId));
+
+        if (cliente) {
+            // Guardar datos temporales
+            window.clienteSeleccionadoTemp = {
+                _id: clienteId,
+                nombre: clienteNombre,
+                dni: cliente.dni || '',
+                telefono: cliente.telefono || '',
+                email: cliente.email || ''
+            };
+
+            // Mostrar sección de confirmación de teléfono
+            document.getElementById('clientesBusquedaContainer').style.display = 'none';
+            document.getElementById('btnConsultarReniecServicio').style.display = 'none';
+            document.getElementById('nombreClienteConfirm').textContent = `Cliente: ${clienteNombre}`;
+
+            // Si tiene teléfono, mostrarlo como readonly, sino dejar vacío para que lo ingrese
+            const telefonoInput = document.getElementById('telefonoClienteServicio');
+            if (cliente.telefono) {
+                telefonoInput.value = cliente.telefono;
+                telefonoInput.readOnly = true;
+            } else {
+                telefonoInput.value = '';
+                telefonoInput.readOnly = false;
+                telefonoInput.focus();
+            }
+
+            document.getElementById('seccionTelefonoCliente').style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al obtener datos del cliente');
+    }
+}
+
+/**
+ * Confirmar cliente con teléfono
+ */
+export async function confirmarClienteConTelefono() {
+    const telefono = document.getElementById('telefonoClienteServicio').value.trim();
+    const cliente = window.clienteSeleccionadoTemp;
+
+    // Validar teléfono del cliente
+    const errores = [];
+
+    // 1. Validar teléfono obligatorio
+    if (!telefono) {
+        errores.push('El número de teléfono es obligatorio');
+    } else if (!/^\d{7,9}$/.test(telefono)) {
+        // 2. Validar formato: 7-9 dígitos solamente
+        errores.push('El teléfono debe tener 7-9 dígitos');
+    }
+
+    // Mostrar errores si existen
+    if (errores.length > 0) {
+        alert('❌ Errores en la validación:\n\n' + errores.join('\n'));
+        return;
+    }
+
+    // Si el cliente no tenía teléfono, actualizarlo
+    if (!cliente.telefono) {
+        try {
+            const response = await fetch(`${API_CLIENTES}/${cliente._id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ telefono: telefono })
+            });
+
+            if (!response.ok) {
+                console.error('Advertencia: No se pudo actualizar teléfono en BD');
+                // Continuar de todas formas - el teléfono fue ingresado
+            }
+        } catch (error) {
+            console.error('Error al actualizar teléfono:', error);
+            // Continuar de todas formas - el teléfono fue ingresado
+        }
+    }
+
+    // Seleccionar el cliente
+    document.getElementById('cliente_id').value = cliente._id;
+    document.getElementById('clienteSeleccionado').value = cliente.nombre;
+    window.clienteIdActual = cliente._id; // Guardar ID para luego usar en equipos
+    cerrarModalSeleccionarCliente();
+    
+    // Actualizar lista de clientes si las funciones existen
+    if (window.cargarClientes) {
+        window.cargarClientes();
+    }
+    if (window.actualizarSelectsClientes) {
+        window.actualizarSelectsClientes();
+    }
+
+    // Habilitar botón de equipo después de seleccionar cliente
+    const btnBuscarEquipo = document.getElementById('btnBuscarEquipo');
+    if (btnBuscarEquipo) {
+        btnBuscarEquipo.disabled = false;
+    }
+
+    // Mensaje de éxito
+    console.log('✅ Validación completada exitosamente');
+}
+
+/**
+ * Limpiar selección y volver a búsqueda (botón Atrás)
+ */
+export function limpiarSeleccionClienteServicio() {
+    document.getElementById('seccionTelefonoCliente').style.display = 'none';
+    document.getElementById('clientesBusquedaContainer').style.display = 'block';
+    document.getElementById('clientesBusquedaContainer').innerHTML = '<div id="mensajeBusqueda" style="text-align: center; color: #999; padding: 20px;">Ingrese un DNI para buscar</div>';
+    document.getElementById('dniClienteBusqueda').value = '';
+    document.getElementById('dniClienteBusqueda').focus();
+    window.clienteSeleccionadoTemp = null;
 }
 
 /**
@@ -459,6 +654,7 @@ export async function consultarReniecServicio() {
 
 /**
  * Agregar cliente desde RENIEC en servicio
+ * OPTIMIZADO: Actualiza caché de servicios
  */
 export async function agregarClienteDesdeReniecServicio() {
     if (!window.reniecDataServicio) return;
@@ -503,6 +699,13 @@ export async function agregarClienteDesdeReniecServicio() {
         }
 
         cerrarModalSeleccionarCliente();
+        
+        // 🚀 OPTIMIZACIÓN: Actualizar caché de Servicios
+        if (window.Servicios && window.Servicios.clientesCache) {
+            // Agregar al inicio del caché
+            window.Servicios.clientesCache.unshift(clienteGuardado);
+            console.log('✅ Caché de clientes (Servicios) actualizado');
+        }
         
         // Actualizar lista de clientes si la función existe
         if (window.cargarClientes) {

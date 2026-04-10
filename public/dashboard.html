@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="css/reporte.css?v=2">
     <link rel="stylesheet" href="css/cancelacion.css">
     <link rel="stylesheet" href="css/diagnostico.css">
-    <link rel="stylesheet" href="css/deudas.css">
+    <link rel="stylesheet" href="css/pagos.css">
     <!-- Librería para generar PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
@@ -21,7 +21,7 @@
         
         <!-- SIDEBAR -->
         <aside class="sidebar">
-            <div class="sidebar-logo">
+            <div class="sidebar-logo" id="sidebarLogo" style="cursor: pointer;">
                 <img src="images/logo-doctorpc.png" alt="Doctor PC Logo" style="width: 100%; max-width: 180px; height: auto; margin: 0 auto; display: block;">
             </div>
             <nav class="nav-tabs">
@@ -34,20 +34,23 @@
                 <button class="tab-btn" onclick="switchTab('equipos')">
                     <i class="fas fa-computer"></i> Equipos
                 </button>
-                <button class="tab-btn" onclick="switchTab('deudas')">
-                    <i class="fas fa-money-bill-wave"></i> Gestión de Deudas
+                <button class="tab-btn" onclick="switchTab('pagos')">
+                    <i class="fas fa-money-bill-wave"></i> Gestión de Pagos
                 </button>
+                
+                <!-- Separador de sección ADMINISTRACIÓN -->
+                <div id="separadorAdmin" style="display: none; margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2);">
+                    <div style="font-size: 10px; font-weight: 700; color: #b3e5ec; letter-spacing: 1.5px; padding: 0 5px 10px 5px;">
+                        ADMINISTRACIÓN
+                    </div>
+                </div>
+                
                 <button class="tab-btn" id="tabUsuarios" onclick="switchTab('usuarios')" style="display: none;">
                     <i class="fas fa-users-cog"></i> Usuarios
                 </button>
-                <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
-                    <div style="padding: 8px 12px; font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 8px;">
-                        <i class="fas fa-user-circle"></i> <span id="nombreUsuarioSidebar">Usuario</span>
-                    </div>
-                    <button class="tab-btn" onclick="cerrarSesion()" style="background: rgba(220,53,69,0.2); color: #ff6b6b;">
-                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                    </button>
-                </div>
+                <button class="tab-btn" onclick="cerrarSesion()">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
             </nav>
         </aside>
 
@@ -57,8 +60,26 @@
                 <button class="menu-toggle" id="menuToggle" onclick="toggleMenu()" style="display: none;">
                     <i class="fas fa-bars"></i>
                 </button>
-                <h1>Doctor PC - Sistema de Administración</h1>
-                <p>Gestiona clientes, servicios y equipos de manera eficiente</p>
+                <div class="header-content">
+                    <div class="header-left">
+                        <h1>Doctor PC - Sistema de Administración</h1>
+                        <p>Gestiona clientes, servicios y equipos de manera eficiente</p>
+                    </div>
+                    <div class="header-right">
+                        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Cambiar tema" style="display: none;">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                        <div class="user-info">
+                            <div class="user-avatar">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <div class="user-details">
+                                <span class="user-name" id="nombreUsuarioHeader">Usuario</span>
+                                <span class="user-role" id="rolUsuarioHeader">Administrador</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </header>
 
             <div class="container">
@@ -114,6 +135,13 @@
                             </label>
                         </div>
                         
+                        <!-- Barra de búsqueda (fuera del contenedor dinámico) -->
+                        <div style="margin-bottom: 20px; position: relative;">
+                            <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #2192B8; font-size: 14px; pointer-events: none;"></i>
+                            <input type="text" id="busquedaServicios" placeholder="Buscar por número, descripción, local, cliente, equipo..." 
+                                   onkeyup="filtrarServicios()" style="max-width: 100%; padding: 12px 15px 12px 40px; font-size: 14px; border: 2px solid #e0e0e0; border-radius: 8px; width: 100%;">
+                        </div>
+                        
                         <div id="serviciosContainer"></div>
                     </div>
                 </div>
@@ -161,13 +189,13 @@
                     </div>
                 </div>
 
-                <!-- DEUDAS TAB -->
-                <div id="deudasTab" class="tab-content">
+                <!-- PAGOS TAB -->
+                <div id="pagosTab" class="tab-content">
                     <div class="form-section">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <h2 style="margin: 0;"><i class="fas fa-money-bill-wave"></i> Gestión de Deudas y Pagos</h2>
+                            <h2 style="margin: 0;"><i class="fas fa-money-bill-wave"></i> Gestión de Pagos</h2>
                         </div>
-                        <div id="deudasContainer"></div>
+                        <div id="pagosContainer"></div>
                     </div>
                 </div>
 
@@ -178,8 +206,11 @@
     <!-- Modal Nuevo Cliente -->
     <div id="modalNuevoCliente" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Nuevo Cliente</h2>
+            <div class="modal-header" style="display: flex; align-items: center; gap: 12px;">
+                <h2 style="margin: 0; flex: 1;">Nuevo Cliente</h2>
+                <div style="height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <img src="/images/logo-doctorpc.svg" alt="Doctor PC" style="height: 100%; width: auto; object-fit: contain;">
+                </div>
                 <button class="close-btn" onclick="cerrarModalNuevoCliente()">×</button>
             </div>
             <form id="formModalCliente" onsubmit="guardarClienteDesdeModal(event)">
@@ -268,8 +299,11 @@
     <!-- Modal Nuevo Servicio -->
     <div id="modalNuevoServicio" class="modal">
         <div class="modal-content" style="max-width: 900px; width: 90%; max-height: 90vh; overflow-y: auto;">
-            <div class="modal-header">
-                <h2>Nuevo Servicio</h2>
+            <div class="modal-header" style="display: flex; align-items: center; gap: 12px;">
+                <h2 style="margin: 0; flex: 1;">Nuevo Servicio</h2>
+                <div style="height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <img src="/images/logo-doctorpc.svg" alt="Doctor PC" style="height: 100%; width: auto; object-fit: contain;">
+                </div>
                 <button class="close-btn" onclick="cerrarModalNuevoServicio()">×</button>
             </div>
             <form id="formServicio" onsubmit="guardarServicio(event)">
@@ -526,8 +560,11 @@
     <!-- Modal Diagnóstico de Equipo -->
     <div id="modalDiagnostico" class="modal">
         <div class="modal-content" style="max-width: 70vw; width: 90%;">
-            <div class="modal-header">
-                <h2><i class="fas fa-stethoscope"></i> Diagnóstico del Equipo</h2>
+            <div class="modal-header" style="display: flex; align-items: center; gap: 12px;">
+                <h2 style="margin: 0; flex: 1;"><i class="fas fa-stethoscope"></i> Diagnóstico del Equipo</h2>
+                <div style="height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <img src="/images/logo-doctorpc.svg" alt="Doctor PC" style="height: 100%; width: auto; object-fit: contain;">
+                </div>
                 <button class="close-btn" onclick="cerrarModalDiagnostico()">×</button>
             </div>
             <div class="form-section">
@@ -764,8 +801,11 @@
     <!-- Modal Nuevo Equipo -->
     <div id="modalNuevoEquipo" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Nuevo Equipo</h2>
+            <div class="modal-header" style="display: flex; align-items: center; gap: 12px;">
+                <h2 style="margin: 0; flex: 1;">Nuevo Equipo</h2>
+                <div style="height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <img src="/images/logo-doctorpc.svg" alt="Doctor PC" style="height: 100%; width: auto; object-fit: contain;">
+                </div>
                 <button class="close-btn" onclick="cerrarModalNuevoEquipo()">×</button>
             </div>
             <form id="formEquipo" onsubmit="guardarEquipo(event)">
@@ -825,8 +865,11 @@
     <!-- Modal Editar Equipo -->
     <div id="modalEditarEquipo" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Editar Equipo</h2>
+            <div class="modal-header" style="display: flex; align-items: center; gap: 12px;">
+                <h2 style="margin: 0; flex: 1;">Editar Equipo</h2>
+                <div style="height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <img src="/images/logo-doctorpc.svg" alt="Doctor PC" style="height: 100%; width: auto; object-fit: contain;">
+                </div>
                 <button class="close-btn" onclick="cerrarModalEditarEquipo()">×</button>
             </div>
             <form id="formEditarEquipo" onsubmit="guardarCambiosEquipo(event)">
@@ -937,8 +980,11 @@
     <!-- Modal Confirmar Reparación (Problemas completados) -->
     <div id="modalConfirmarReparacion" class="modal" style="z-index: 1001;">
         <div class="modal-content reparacion-modal">
-            <div class="modal-header">
-                <h2><i class="fas fa-check-circle" style="color: #4CAF50; margin-right: 8px;"></i>Confirmar Reparación</h2>
+            <div class="modal-header" style="display: flex; align-items: center; gap: 12px;">
+                <h2 style="margin: 0; flex: 1;"><i class="fas fa-check-circle" style="color: #4CAF50; margin-right: 8px;"></i>Confirmar Reparación</h2>
+                <div style="height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <img src="/images/logo-doctorpc.svg" alt="Doctor PC" style="height: 100%; width: auto; object-fit: contain;">
+                </div>
                 <button class="close-btn" onclick="cerrarModalConfirmarReparacion()" style="pointer-events: auto;">×</button>
             </div>
             <div class="form-section">
@@ -1085,17 +1131,17 @@
     <div id="modalEntregaServicio" class="modal">
         <div class="modal-content">
             <!-- Header -->
-            <div class="entrega-header">
-                <div class="entrega-header-left">
-                    <div class="entrega-header-icon">
-                        <i class="fas fa-box-open"></i>
-                    </div>
-                    <div class="entrega-header-text">
-                        <h2>Entrega de Servicio y Saldo de Deuda</h2>
-                        <span>Control de Deuda Integrado</span>
-                    </div>
+            <div class="entrega-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="entrega-header-text">
+                    <h2>Entrega de Servicio y Saldo de Deuda</h2>
+                    <span>Control de Deuda Integrado</span>
                 </div>
-                <button class="close-btn" onclick="cerrarModalEntrega()">&times;</button>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <img src="/images/logo-doctorpc.svg" alt="Doctor PC" style="height: 100%; width: auto; object-fit: contain;">
+                    </div>
+                    <button class="close-btn" onclick="cerrarModalEntrega()">&times;</button>
+                </div>
             </div>
 
             <div class="entrega-body">
@@ -1224,7 +1270,7 @@
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; align-items: start;">
                         <div class="form-group">
                             <label>
                                 <i class="fas fa-coins"></i> Monto a Cobrar Hoy <span style="color: #dc2626;">*</span>
@@ -1235,7 +1281,7 @@
                                        style="padding-left: 38px;"
                                        oninput="actualizarIndicadorDeuda()">
                             </div>
-                            <div style="font-size: 11px; margin-top: 4px;">
+                            <div style="font-size: 11px; margin-top: 4px; min-height: 18px;">
                                 <span id="sugerenciaPago" style="color: #d97706; font-weight: 600;">
                                     <i class="fas fa-circle-info"></i> Saldo pendiente: S/ 0.00
                                 </span>
@@ -1251,6 +1297,45 @@
                                 <option value="Transferencia">Transferencia</option>
                                 <option value="Tarjeta">Tarjeta</option>
                             </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Campo para registrar devolución (solo visible cuando hay saldo negativo) -->
+                    <div id="seccionDevolucion" style="display: none; margin-bottom: 12px; padding: 12px; background: #e3f2fd; border: 2px solid #1565c0; border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <i class="fas fa-hand-holding-usd" style="color: #1565c0; font-size: 18px;"></i>
+                            <span style="font-weight: 600; color: #1565c0; font-size: 14px;">Devolución de Dinero al Cliente</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="form-group" style="margin: 0;">
+                                <label style="font-size: 12px;">Monto Devuelto <span style="color: #dc2626;">*</span></label>
+                                <div style="position: relative;">
+                                    <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-weight: 600; color: #1565c0; font-size: 14px; z-index: 1;">S/</span>
+                                    <input type="number" id="entMontoDevuelto" step="0.01" min="0" value="0" 
+                                           style="padding-left: 38px; border-color: #1565c0;"
+                                           readonly>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin: 0;">
+                                <label style="font-size: 12px;">Método de Devolución <span style="color: #dc2626;">*</span></label>
+                                <select id="entMetodoDevolucion" style="border-color: #1565c0;">
+                                    <option value="">Selecciona método...</option>
+                                    <option value="Efectivo">Efectivo</option>
+                                    <option value="Yape">Yape</option>
+                                    <option value="Plin">Plin</option>
+                                    <option value="Transferencia">Transferencia</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin: 8px 0 0 0;">
+                            <label style="font-size: 12px;">Observaciones de la Devolución</label>
+                            <textarea id="entObservacionesDevolucion" rows="2" placeholder="Detalles de la devolución..." style="border-color: #1565c0; font-size: 13px;"></textarea>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 8px; background: white; border-radius: 6px;">
+                            <input type="checkbox" id="entConfirmarDevolucion" style="width: 18px; height: 18px; cursor: pointer;">
+                            <label for="entConfirmarDevolucion" style="margin: 0; cursor: pointer; font-size: 13px; color: #1565c0; font-weight: 600;">
+                                Confirmo que se devolvió el dinero al cliente
+                            </label>
                         </div>
                     </div>
                     
@@ -1355,6 +1440,33 @@
     <script src="animations.js"></script>
     <script src="reporte.js?v=2"></script>
     
+    <!-- Definir funciones stub antes de cargar el módulo -->
+    <script>
+        // Funciones temporales que serán reemplazadas por el módulo
+        // Usar un flag para saber si ya se cargó el módulo
+        window._moduleLoaded = false;
+        
+        window.switchTab = function(tab) { 
+            if (!window._moduleLoaded) {
+                console.log('⏳ Esperando a que el módulo cargue...');
+                // Reintentar después de un breve delay
+                setTimeout(() => window.switchTab(tab), 100);
+            }
+        };
+        window.toggleMenu = function() { 
+            if (!window._moduleLoaded) {
+                console.log('⏳ Esperando a que el módulo cargue...');
+                setTimeout(() => window.toggleMenu(), 100);
+            }
+        };
+        window.cerrarSesion = function() { 
+            if (!window._moduleLoaded) {
+                console.log('⏳ Esperando a que el módulo cargue...');
+                setTimeout(() => window.cerrarSesion(), 100);
+            }
+        };
+    </script>
+    
     <!-- Sistema modular ES6 -->
     <script type="module" src="js/main.js"></script>
     
@@ -1432,8 +1544,11 @@
               <!-- Modal Editar Usuario -->
               <div id="modalEditarUsuario" class="modal">
                   <div class="modal-content" style="max-width: 500px;">
-                      <div class="modal-header">
-                          <h2><i class="fas fa-user-edit" style="margin-right: 8px;"></i>Editar Usuario</h2>
+                      <div class="modal-header" style="display: flex; align-items: center; gap: 12px;">
+                          <h2 style="margin: 0; flex: 1;"><i class="fas fa-user-edit" style="margin-right: 8px;"></i>Editar Usuario</h2>
+                          <div style="height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                              <img src="/images/logo-doctorpc.svg" alt="Doctor PC" style="height: 100%; width: auto; object-fit: contain;">
+                          </div>
                           <button class="close-btn" onclick="cerrarModalEditarUsuario()">×</button>
                       </div>
                       <form id="formEditarUsuario" onsubmit="guardarEdicionUsuario(event)">
@@ -1484,8 +1599,11 @@
 
                          <div id="modalNuevoUsuario" class="modal">
                   <div class="modal-content" style="max-width: 500px;">
-                      <div class="modal-header">
-                          <h2><i class="fas fa-user-plus" style="margin-right: 8px;"></i>Nuevo Usuario</h2>
+                      <div class="modal-header" style="display: flex; align-items: center; gap: 12px;">
+                          <h2 style="margin: 0; flex: 1;"><i class="fas fa-user-plus" style="margin-right: 8px;"></i>Nuevo Usuario</h2>
+                          <div style="height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                              <img src="/images/logo-doctorpc.svg" alt="Doctor PC" style="height: 100%; width: auto; object-fit: contain;">
+                          </div>
                           <button class="close-btn" onclick="cerrarModalNuevoUsuario()">×</button>
                       </div>
                       <form id="formNuevoUsuario" onsubmit="guardarNuevoUsuario(event)">
@@ -1533,8 +1651,11 @@
     <!-- Modal Registrar Pago -->
     <div id="modalRegistrarPago" class="modal">
         <div class="modal-content" style="max-width: 600px;">
-            <div class="modal-header">
-                <h2><i class="fas fa-money-bill-wave"></i> Registrar Pago</h2>
+            <div class="modal-header" style="display: flex; align-items: center; gap: 12px;">
+                <h2 style="margin: 0; flex: 1;"><i class="fas fa-money-bill-wave"></i> Registrar Pago</h2>
+                <div style="height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <img src="/images/logo-doctorpc.svg" alt="Doctor PC" style="height: 100%; width: auto; object-fit: contain;">
+                </div>
                 <button class="close-btn" onclick="cerrarModalRegistrarPago()">×</button>
             </div>
             <form onsubmit="guardarPago(event)">
@@ -1581,13 +1702,16 @@
                     </div>
                     <div>
                         <label>Método de Pago: <span style="color: #d32f2f;">*</span></label>
-                        <select id="pagoMetodo" required style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 5px;">
-                            <option value="efectivo">💵 Efectivo</option>
-                            <option value="transferencia">🏦 Transferencia</option>
-                            <option value="tarjeta">💳 Tarjeta</option>
-                            <option value="yape">📱 Yape</option>
-                            <option value="plin">📱 Plin</option>
-                        </select>
+                        <div style="position: relative;">
+                            <i class="fas fa-credit-card" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #5f6368; pointer-events: none; z-index: 1;"></i>
+                            <select id="pagoMetodo" required style="width: 100%; padding: 10px 10px 10px 38px; border: 2px solid #e0e0e0; border-radius: 5px; appearance: none; background: white url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27 viewBox=%270 0 12 8%27%3e%3cpath fill=%27%235f6368%27 d=%27M6 8L0 0h12z%27/%3e%3c/svg%3e') no-repeat right 12px center; padding-right: 35px; cursor: pointer;">
+                                <option value="efectivo">Efectivo</option>
+                                <option value="transferencia">Transferencia Bancaria</option>
+                                <option value="tarjeta">Tarjeta de Crédito/Débito</option>
+                                <option value="yape">Yape</option>
+                                <option value="plin">Plin</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -1703,6 +1827,77 @@
                     <i class="fab fa-whatsapp"></i> Enviar WhatsApp
                 </button>
                 <button type="button" class="btn-secondary" onclick="cerrarModalHistorialCliente()">
+                    <i class="fas fa-times"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Historial de Pagos del Servicio -->
+    <div id="modalHistorialPagosServicio" class="modal">
+        <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2><i class="fas fa-receipt"></i> Historial de Pagos del Servicio</h2>
+                <button class="close-btn" onclick="cerrarModalHistorialPagosServicio()">×</button>
+            </div>
+            
+            <!-- Información del Servicio -->
+            <div style="background: linear-gradient(135deg, #2192B8 0%, #1976a2 100%); padding: 20px; border-radius: 8px; color: white; margin-bottom: 20px;">
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                    <div>
+                        <p style="margin: 0; font-size: 12px; opacity: 0.9;">Servicio</p>
+                        <h3 id="historialPagosNumeroServicio" style="margin: 5px 0 0 0; font-size: 20px;">-</h3>
+                    </div>
+                    <div>
+                        <p style="margin: 0; font-size: 12px; opacity: 0.9;">Cliente</p>
+                        <h3 id="historialPagosCliente" style="margin: 5px 0 0 0; font-size: 20px;">-</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resumen Financiero -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px;">
+                <div style="background: #f3e5f5; padding: 15px; border-radius: 8px; border-left: 4px solid #9C27B0;">
+                    <p style="margin: 0; font-size: 12px; color: #666; text-transform: uppercase; font-weight: 600;">Monto Total</p>
+                    <h3 id="historialPagosMontoTotal" style="margin: 5px 0 0 0; font-size: 22px; color: #9C27B0;">S/ 0.00</h3>
+                </div>
+                <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; border-left: 4px solid #4CAF50;">
+                    <p style="margin: 0; font-size: 12px; color: #666; text-transform: uppercase; font-weight: 600;">Total Pagado</p>
+                    <h3 id="historialPagosMontoPagado" style="margin: 5px 0 0 0; font-size: 22px; color: #4CAF50;">S/ 0.00</h3>
+                </div>
+                <div style="background: #fff3e0; padding: 15px; border-radius: 8px; border-left: 4px solid #FF9800;">
+                    <p style="margin: 0; font-size: 12px; color: #666; text-transform: uppercase; font-weight: 600;">Saldo Pendiente</p>
+                    <h3 id="historialPagosSaldoPendiente" style="margin: 5px 0 0 0; font-size: 22px; color: #FF9800;">S/ 0.00</h3>
+                </div>
+            </div>
+            
+            <!-- Tabla de Pagos -->
+            <div style="margin-bottom: 20px;">
+                <h3 style="margin-bottom: 15px;"><i class="fas fa-list"></i> Detalle de Pagos</h3>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table class="records-table">
+                        <thead>
+                            <tr>
+                                <th>N°</th>
+                                <th>Fecha</th>
+                                <th>Monto</th>
+                                <th>Método</th>
+                                <th>Referencia</th>
+                                <th>Notas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historialPagosTabla">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 20px;">Cargando...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Botones -->
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" class="btn-secondary" onclick="cerrarModalHistorialPagosServicio()">
                     <i class="fas fa-times"></i> Cerrar
                 </button>
             </div>

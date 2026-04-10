@@ -88,13 +88,15 @@ export async function guardarClienteDesdeModal(e) {
     try {
         mostrarModalCarga('Guardando...');
         
-        await postJSON(API.CLIENTES, cliente);
+        const clienteGuardado = await postJSON(API.CLIENTES, cliente);
 
         cerrarModalCarga();
         document.getElementById('formModalCliente').reset();
         cerrarModalNuevoCliente();
         
-        await cargarClientes();
+        // Agregar al caché y actualizar tabla sin recargar
+        clientesCache.unshift(clienteGuardado);
+        renderTablaClientes(clientesCache);
         await actualizarSelectsClientes();
         
         mostrarNotificacionExito('Cliente guardado');
@@ -479,11 +481,21 @@ async function guardarCambiosClienteDirecto(clienteId, telefonoNuevo, emailNuevo
     try {
         mostrarModalCarga('Guardando...');
         
-        await putJSON(`${API.CLIENTES}/${clienteId}`, datosActualizados);
+        const clienteActualizado = await putJSON(`${API.CLIENTES}/${clienteId}`, datosActualizados);
+
+        if (!clienteActualizado || !clienteActualizado._id) {
+            throw new Error('El servidor no devolvió un cliente válido');
+        }
 
         cerrarModalCarga();
         cerrarModalVerCliente();
-        await cargarClientes();
+        
+        // Actualizar en el caché
+        const index = clientesCache.findIndex(c => c._id === clienteActualizado._id);
+        if (index !== -1) {
+            clientesCache[index] = clienteActualizado;
+        }
+        renderTablaClientes(clientesCache);
         
         mostrarNotificacionExito('Cliente actualizado');
     } catch (error) {
@@ -518,7 +530,7 @@ async function eliminarCliente(id) {
 /**
  * Actualizar selects de clientes en otros formularios
  */
-async function actualizarSelectsClientes() {
+export async function actualizarSelectsClientes() {
     try {
         const clientes = await getJSON(API.CLIENTES);
 

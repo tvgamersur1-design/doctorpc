@@ -485,9 +485,13 @@ async function guardarDiagnosticoInterno(finalizarDiag = false) {
         // Cerrar y recargar
         cerrarModalDiagnostico(true);
         
-        // Recargar servicios si la función existe
-        if (window.cargarServicios) {
-            window.cargarServicios();
+        // Actualizar servicio en el caché y tabla
+        if (window.Servicios && window.Servicios.serviciosCache) {
+            const index = window.Servicios.serviciosCache.findIndex(s => s._id === servicioId);
+            if (index !== -1) {
+                window.Servicios.serviciosCache[index] = servicioGuardado;
+                window.Servicios.renderTablaServicios(window.Servicios.serviciosCache);
+            }
         }
         
         // Mostrar notificación de éxito

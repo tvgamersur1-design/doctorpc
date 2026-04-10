@@ -8,14 +8,25 @@ import { getJSON, postJSON, putJSON } from '../api.js';
 // ==================== ESTADO DEL MÓDULO ====================
 
 export let serviciosCache = [];
-let clientesCache = [];
-let equiposCache = [];
-let serviciosEquipoCache = [];
+export let clientesCache = [];
+export let equiposCache = [];
+export let serviciosEquipoCache = [];
 let serviciosPaginaActual = 1;
 let serviciosBusquedaActual = '';
 let serviciosLimitePorPagina = 10;
 let serviciosBusquedaTimer = null;
 let servicioParaGuardar = null;
+
+// Exponer cachés globalmente para otros módulos (con acceso directo a los arrays)
+if (typeof window !== 'undefined') {
+    window.Servicios = {
+        // Retornar referencia directa al array para permitir modificaciones
+        get serviciosCache() { return serviciosCache; },
+        get clientesCache() { return clientesCache; },
+        get equiposCache() { return equiposCache; },
+        get serviciosEquipoCache() { return serviciosEquipoCache; }
+    };
+}
 
 // ==================== FUNCIONES PÚBLICAS ====================
 
@@ -27,18 +38,16 @@ export async function cargarServicios(page = 1, busqueda = '', forzarRecarga = f
     serviciosBusquedaActual = busqueda;
     const container = document.getElementById('serviciosContainer');
     
-    // Solo mostrar spinner si es una recarga forzada
-    if (forzarRecarga) {
-        container.innerHTML = `
-            <div class="loading-spinner-inline">
-                <div class="loading-spinner-circle"></div>
-                <p class="loading-spinner-text">Cargando servicios...</p>
-            </div>`;
-    }
-    
     try {
         // Cargar datos solo si no están en caché o si se fuerza la recarga
         if (forzarRecarga || serviciosCache.length === 0) {
+            // 🔄 Mostrar spinner mientras carga
+            container.innerHTML = `
+                <div class="loading-spinner-inline">
+                    <div class="loading-spinner-circle"></div>
+                    <p class="loading-spinner-text">Cargando servicios...</p>
+                </div>`;
+            
             const clientesRes = await fetch(`${API_CLIENTES}`);
             clientesCache = await clientesRes.json();
 
@@ -289,6 +298,12 @@ export async function cargarServicios(page = 1, busqueda = '', forzarRecarga = f
         
         // Si el input ya existe, solo actualizar la tabla y paginación
         if (inputBusquedaExiste) {
+            // Eliminar spinner si existe
+            const spinnerExistente = container.querySelector('.loading-spinner-inline');
+            if (spinnerExistente) {
+                spinnerExistente.remove();
+            }
+            
             // Eliminar tabla y paginación existentes
             const tablaExistente = container.querySelector('#tablaServicios');
             if (tablaExistente) {
@@ -429,7 +444,22 @@ export async function guardarServicio(e) {
         servicio.equipo_id = document.getElementById('equipo_id').value || null;
     }
 
-    console.log('Servicio a guardar:', servicio);
+    // Limpiar objeto para evitar duplicados
+    const servicioLimpio = {
+        numero_servicio: servicio.numero_servicio,
+        cliente_id: servicio.cliente_id,
+        equipo_id: servicio.equipo_id,
+        fecha: servicio.fecha,
+        hora: servicio.hora,
+        local: servicio.local,
+        problemas: servicio.problemas,
+        observaciones: servicio.observaciones,
+        monto: servicio.monto,
+        adelanto: servicio.adelanto,
+        estado: 'Pendiente de evaluación'
+    };
+
+    console.log('Servicio a guardar:', servicioLimpio);
 
     // Validar equipo antes de guardar
     const equipoId = document.getElementById('equipo_id').value;
@@ -442,11 +472,8 @@ export async function guardarServicio(e) {
         return;
     }
 
-    // Agregar estado inicial
-    servicio.estado = 'Pendiente de evaluación';
-
     // Mostrar resumen antes de guardar
-    await mostrarResumenServicio(servicio);
+    await mostrarResumenServicio(servicioLimpio);
 }
 
 /**
@@ -1515,11 +1542,41 @@ export async function guardarServicioRealConFoto(servicio) {
             : 'Servicio guardado';
         mostrarNotificacionExito(mensajeExito);
 
-        // Agregar el nuevo servicio al caché (al inicio para que aparezca primero)
-        serviciosCache.unshift(servicioGuardado);
+        // 🔄 ACTUALIZAR CACHÉ: Recargar solo los datos necesarios del nuevo servicio
+        console.log('🔄 Actualizando caché con el nuevo servicio...');
         
-        // Actualizar la tabla sin recargar desde el servidor
-        renderTablaServicios(serviciosCache);
+        try {
+            // Obtener el servicio completo desde el servidor
+            const servicioCompleto = await fetch(`${API_SERVICIOS}/${servicioGuardado._id}`).then(r => r.json());
+            
+            // Si hay fotos, obtener la relación servicio-equipo actualizada
+            if (fotosUrls.length > 0 && servicio.equipo_id) {
+                const serviciosEquipoActualizados = await fetch(`${API_SERVICIO_EQUIPO}`).then(r => r.json());
+                const servicioEquipoNuevo = serviciosEquipoActualizados.find(se => se.servicio_id === servicioGuardado._id);
+                
+                if (servicioEquipoNuevo) {
+                    // Actualizar o agregar en el caché de servicio-equipo
+                    const indexSE = serviciosEquipoCache.findIndex(se => se.servicio_id === servicioGuardado._id);
+                    if (indexSE !== -1) {
+                        serviciosEquipoCache[indexSE] = servicioEquipoNuevo;
+                    } else {
+                        serviciosEquipoCache.push(servicioEquipoNuevo);
+                    }
+                }
+            }
+            
+            // Agregar el nuevo servicio al inicio del caché
+            serviciosCache.unshift(servicioCompleto);
+            
+            // Actualizar la tabla sin recargar todo
+            renderTablaServicios(serviciosCache);
+            
+            console.log('✅ Caché actualizado correctamente');
+        } catch (error) {
+            console.error('⚠️ Error al actualizar caché, recargando tabla completa:', error);
+            // Si falla, recargar todo como fallback
+            await cargarServicios();
+        }
     } catch (error) {
         cerrarModalCarga();
         console.error('Error:', error);

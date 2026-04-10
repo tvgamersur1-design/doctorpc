@@ -2,14 +2,17 @@
 
 import { verificarSesion, cerrarSesion, configurarPermisos, actualizarNombreUsuarioUI } from './auth.js';
 import { 
-    switchTab, 
-    toggleMenu, 
+    switchTab as switchTabUI, 
+    toggleMenu,
+    toggleTheme,
+    loadTheme,
     updateMenuToggleVisibility,
     mostrarModalCarga,
     cerrarModalCarga,
     mostrarNotificacionExito,
     mostrarModalNotificacion,
-    cerrarModalNotificacion
+    cerrarModalNotificacion,
+    cerrarModalConfirmacion
 } from './ui.js';
 import * as Clientes from './modules/clientes.js';
 import * as Equipos from './modules/equipos.js';
@@ -18,8 +21,55 @@ import * as Diagnostico from './modules/diagnostico.js';
 import * as Usuarios from './modules/usuarios.js';
 import * as Cancelacion from './modules/cancelacion.js';
 import * as Estado from './modules/estado.js';
-import * as Deudas from './modules/deudas.js';
+import * as Pagos from './modules/pagos.js';
 import * as Helpers from './helpers.js';
+
+// ==================== FUNCIONES DE NAVEGACIÓN ====================
+
+/**
+ * Manejar cambio de tab
+ * @param {string} tabName 
+ */
+function handleSwitchTab(tabName) {
+    // Cambiar tab en la UI
+    switchTabUI(tabName);
+    
+    // Cargar datos del nuevo tab
+    if (tabName === 'clientes') {
+        Clientes.cargarClientes();
+    } else if (tabName === 'equipos') {
+        Equipos.cargarEquipos();
+    } else if (tabName === 'servicios') {
+        Servicios.cargarServicios();
+    } else if (tabName === 'usuarios') {
+        Usuarios.cargarUsuarios();
+    } else if (tabName === 'pagos') {
+        Pagos.cargarPagos();
+    }
+}
+
+// ==================== EXPONER FUNCIONES AL SCOPE GLOBAL ====================
+// IMPORTANTE: Exponer ANTES del DOMContentLoaded para que estén disponibles en onclick
+
+window.switchTab = handleSwitchTab;
+window.toggleMenu = toggleMenu;
+window.toggleTheme = toggleTheme;
+window.cerrarSesion = cerrarSesion;
+window.mostrarModalCarga = mostrarModalCarga;
+window.cerrarModalCarga = cerrarModalCarga;
+window.mostrarNotificacionExito = mostrarNotificacionExito;
+window.mostrarModalNotificacion = mostrarModalNotificacion;
+window.cerrarModalNotificacion = cerrarModalNotificacion;
+window.cerrarModal = cerrarModalConfirmacion; // Para el modal de confirmación genérico
+
+// Marcar que el módulo se cargó
+window._moduleLoaded = true;
+
+console.log('✅ Funciones globales expuestas:', {
+    switchTab: typeof window.switchTab,
+    toggleMenu: typeof window.toggleMenu,
+    cerrarSesion: typeof window.cerrarSesion
+});
 
 // Verificar sesión al cargar (solo si no estamos en index.html)
 if (!window.location.pathname.includes('index.html') && window.location.pathname !== '/') {
@@ -28,7 +78,7 @@ if (!window.location.pathname.includes('index.html') && window.location.pathname
 
 // Inicializar aplicación cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
-    console.log(' Inicializando aplicación modular...');
+    console.log('🚀 Inicializando aplicación modular...');
     inicializarAplicacion();
 });
 
@@ -62,6 +112,9 @@ function inicializarAplicacion() {
  * Configurar elementos de UI
  */
 function configurarUI() {
+    // Cargar tema guardado
+    loadTheme();
+    
     // Configurar visibilidad del menú móvil
     updateMenuToggleVisibility();
     
@@ -167,48 +220,12 @@ function cargarDatosIniciales() {
         Servicios.cargarServicios();
     } else if (tabActivo.id === 'usuariosTab') {
         Usuarios.cargarUsuarios();
-    } else if (tabActivo.id === 'deudasTab') {
-        Deudas.cargarDeudas();
+    } else if (tabActivo.id === 'pagosTab') {
+        Pagos.cargarPagos();
     }
 }
 
-/**
- * Manejar cambio de tab
- * @param {string} tabName 
- */
-function handleSwitchTab(tabName) {
-    // Cambiar tab en la UI
-    switchTab(tabName);
-    
-    // Cargar datos del nuevo tab
-    if (tabName === 'clientes') {
-        Clientes.cargarClientes();
-    } else if (tabName === 'equipos') {
-        Equipos.cargarEquipos();
-    } else if (tabName === 'servicios') {
-        Servicios.cargarServicios();
-    } else if (tabName === 'usuarios') {
-        Usuarios.cargarUsuarios();
-    } else if (tabName === 'deudas') {
-        Deudas.cargarDeudas();
-    }
-}
-
-// ==================== EXPONER FUNCIONES AL SCOPE GLOBAL ====================
-// Necesario para que funcionen los onclick en el HTML
-
-// Funciones de navegación
-window.switchTab = handleSwitchTab;
-window.toggleMenu = toggleMenu;
-window.cerrarSesion = cerrarSesion;
-
-// ✅ Funciones de UI globales (necesarias para modales de confirmación)
-window.mostrarModalCarga = mostrarModalCarga;
-window.cerrarModalCarga = cerrarModalCarga;
-window.mostrarNotificacionExito = mostrarNotificacionExito;
-window.mostrarModalNotificacion = mostrarModalNotificacion;
-window.cerrarModalNotificacion = cerrarModalNotificacion;
-// No sobrescribir cerrarModal de app.js (cierra confirmModal sin parámetro)
+// ==================== EXPONER FUNCIONES DE MÓDULOS AL SCOPE GLOBAL ====================
 
 // Módulo de Clientes
 window.abrirModalNuevoCliente = Clientes.abrirModalNuevoCliente;
@@ -250,6 +267,7 @@ window.abrirModalNuevoServicio = Servicios.abrirModalNuevoServicio;
 window.cerrarModalNuevoServicio = Servicios.cerrarModalNuevoServicio;
 window.guardarServicio = Servicios.guardarServicio;
 window.cargarServicios = Servicios.cargarServicios;
+window.filtrarServicios = Servicios.filtrarServicios;
 window.buscarServiciosConDebounce = Servicios.buscarServiciosConDebounce;
 window.confirmarGuardarServicio = Servicios.confirmarGuardarServicio;
 window.cerrarModalResumen = Servicios.cerrarModalResumen;
@@ -287,6 +305,9 @@ window.eliminarUsuario = Usuarios.eliminarUsuario;
 window.abrirModalEditarUsuario = Usuarios.abrirModalEditarUsuario;
 window.cerrarModalEditarUsuario = Usuarios.cerrarModalEditarUsuario;
 window.guardarEdicionUsuario = Usuarios.guardarEdicionUsuario;
+window.toggleEstadoUsuario = Usuarios.toggleEstadoUsuario; // ✅ NUEVO
+window.handleToggleUsuario = Usuarios.handleToggleUsuario; // ✅ NUEVO - Maneja el click del toggle
+window.cerrarModalConfirmacionEstado = Usuarios.cerrarModalConfirmacionEstado; // ✅ NUEVO
 
 // ✅ Exponer módulo completo
 window.Usuarios = Usuarios;
@@ -339,26 +360,28 @@ window.actualizarIndicadorDeuda = Estado.actualizarIndicadorDeuda;
 // ✅ Exponer módulo completo
 window.Estado = Estado;
 
-// Módulo de Deudas
-window.cargarDeudas = Deudas.cargarDeudas;
-window.filtrarPorEstadoPago = Deudas.filtrarPorEstadoPago;
-window.buscarClienteDeuda = Deudas.buscarClienteDeuda;
-window.abrirModalRegistrarPago = Deudas.abrirModalRegistrarPago;
-window.cerrarModalRegistrarPago = Deudas.cerrarModalRegistrarPago;
-window.guardarPago = Deudas.guardarPago;
-window.verHistorialCliente = Deudas.verHistorialCliente;
-window.cerrarModalHistorialCliente = Deudas.cerrarModalHistorialCliente;
-
-// ✅ Exponer módulo completo
-window.Deudas = Deudas;
+// Módulo de Pagos
+window.cargarPagos = Pagos.cargarPagos;
+window.filtrarPorEstadoPago = Pagos.filtrarPorEstadoPago;
+window.buscarClientePago = Pagos.buscarClientePago;
+window.abrirModalRegistrarPago = Pagos.abrirModalRegistrarPago;
+window.cerrarModalRegistrarPago = Pagos.cerrarModalRegistrarPago;
+window.guardarPago = Pagos.guardarPago;
+window.verHistorialCliente = Pagos.verHistorialCliente;
+window.cerrarModalHistorialCliente = Pagos.cerrarModalHistorialCliente;
+window.verHistorialPagosServicio = Pagos.verHistorialPagosServicio;
+window.cerrarModalHistorialPagosServicio = Pagos.cerrarModalHistorialPagosServicio;
 
 // Funciones auxiliares (helpers)
 window.agregarProblemaAtajo = Helpers.agregarProblemaAtajo;
 window.abrirModalSeleccionarCliente = Helpers.abrirModalSeleccionarCliente;
 window.cerrarModalSeleccionarCliente = Helpers.cerrarModalSeleccionarCliente;
 window.buscarClientePorDNI = Helpers.buscarClientePorDNI;
-window.buscarClientesPorDNI = Helpers.buscarClientePorDNI; // Alias para compatibilidad
+window.buscarClientesPorDNI = Helpers.buscarClientesPorDNI; // ✅ Función con autocompletado para servicios
 window.seleccionarClienteExistente = Helpers.seleccionarClienteExistente;
+window.seleccionarClienteServicio = Helpers.seleccionarClienteServicio; // ✅ Migrado desde app.js
+window.confirmarClienteConTelefono = Helpers.confirmarClienteConTelefono; // ✅ Migrado desde app.js
+window.limpiarSeleccionClienteServicio = Helpers.limpiarSeleccionClienteServicio; // ✅ Migrado desde app.js
 window.abrirModalSeleccionarEquipo = Helpers.abrirModalSeleccionarEquipo;
 window.cerrarModalSeleccionarEquipo = Helpers.cerrarModalSeleccionarEquipo;
 window.buscarEquiposPorCliente = Helpers.buscarEquiposPorCliente;
@@ -380,8 +403,62 @@ console.log('📦 Módulos cargados:', {
     usuarios: '✅',
     cancelacion: '✅',
     estado: '✅',
-    deudas: '✅',
+    pagos: '✅',
     helpers: '✅'
 });
 
 console.log('🎉 Sistema 100% migrado y funcional');
+
+
+// ==================== EASTER EGG: ACTIVAR TEMA OSCURO ====================
+
+/**
+ * Easter egg: Hacer clic 8 veces en el área de usuario para activar el botón de tema
+ * El botón se oculta nuevamente al cerrar sesión o recargar la página
+ */
+let clicksEnUsuario = 0;
+let timerResetClicks = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const userInfo = document.querySelector('.user-info');
+    const themeToggle = document.getElementById('themeToggle');
+    
+    if (userInfo && themeToggle) {
+        // Hacer el área de usuario clickeable
+        userInfo.style.cursor = 'pointer';
+        
+        userInfo.addEventListener('click', function() {
+            clicksEnUsuario++;
+            
+            // Resetear contador después de 3 segundos de inactividad
+            clearTimeout(timerResetClicks);
+            timerResetClicks = setTimeout(() => {
+                clicksEnUsuario = 0;
+            }, 3000);
+            
+            // Feedback visual sutil
+            userInfo.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                userInfo.style.transform = 'scale(1)';
+            }, 100);
+            
+            // Si llega a 8 clics, activar el botón de tema
+            if (clicksEnUsuario === 8) {
+                themeToggle.style.display = 'flex';
+                clicksEnUsuario = 0;
+                
+                // Animación de aparición
+                themeToggle.style.opacity = '0';
+                themeToggle.style.transform = 'scale(0.5)';
+                setTimeout(() => {
+                    themeToggle.style.transition = 'all 0.3s ease';
+                    themeToggle.style.opacity = '1';
+                    themeToggle.style.transform = 'scale(1)';
+                }, 10);
+                
+                // Notificación sutil
+                console.log('🌙 ¡Easter egg activado! Botón de tema desbloqueado');
+            }
+        });
+    }
+});

@@ -8,21 +8,38 @@ import { getJSON, postJSON } from '../api.js';
 // ==================== ESTADO DEL MÓDULO ====================
 
 let pagosCache = [];
+let historialPagosCache = {}; // Caché de historial de pagos por servicioId
 let filtroEstadoPago = 'todos'; // todos, pendiente, parcial, pagado
 let busquedaCliente = '';
 let busquedaTimer = null; // Timer para debounce
+
+// Exponer caché globalmente para otros módulos
+if (typeof window !== 'undefined') {
+    window.Pagos = {
+        get pagosCache() { return pagosCache; },
+        get historialPagosCache() { return historialPagosCache; }
+    };
+}
 
 // ==================== FUNCIONES PÚBLICAS ====================
 
 /**
  * Cargar panel de pagos
+ * OPTIMIZADO: Verifica caché antes de consultar BD
  */
-export async function cargarPagos() {
+export async function cargarPagos(forzarRecarga = false) {
     const container = document.getElementById('pagosContainer');
     
     // Verificar que el contenedor existe
     if (!container) {
         console.warn('Contenedor de pagos no encontrado');
+        return;
+    }
+    
+    // 🚀 OPTIMIZACIÓN: Verificar si hay caché y no se fuerza recarga
+    if (!forzarRecarga && pagosCache.length > 0) {
+        console.log('✅ Usando caché de pagos (sin consultar BD)');
+        renderizarPanelPagos();
         return;
     }
     
@@ -33,6 +50,8 @@ export async function cargarPagos() {
         </div>`;
     
     try {
+        console.log('📡 Consultando BD para cargar pagos...');
+        
         // Cargar servicios (colección principal con numero_servicio)
         const serviciosRes = await fetch(`${API_BASE}/api/servicios`);
         const serviciosRaw = await serviciosRes.json();
@@ -152,12 +171,12 @@ function renderizarPanelPagos() {
                 </div>
             </div>
             
-            <div style="background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); padding: 20px; border-radius: 12px; color: white; box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);">
+            <div style="background: linear-gradient(135deg, ${totalPendiente < 0 ? '#4CAF50' : '#FF9800'} 0%, ${totalPendiente < 0 ? '#388E3C' : '#F57C00'} 100%); padding: 20px; border-radius: 12px; color: white; box-shadow: 0 4px 15px rgba(${totalPendiente < 0 ? '76, 175, 80' : '255, 152, 0'}, 0.3);">
                 <div style="display: flex; align-items: center; gap: 15px;">
-                    <i class="fas fa-exclamation-triangle" style="font-size: 36px; opacity: 0.9;"></i>
+                    <i class="fas ${totalPendiente < 0 ? 'fa-hand-holding-usd' : 'fa-exclamation-triangle'}" style="font-size: 36px; opacity: 0.9;"></i>
                     <div>
-                        <p style="margin: 0; font-size: 13px; opacity: 0.9;">Saldo Pendiente</p>
-                        <h3 style="margin: 5px 0 0 0; font-size: 28px; font-weight: 700;">${formatearMoneda(totalPendiente)}</h3>
+                        <p style="margin: 0; font-size: 13px; opacity: 0.9;">${totalPendiente < 0 ? 'Saldo a Devolver' : 'Saldo Pendiente'}</p>
+                        <h3 style="margin: 5px 0 0 0; font-size: 28px; font-weight: 700;">${formatearMoneda(Math.abs(totalPendiente))}</h3>
                     </div>
                 </div>
             </div>
@@ -455,6 +474,7 @@ export function cerrarModalRegistrarPago() {
 
 /**
  * Guardar pago
+ * OPTIMIZADO: Actualiza caché en lugar de recargar todo
  */
 export async function guardarPago(e) {
     e.preventDefault();
@@ -559,6 +579,29 @@ export async function guardarPago(e) {
         } else {
             const historialResult = await historialResponse.json();
             console.log('✅ Historial guardado:', historialResult);
+            
+            // 🚀 OPTIMIZACIÓN: Actualizar caché de historial
+            if (historialPagosCache[servicioId]) {
+                historialPagosCache[servicioId].unshift(historialResult);
+            }
+        }
+        
+        // 🚀 OPTIMIZACIÓN: Actualizar caché en lugar de recargar todo
+        const index = pagosCache.findIndex(p => p._id === servicioId);
+        if (index !== -1) {
+            pagosCache[index].montoPagado = nuevoAdelanto;
+            pagosCache[index].saldoPendiente = nuevoSaldo;
+            pagosCache[index].estadoPago = estadoPago;
+            console.log('✅ Caché actualizado localmente (sin recargar BD)');
+        }
+        
+        // 🚀 Actualizar caché global de Servicios si existe
+        if (window.Servicios && window.Servicios.serviciosCache) {
+            const srvIndex = window.Servicios.serviciosCache.findIndex(s => s._id === servicioId);
+            if (srvIndex !== -1) {
+                window.Servicios.serviciosCache[srvIndex].adelanto = nuevoAdelanto;
+                console.log('✅ Caché de Servicios sincronizado');
+            }
         }
         
         cerrarModalCarga();
@@ -571,8 +614,8 @@ export async function guardarPago(e) {
             mostrarNotificacionExito(`✅ Pago registrado - Saldo pendiente: ${formatearMoneda(nuevoSaldo)}`);
         }
         
-        // Recargar pagos
-        await cargarPagos();
+        // 🚀 OPTIMIZACIÓN: Solo re-renderizar la tabla (no recargar desde BD)
+        actualizarTablaPagos();
         
     } catch (error) {
         cerrarModalCarga();
@@ -669,20 +712,33 @@ export function cerrarModalHistorialCliente() {
 
 /**
  * Ver historial de pagos de un servicio específico
+ * OPTIMIZADO: Usa caché de historial de pagos
  */
 export async function verHistorialPagosServicio(servicioId) {
     mostrarModalCarga('Cargando historial de pagos...');
     
     try {
-        // Obtener el servicio
+        // Obtener el servicio del caché
         const servicio = pagosCache.find(s => s._id === servicioId);
         if (!servicio) {
             throw new Error('Servicio no encontrado');
         }
         
-        // Obtener historial de pagos
-        const response = await fetch(`${API_BASE}/api/historial-pagos/${servicioId}`);
-        const historialPagos = await response.json();
+        let historialPagos;
+        
+        // 🚀 OPTIMIZACIÓN: Verificar si está en caché
+        if (historialPagosCache[servicioId]) {
+            console.log('✅ Usando caché de historial de pagos');
+            historialPagos = historialPagosCache[servicioId];
+        } else {
+            // Si no está en caché, consultar BD
+            console.log('📡 Consultando BD para historial de pagos');
+            const response = await fetch(`${API_BASE}/api/historial-pagos/${servicioId}`);
+            historialPagos = await response.json();
+            
+            // Guardar en caché
+            historialPagosCache[servicioId] = historialPagos;
+        }
         
         const clienteNombre = servicio.cliente ? `${servicio.cliente.nombre} ${servicio.cliente.apellido_paterno || ''}`.trim() : 'Sin cliente';
         

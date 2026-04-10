@@ -1,58 +1,211 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
-  <!-- Fondo circular -->
-  <circle cx="100" cy="100" r="95" fill="#2192B8"/>
-  
-  <!-- Personaje Doctor PC -->
-  <g transform="translate(100, 100)">
-    <!-- Cuerpo (bata blanca) -->
-    <ellipse cx="0" cy="25" rx="35" ry="45" fill="#ffffff"/>
-    
-    <!-- Brazos -->
-    <ellipse cx="-30" cy="30" rx="12" ry="35" fill="#87CEEB" transform="rotate(-20 -30 30)"/>
-    <ellipse cx="30" cy="30" rx="12" ry="35" fill="#87CEEB" transform="rotate(20 30 30)"/>
-    
-    <!-- Manos -->
-    <circle cx="-35" cy="55" r="8" fill="#87CEEB"/>
-    <circle cx="35" cy="55" r="8" fill="#87CEEB"/>
-    
-    <!-- Destornillador en mano derecha -->
-    <g transform="translate(35, 55) rotate(45)">
-      <rect x="-2" y="5" width="4" height="20" fill="#FFD700" rx="1"/>
-      <rect x="-1" y="25" width="2" height="15" fill="#666666"/>
-    </g>
-    
-    <!-- Corbata roja -->
-    <path d="M 0 5 L -5 15 L 0 35 L 5 15 Z" fill="#DC3545"/>
-    
-    <!-- Cabeza -->
-    <circle cx="0" cy="-15" r="25" fill="#87CEEB"/>
-    
-    <!-- Ojo (visor médico) -->
-    <ellipse cx="8" cy="-18" rx="12" ry="10" fill="#ffffff" opacity="0.9"/>
-    <circle cx="8" cy="-18" r="5" fill="#333333"/>
-    <circle cx="10" cy="-20" r="2" fill="#ffffff"/>
-    
-    <!-- Banda del visor -->
-    <ellipse cx="0" cy="-25" rx="28" ry="8" fill="#4A5568"/>
-    
-    <!-- Estetoscopio -->
-    <path d="M -15 10 Q -25 10 -25 20" stroke="#FFD700" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <circle cx="-25" cy="23" r="4" fill="#FFD700"/>
-    
-    <!-- Bolsillo de la bata con cruz -->
-    <rect x="-12" y="15" width="24" height="18" rx="2" fill="#E3F2FD"/>
-    <g transform="translate(0, 24)">
-      <rect x="-1.5" y="-5" width="3" height="10" fill="#2192B8"/>
-      <rect x="-5" y="-1.5" width="10" height="3" fill="#2192B8"/>
-    </g>
-    
-    <!-- Botones de la bata -->
-    <circle cx="0" cy="5" r="2" fill="#2192B8"/>
-    <circle cx="0" cy="45" r="2" fill="#2192B8"/>
-  </g>
-  
-  <!-- Texto "Dr. PC" en la parte inferior (opcional) -->
-  <text x="100" y="185" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#ffffff" text-anchor="middle">
-    Dr. PC
-  </text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500">
+
+<defs>
+<!-- Gradiente para la piel/cuerpo azul -->
+<linearGradient id="skinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+<stop offset="0%" stop-color="#00b4ff"/>
+<stop offset="100%" stop-color="#0088cc"/>
+</linearGradient>
+
+<!-- Brillo en la cabeza -->
+<radialGradient id="shine" cx="30%" cy="25%" r="50%">
+<stop offset="0%" stop-color="white" stop-opacity="0.7"/>
+<stop offset="100%" stop-color="white" stop-opacity="0"/>
+</radialGradient>
+
+<!-- Gradiente para el espejo -->
+<radialGradient id="mirrorShine" cx="40%" cy="40%" r="60%">
+<stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+<stop offset="50%" stop-color="#e0e0e0" stop-opacity="0.6"/>
+<stop offset="100%" stop-color="#c0c0c0" stop-opacity="0.3"/>
+</radialGradient>
+</defs>
+
+<!-- CUERPO -->
+<path d="
+M170 210
+L230 210
+Q245 350 245 470
+L155 470
+Q155 350 170 210
+Z"
+fill="url(#skinGrad)"
+stroke="#005580"
+stroke-width="2.5"/>
+
+<!-- BATA BLANCA -->
+<path d="
+M170 210
+Q105 240 95 350
+L85 440
+Q85 465 145 465
+L170 465 Z"
+fill="white"
+stroke="#d0d0d0"
+stroke-width="2"/>
+
+<path d="
+M230 210
+Q295 240 305 350
+L315 440
+Q315 465 255 465
+L230 465 Z"
+fill="white"
+stroke="#d0d0d0"
+stroke-width="2"/>
+
+<!-- CAMISA INTERIOR -->
+<rect x="185" y="210" width="30" height="160" fill="#f0f0f0"/>
+
+<!-- CORBATA ROJA -->
+<path d="M188 235 L212 235 L222 315 L200 355 L178 315 Z"
+fill="#e31e24"
+stroke="#b01018"
+stroke-width="1.5"/>
+
+<!-- BRAZO IZQUIERDO -->
+<path d="M105 290 Q65 305 65 345"
+fill="none"
+stroke="white"
+stroke-width="22"
+stroke-linecap="round"/>
+
+<circle cx="65" cy="365" r="24"
+fill="url(#skinGrad)"
+stroke="#005580"
+stroke-width="2.5"/>
+
+<!-- BRAZO DERECHO -->
+<path d="M295 290 Q335 305 335 345"
+fill="none"
+stroke="white"
+stroke-width="22"
+stroke-linecap="round"/>
+
+<circle cx="335" cy="365" r="24"
+fill="url(#skinGrad)"
+stroke="#005580"
+stroke-width="2.5"/>
+
+<!-- DESTORNILLADOR EN LA MANO -->
+<g transform="translate(335 365) rotate(-25)">
+<!-- Mango amarillo -->
+<rect x="-13" y="-90" width="26" height="90" rx="13"
+fill="#ffc107"
+stroke="#e0a800"
+stroke-width="2"/>
+<!-- Detalles del mango -->
+<line x1="0" y1="-70" x2="0" y2="-20" stroke="#e0a800" stroke-width="1" opacity="0.5"/>
+<line x1="-8" y1="-50" x2="8" y2="-50" stroke="#e0a800" stroke-width="1" opacity="0.3"/>
+<line x1="-8" y1="-35" x2="8" y2="-35" stroke="#e0a800" stroke-width="1" opacity="0.3"/>
+<!-- Vástago metálico -->
+<rect x="-4" y="-150" width="8" height="60"
+fill="#b0b0b0"
+stroke="#808080"
+stroke-width="1.5"/>
+<!-- Brillo metálico -->
+<rect x="-2" y="-145" width="2" height="55"
+fill="#d0d0d0"
+opacity="0.6"/>
+<!-- Punta tipo Phillips (cruz) completa -->
+<g transform="translate(0, -150)">
+<!-- Cuerpo de la punta cónica -->
+<polygon points="0,-15 -4,-8 -3,-1 3,-1 4,-8"
+fill="#909090"
+stroke="#606060"
+stroke-width="1"/>
+<!-- Lado izquierdo oscuro -->
+<polygon points="0,-15 -4,-8 -3,-1 0,-1"
+fill="#707070"/>
+<!-- Lado derecho claro -->
+<polygon points="0,-15 4,-8 3,-1 0,-1"
+fill="#a0a0a0"/>
+<!-- Ranura vertical de la cruz -->
+<rect x="-0.8" y="-14" width="1.6" height="13"
+fill="#303030"/>
+<!-- Ranura horizontal de la cruz -->
+<rect x="-3.5" y="-9" width="7" height="1.6"
+fill="#303030"/>
+<!-- Brillo en la punta -->
+<polygon points="0,-15 1,-13 0.5,-8"
+fill="white"
+opacity="0.3"/>
+</g>
+</g>
+
+<!-- ESTETOSCOPIO -->
+<path d="M175 240 Q145 265 155 345"
+stroke="#00d4ff"
+stroke-width="6"
+fill="none"
+stroke-linecap="round"/>
+
+<path d="M225 240 Q255 265 245 325"
+stroke="#00d4ff"
+stroke-width="6"
+fill="none"
+stroke-linecap="round"/>
+
+<circle cx="240" cy="355" r="11" fill="#e0e0e0" stroke="#005580" stroke-width="2"/>
+<circle cx="240" cy="355" r="5" fill="#005580"/>
+
+<!-- CABEZA -->
+<circle cx="200" cy="135" r="95"
+fill="url(#skinGrad)"
+stroke="#005580"
+stroke-width="3"/>
+
+<circle cx="170" cy="105" r="40"
+fill="url(#shine)"/>
+
+<!-- OJOS -->
+<ellipse cx="175" cy="130" rx="12" ry="16" fill="white"/>
+<ellipse cx="225" cy="130" rx="12" ry="16" fill="white"/>
+
+<circle cx="177" cy="133" r="8" fill="#003554"/>
+<circle cx="227" cy="133" r="8" fill="#003554"/>
+
+<circle cx="179" cy="130" r="3" fill="white"/>
+<circle cx="229" cy="130" r="3" fill="white"/>
+
+<!-- CEJAS -->
+<path d="M160 115 Q175 110 185 112"
+stroke="#003554"
+stroke-width="3"
+fill="none"
+stroke-linecap="round"/>
+
+<path d="M215 112 Q225 110 240 115"
+stroke="#003554"
+stroke-width="3"
+fill="none"
+stroke-linecap="round"/>
+
+<!-- SONRISA -->
+<path d="M165 165 Q200 185 235 165"
+stroke="#003554"
+stroke-width="4"
+fill="none"
+stroke-linecap="round"/>
+
+<!-- BANDA DEL ESPEJO -->
+<rect x="115" y="90" width="170" height="30"
+fill="#003554"
+transform="rotate(-12 200 135)"
+rx="3"/>
+
+<!-- ESPEJO FRONTAL -->
+<circle cx="270" cy="100" r="38"
+fill="url(#mirrorShine)"
+stroke="#003554"
+stroke-width="3"/>
+
+<circle cx="270" cy="100" r="30"
+fill="white"
+opacity="0.5"/>
+
+<circle cx="270" cy="100" r="10"
+fill="#005580"
+opacity="0.3"/>
+
 </svg>

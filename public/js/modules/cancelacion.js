@@ -64,12 +64,18 @@ export async function confirmarCancelacionServicio() {
             throw new Error('Error al cancelar el servicio');
         }
 
+        const servicioActualizado = await response.json();
+
         cerrarModalCarga();
         cerrarModalCancelarServicio();
         
-        // Recargar servicios
-        if (window.cargarServicios) {
-            window.cargarServicios();
+        // Actualizar servicio en el caché y tabla
+        if (window.Servicios && window.Servicios.serviciosCache) {
+            const index = window.Servicios.serviciosCache.findIndex(s => s._id === servicioActualizado._id);
+            if (index !== -1) {
+                window.Servicios.serviciosCache[index] = servicioActualizado;
+                window.Servicios.renderTablaServicios(window.Servicios.serviciosCache);
+            }
         }
         
         mostrarNotificacionExito('Servicio cancelado exitosamente');

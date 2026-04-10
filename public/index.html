@@ -398,6 +398,16 @@
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('usuario', JSON.stringify(data.usuario));
                     window.location.href = 'dashboard.html';
+                } else if (response.status === 403 && data.tipo === 'usuario_desactivado') {
+                    showError(data.mensaje || 'Tu cuenta ha sido desactivada. Contacta al administrador.');
+                    btnLogin.disabled = true;
+                    btnLogin.style.background = '#95a5a6';
+                    btnLogin.innerHTML = '<i class="fas fa-user-slash"></i> Cuenta Desactivada';
+                    setTimeout(() => {
+                        btnLogin.disabled = false;
+                        btnLogin.style.background = '';
+                        btnLogin.innerHTML = '<span class="btn-text">Iniciar Sesión</span><span class="spinner"></span>';
+                    }, 5000);
                 } else if (response.status === 429) {
                     // Bloqueado por rate limit
                     showBloqueado(data.disponible_a_las);

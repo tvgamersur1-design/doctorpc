@@ -3,6 +3,7 @@
 import { API_CLIENTES, API_SERVICIOS, API_EQUIPOS, API_SERVICIO_EQUIPO, API_URL } from '../config.js';
 import { mostrarModalCarga, cerrarModalCarga, mostrarNotificacionExito, mostrarNotificacionAdvertencia, mostrarModalNotificacion } from '../ui.js';
 import { getJSON } from '../api.js';
+import { serviciosCache } from './servicios.js';
 
 // ==================== FUNCIONES PÚBLICAS ====================
 
@@ -25,16 +26,28 @@ export function obtenerEstadosPermitidos(estadoActual) {
 
 /**
  * Abrir modal para cambiar estado
+ * OPTIMIZADO: Usa caché local cuando es posible
  */
 export async function abrirModalCambiarEstado(servicioId) {
     try {
-        // Obtener el servicio específico por ID
-        const servicioRes = await fetch(`${API_SERVICIOS}/${servicioId}`);
-        if (!servicioRes.ok) {
-            alert('Servicio no encontrado');
-            return;
+        let servicio;
+        
+        // 🚀 OPTIMIZACIÓN: Intentar obtener del caché primero
+        if (window.Servicios && window.Servicios.serviciosCache && window.Servicios.serviciosCache.length > 0) {
+            console.log('✅ Usando caché para Cambiar Estado');
+            servicio = window.Servicios.serviciosCache.find(s => s._id === servicioId);
         }
-        const servicio = await servicioRes.json();
+        
+        // Si no está en caché, consultar BD
+        if (!servicio) {
+            console.log('⚠️ Servicio no en caché, consultando BD');
+            const servicioRes = await fetch(`${API_SERVICIOS}/${servicioId}`);
+            if (!servicioRes.ok) {
+                alert('Servicio no encontrado');
+                return;
+            }
+            servicio = await servicioRes.json();
+        }
         
         // Si está en "En reparación", mostrar modal de confirmación de reparación
         if (servicio.estado === 'En reparación') {
@@ -231,11 +244,23 @@ export async function cambiarEstadoServicio(servicioId, nuevoEstado, datosAdicio
 
 /**
  * Ver diagnóstico guardado
+ * OPTIMIZADO: Usa caché local
  */
 export async function verDiagnostico(servicioId) {
     try {
-        const response = await fetch(`${API_SERVICIOS}`);
-        const servicios = await response.json();
+        // 🚀 OPTIMIZACIÓN: Usar caché en lugar de consulta a BD
+        let servicios;
+        
+        if (window.Servicios && window.Servicios.serviciosCache && window.Servicios.serviciosCache.length > 0) {
+            console.log('✅ Usando caché para Ver Diagnóstico');
+            servicios = window.Servicios.serviciosCache;
+        } else {
+            // Fallback: Si no hay caché, consultar BD
+            console.log('⚠️ Caché vacío, consultando BD');
+            const response = await fetch(`${API_SERVICIOS}`);
+            servicios = await response.json();
+        }
+        
         const servicio = servicios.find(s => s._id === servicioId);
         
         if (!servicio || !servicio.diagnostico) {
@@ -264,12 +289,31 @@ export async function verDiagnostico(servicioId) {
 
 /**
  * Abrir modal con detalles completos del servicio
+ * OPTIMIZADO: Usa caché local en lugar de consultas a BD
  */
 export async function abrirModalDetallesServicio(servicioId) {
     try {
         mostrarModalCarga('Cargando detalles...');
 
-        const servicios = await getJSON(`${API_SERVICIOS}?incluir_cancelados=true`);
+        // 🚀 OPTIMIZACIÓN: Usar caché en lugar de consultas a BD
+        let servicios, clientes, equipos, serviciosEquipo;
+        
+        // Verificar si hay datos en caché del módulo servicios
+        if (window.Servicios && window.Servicios.serviciosCache && window.Servicios.serviciosCache.length > 0) {
+            console.log('✅ Usando caché para Ver Información');
+            servicios = window.Servicios.serviciosCache;
+            clientes = window.Servicios.clientesCache || [];
+            equipos = window.Servicios.equiposCache || [];
+            serviciosEquipo = window.Servicios.serviciosEquipoCache || [];
+        } else {
+            // Fallback: Si no hay caché, consultar BD
+            console.log('⚠️ Caché vacío, consultando BD');
+            servicios = await getJSON(`${API_SERVICIOS}?incluir_cancelados=true`);
+            clientes = await getJSON(API_CLIENTES);
+            equipos = await getJSON(API_EQUIPOS);
+            serviciosEquipo = await getJSON(API_SERVICIO_EQUIPO);
+        }
+
         const servicio = servicios.find(s => s._id === servicioId);
 
         if (!servicio) {
@@ -278,10 +322,7 @@ export async function abrirModalDetallesServicio(servicioId) {
             return;
         }
 
-        const clientes = await getJSON(API_CLIENTES);
         const cliente = clientes.find(c => c._id == servicio.cliente_id);
-
-        const equipos = await getJSON(API_EQUIPOS);
 
         let equipo = null;
         let servicioEquipo = null;
@@ -292,7 +333,6 @@ export async function abrirModalDetallesServicio(servicioId) {
         }
 
         if (!equipo) {
-            const serviciosEquipo = await getJSON(API_SERVICIO_EQUIPO);
             servicioEquipo = serviciosEquipo.find(se => se.servicio_id == servicioId);
             if (servicioEquipo) {
                 equipo = equipos.find(e => String(e._id) === String(servicioEquipo.equipo_id));
@@ -301,7 +341,6 @@ export async function abrirModalDetallesServicio(servicioId) {
                 }
             }
         } else {
-            const serviciosEquipo = await getJSON(API_SERVICIO_EQUIPO);
             servicioEquipo = serviciosEquipo.find(se => se.servicio_id == servicioId);
             if (servicioEquipo && servicioEquipo.fotos && Array.isArray(servicioEquipo.fotos)) {
                 fotosEquipo = servicioEquipo.fotos;
@@ -336,7 +375,23 @@ export async function abrirModalDetallesServicio(servicioId) {
         };
 
         // --- Helper: saldo ---
-        const saldo = parseFloat(servicio.monto || 0) - parseFloat(servicio.adelanto || 0);
+        let saldo = parseFloat(servicio.monto || 0) - parseFloat(servicio.adelanto || 0);
+        
+        // Verificar si ya se devolvió el dinero (cuando está entregado y había saldo negativo)
+        let montoDevuelto = 0;
+        if (servicio.estado === 'Entregado' && servicio.datos_entrega) {
+            try {
+                const datosEntrega = JSON.parse(servicio.datos_entrega);
+                if (datosEntrega.montoDevuelto && datosEntrega.montoDevuelto > 0) {
+                    montoDevuelto = parseFloat(datosEntrega.montoDevuelto);
+                    // Si ya se devolvió, el saldo real es 0
+                    saldo = 0;
+                }
+            } catch (e) {
+                console.warn('Error al parsear datos_entrega:', e);
+            }
+        }
+        
         const saldoColor = saldo > 0 ? '#dc3545' : '#198754';
 
         // --- COLUMNA 1: Info General ---
@@ -386,10 +441,21 @@ export async function abrirModalDetallesServicio(servicioId) {
                     <div class="emp-finance-card">
                         <div class="emp-finance-row"><span class="emp-field-label">MONTO TOTAL</span><span class="emp-finance-amount" style="color: #2192B8;">${parseFloat(servicio.monto || 0).toFixed(2)}</span></div>
                         <div class="emp-finance-row"><span class="emp-field-label">ADELANTO</span><span class="emp-finance-amount" style="color: #198754;">${parseFloat(servicio.adelanto || 0).toFixed(2)}</span></div>
-                        <div class="emp-finance-row emp-finance-saldo" style="background: ${saldo > 0 ? '#fff3cd' : '#d1e7dd'};">
-                            <span class="emp-field-label" style="color: ${saldo > 0 ? '#856404' : '#0f5132'};">SALDO PENDIENTE</span>
-                            <span class="emp-finance-amount" style="color: ${saldoColor};">${saldo.toFixed(2)}</span>
+                        ${montoDevuelto > 0 ? `
+                        <div class="emp-finance-row" style="background: #e3f2fd;">
+                            <span class="emp-field-label" style="color: #1565c0;">DEVUELTO AL CLIENTE</span>
+                            <span class="emp-finance-amount" style="color: #1565c0;">${montoDevuelto.toFixed(2)}</span>
                         </div>
+                        <div class="emp-finance-row emp-finance-saldo" style="background: #d1e7dd;">
+                            <span class="emp-field-label" style="color: #0f5132;">SALDO FINAL</span>
+                            <span class="emp-finance-amount" style="color: #198754;">0.00</span>
+                        </div>
+                        ` : `
+                        <div class="emp-finance-row emp-finance-saldo" style="background: ${saldo > 0 ? '#fff3cd' : (saldo < 0 ? '#e3f2fd' : '#d1e7dd')};">
+                            <span class="emp-field-label" style="color: ${saldo > 0 ? '#856404' : (saldo < 0 ? '#1565c0' : '#0f5132')};">${saldo < 0 ? 'SALDO A DEVOLVER' : 'SALDO PENDIENTE'}</span>
+                            <span class="emp-finance-amount" style="color: ${saldoColor};">${Math.abs(saldo).toFixed(2)}</span>
+                        </div>
+                        `}
                     </div>
                 </div>
 
@@ -617,8 +683,9 @@ export async function abrirModalDetallesServicio(servicioId) {
                 #modalDetallesServicio .emp-modal-container { width: 94vw; max-width: 1400px; max-height: 92vh; background: white; border-radius: 6px; box-shadow: 0 8px 40px rgba(0,0,0,0.18); display: flex; flex-direction: column; overflow: hidden; }
                 
                 /* Header */
-                #modalDetallesServicio .emp-header { display: flex; align-items: center; padding: 16px 24px; border-bottom: 1px solid #e9ecef; background: #fff; flex-shrink: 0; gap: 16px; flex-wrap: wrap; }
-                #modalDetallesServicio .emp-logo { width: 46px; height: 46px; background: #2192B8; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 20px; font-family: 'Segoe UI', Arial, sans-serif; flex-shrink: 0; }
+                #modalDetallesServicio .emp-header { display: flex; align-items: center; padding: 16px 24px; border-bottom: 1px solid #e9ecef; background: #fff; flex-shrink: 0; gap: 16px; flex-wrap: wrap; position: relative; }
+                #modalDetallesServicio .emp-logo { height: 56px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 2px; }
+                #modalDetallesServicio .emp-logo img { width: 100%; height: 100%; object-fit: contain; }
                 #modalDetallesServicio .emp-header-info { flex: 1; min-width: 180px; }
                 #modalDetallesServicio .emp-header-label { font-size: 11px; color: #6c757d; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
                 #modalDetallesServicio .emp-header-id { font-size: 24px; font-weight: 600; color: #212529; font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.2; }
@@ -706,9 +773,11 @@ export async function abrirModalDetallesServicio(servicioId) {
                     #modalDetallesServicio .emp-col-evidencia .emp-card { display: block; width: 100%; margin-right: 0; }
                     #modalDetallesServicio .emp-header { padding: 12px 16px; }
                     #modalDetallesServicio .emp-header-id { font-size: 18px; }
-                    #modalDetallesServicio .emp-logo { width: 38px; height: 38px; font-size: 16px; }
-                    #modalDetallesServicio .emp-header-actions { width: 100%; justify-content: flex-end; }
+                    #modalDetallesServicio .emp-logo { height: 46px; }
+                    #modalDetallesServicio .emp-logo img { width: 100%; height: 100%; }
+                    #modalDetallesServicio .emp-header-actions { width: auto; justify-content: flex-end; margin-left: auto; }
                     #modalDetallesServicio .emp-btn span.emp-btn-text { display: none; }
+                    #modalDetallesServicio .emp-btn-close { position: absolute; top: 12px; right: 12px; }
                     #modalDetallesServicio .emp-col { padding: 14px; }
                     #modalDetallesServicio .emp-timeline-content { flex-direction: column; align-items: flex-start; gap: 2px; }
                 }
@@ -719,6 +788,49 @@ export async function abrirModalDetallesServicio(servicioId) {
                     #modalDetallesServicio .emp-card-row { flex-direction: column; }
                     #modalDetallesServicio .emp-fotos-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
                 }
+
+                /* ===== TEMA OSCURO ===== */
+                body.dark-theme #modalDetallesServicio { background: rgba(0,0,0,0.85); }
+                body.dark-theme #modalDetallesServicio .emp-modal-container { background: #1a2332; box-shadow: 0 8px 40px rgba(0,0,0,0.6); }
+                body.dark-theme #modalDetallesServicio .emp-header { background: #0d1b2a; border-bottom-color: #2d3748; }
+                body.dark-theme #modalDetallesServicio .emp-header-label { color: #90cdf4; }
+                body.dark-theme #modalDetallesServicio .emp-header-id { color: #3bb4e5; }
+                body.dark-theme #modalDetallesServicio .emp-btn { background: #243447; border-color: #2d3748; color: #cbd5e0; }
+                body.dark-theme #modalDetallesServicio .emp-btn:hover { background: #2d3748; border-color: #3d4a5c; }
+                body.dark-theme #modalDetallesServicio .emp-btn-primary { background: #2192B8; border-color: #2192B8; }
+                body.dark-theme #modalDetallesServicio .emp-btn-primary:hover { background: #1a7a9e; }
+                body.dark-theme #modalDetallesServicio .emp-btn-close { background: #243447; border-color: #2d3748; color: #cbd5e0; }
+                body.dark-theme #modalDetallesServicio .emp-btn-close:hover { background: #5f1e1e; color: #fc8181; border-color: #9b2c2c; }
+                body.dark-theme #modalDetallesServicio .emp-col-info { background: #1e2a3a; border-right-color: #2d3748; }
+                body.dark-theme #modalDetallesServicio .emp-col-proceso { background: #1a2332; }
+                body.dark-theme #modalDetallesServicio .emp-col-evidencia { background: #1a2332; border-left-color: #2d3748; }
+                body.dark-theme #modalDetallesServicio .emp-section-label { color: #90cdf4; }
+                body.dark-theme #modalDetallesServicio .emp-section-divider { background: #2d3748; }
+                body.dark-theme #modalDetallesServicio .emp-client-name { color: #e2e8f0; }
+                body.dark-theme #modalDetallesServicio .emp-equipo-name { color: #e2e8f0; }
+                body.dark-theme #modalDetallesServicio .emp-field-label { color: #90cdf4; }
+                body.dark-theme #modalDetallesServicio .emp-field-value { color: #cbd5e0; }
+                body.dark-theme #modalDetallesServicio .emp-mini-card { background: #243447; }
+                body.dark-theme #modalDetallesServicio .emp-mini-card-full { background: #243447; }
+                body.dark-theme #modalDetallesServicio .emp-col-proceso .emp-mini-card,
+                body.dark-theme #modalDetallesServicio .emp-col-proceso .emp-mini-card-full,
+                body.dark-theme #modalDetallesServicio .emp-col-evidencia .emp-mini-card,
+                body.dark-theme #modalDetallesServicio .emp-col-evidencia .emp-mini-card-full { background: #1e2a3a; }
+                body.dark-theme #modalDetallesServicio .emp-card { background: #1e2a3a; border-color: #2d3748; }
+                body.dark-theme #modalDetallesServicio .emp-card-header { background: #243447; }
+                body.dark-theme #modalDetallesServicio .emp-card-body { background: #1e2a3a; }
+                body.dark-theme #modalDetallesServicio .emp-diag-item { background: #243447; }
+                body.dark-theme #modalDetallesServicio .emp-finance-card { background: #1e2a3a; }
+                body.dark-theme #modalDetallesServicio .emp-finance-row { background: #243447; }
+                body.dark-theme #modalDetallesServicio .emp-finance-amount { color: #3bb4e5; }
+                body.dark-theme #modalDetallesServicio .emp-timeline::before { background: #2d3748; }
+                body.dark-theme #modalDetallesServicio .emp-timeline-dot { border-color: #1a2332; box-shadow: 0 0 0 1px #2d3748; }
+                body.dark-theme #modalDetallesServicio .emp-timeline-content { background: #243447; }
+                body.dark-theme #modalDetallesServicio .emp-timeline-entregado { background: #1e4620; }
+                body.dark-theme #modalDetallesServicio .emp-timeline-title { color: #cbd5e0; }
+                body.dark-theme #modalDetallesServicio .emp-timeline-date { color: #90cdf4; }
+                body.dark-theme #modalDetallesServicio .emp-foto-thumb { border-color: #2d3748; }
+                body.dark-theme #modalDetallesServicio .emp-foto-thumb.emp-foto-entrega { border-color: #38a169; }
             `;
             document.head.appendChild(styleSheet);
         }
@@ -729,7 +841,7 @@ export async function abrirModalDetallesServicio(servicioId) {
         modal.innerHTML = `
             <div class="emp-modal-container">
                 <div class="emp-header">
-                    <div class="emp-logo">DP</div>
+                    <div class="emp-logo"><img src="/images/logo-doctorpc.svg" alt="Doctor PC"></div>
                     <div class="emp-header-info">
                         <div class="emp-header-label">ORDEN DE SERVICIO</div>
                         <div class="emp-header-id">${servicio.numero_servicio || 'N/A'}</div>
@@ -1023,9 +1135,6 @@ export async function confirmarReparacionCompleta() {
         const servicioActualizado = await cambiarEstadoServicio(window.servicioEnReparacion.id, 'Completado', datosJSON);
         cerrarModalConfirmarReparacion();
         
-        // Mostrar notificación de éxito (sin alert)
-        mostrarNotificacionExito('Reparación completada');
-        
         // Actualizar servicio en el caché y tabla
         if (servicioActualizado && window.Servicios && window.Servicios.serviciosCache) {
             const index = window.Servicios.serviciosCache.findIndex(s => s._id === servicioActualizado._id);
@@ -1156,11 +1265,50 @@ export async function abrirModalEntrega(servicioId, servicio) {
 
         document.getElementById('entMontoTotal').textContent = montoTotal.toFixed(2);
         document.getElementById('entPagadoHasta').textContent = pagadoHasta.toFixed(2);
-        document.getElementById('entSaldoPendiente').textContent = saldoPendiente.toFixed(2);
+        document.getElementById('entSaldoPendiente').textContent = Math.abs(saldoPendiente).toFixed(2);
         
-        // Establecer el monto a cobrar hoy como el saldo pendiente por defecto
-        document.getElementById('entMontoCobraHoy').value = saldoPendiente.toFixed(2);
-        document.getElementById('entMontoCobraHoy').max = saldoPendiente.toFixed(2);
+        // Actualizar el label según si es saldo pendiente o a devolver
+        const labelSaldo = document.querySelector('.entrega-finance-row.pendiente .fin-label');
+        const rowSaldo = document.querySelector('.entrega-finance-row.pendiente');
+        const seccionDevolucion = document.getElementById('seccionDevolucion');
+        
+        if (saldoPendiente < 0) {
+            // Hay que devolver dinero al cliente
+            labelSaldo.innerHTML = '<i class="fas fa-hand-holding-usd"></i> Saldo a Devolver';
+            rowSaldo.style.background = 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)';
+            rowSaldo.querySelector('.fin-label').style.color = '#1565c0';
+            rowSaldo.querySelector('.fin-value').style.color = '#1565c0';
+            
+            // Mostrar sección de devolución
+            seccionDevolucion.style.display = 'block';
+            document.getElementById('entMontoDevuelto').value = Math.abs(saldoPendiente).toFixed(2);
+            
+            // Ocultar campos de cobro
+            document.getElementById('entMontoCobraHoy').value = '0.00';
+            document.getElementById('entMontoCobraHoy').disabled = true;
+            document.getElementById('entMetodoPago').disabled = true;
+        } else {
+            // Saldo pendiente normal
+            labelSaldo.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Saldo Pendiente';
+            rowSaldo.style.background = 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)';
+            rowSaldo.querySelector('.fin-label').style.color = '#E65100';
+            rowSaldo.querySelector('.fin-value').style.color = '#E65100';
+            
+            // Ocultar sección de devolución
+            seccionDevolucion.style.display = 'none';
+            
+            // Habilitar campos de cobro
+            document.getElementById('entMontoCobraHoy').disabled = false;
+            document.getElementById('entMetodoPago').disabled = false;
+            
+            if (saldoPendiente > 0) {
+                document.getElementById('entMontoCobraHoy').value = saldoPendiente.toFixed(2);
+                document.getElementById('entMontoCobraHoy').max = saldoPendiente.toFixed(2);
+            } else {
+                document.getElementById('entMontoCobraHoy').value = '0.00';
+                document.getElementById('entMontoCobraHoy').max = '0.00';
+            }
+        }
         
         // Actualizar indicador de deuda inicial
         actualizarIndicadorDeuda();
@@ -1358,11 +1506,39 @@ export async function confirmarEntregaServicio() {
         const adelantoPrevio = parseFloat(window.servicioEnEntrega.adelanto || 0);
         const saldoPendiente = montoTotal - adelantoPrevio;
         
-        // Validar que no exceda el saldo
-        if (montoCobraHoy > saldoPendiente) {
-            alert(`❌ El monto no puede exceder el saldo pendiente de S/ ${saldoPendiente.toFixed(2)}`);
-            document.getElementById('entMontoCobraHoy').focus();
-            return;
+        // Variables para devolución
+        let montoDevuelto = 0;
+        let metodoDevolucion = '';
+        let observacionesDevolucion = '';
+        
+        // Si hay saldo negativo (a devolver)
+        if (saldoPendiente < 0) {
+            const confirmarDevolucion = document.getElementById('entConfirmarDevolucion').checked;
+            metodoDevolucion = document.getElementById('entMetodoDevolucion').value;
+            montoDevuelto = parseFloat(document.getElementById('entMontoDevuelto').value || 0);
+            observacionesDevolucion = document.getElementById('entObservacionesDevolucion').value.trim();
+            
+            // Validar que se haya confirmado la devolución
+            if (!confirmarDevolucion) {
+                alert('❌ Debes confirmar que se devolvió el dinero al cliente');
+                document.getElementById('entConfirmarDevolucion').focus();
+                return;
+            }
+            
+            // Validar método de devolución
+            if (!metodoDevolucion) {
+                alert('❌ Debes seleccionar el método de devolución');
+                document.getElementById('entMetodoDevolucion').style.borderColor = '#d32f2f';
+                document.getElementById('entMetodoDevolucion').focus();
+                return;
+            }
+        } else {
+            // Validar que no exceda el saldo
+            if (montoCobraHoy > saldoPendiente) {
+                alert(`❌ El monto no puede exceder el saldo pendiente de S/ ${saldoPendiente.toFixed(2)}`);
+                document.getElementById('entMontoCobraHoy').focus();
+                return;
+            }
         }
         
         // Calcular nuevo adelanto y saldo
@@ -1371,7 +1547,7 @@ export async function confirmarEntregaServicio() {
         
         // Determinar estado de pago
         let estadoPago = 'pendiente';
-        if (nuevoSaldo === 0) {
+        if (nuevoSaldo === 0 || saldoPendiente < 0) {
             estadoPago = 'pagado';
         } else if (nuevoAdelanto > 0) {
             estadoPago = 'parcial';
@@ -1392,6 +1568,11 @@ export async function confirmarEntregaServicio() {
             nuevoAdelanto: nuevoAdelanto,
             nuevoSaldo: nuevoSaldo,
             estadoPago: estadoPago,
+            
+            // DATOS DE DEVOLUCIÓN (si aplica)
+            montoDevuelto: montoDevuelto,
+            metodoDevolucion: metodoDevolucion,
+            observacionesDevolucion: observacionesDevolucion,
             
             comprobanteEntrega: document.getElementById('entComprobante').value.trim(),
             garantiaHasta: document.getElementById('entGarantia').value,
@@ -1438,13 +1619,47 @@ export async function confirmarEntregaServicio() {
             }
         }
         
+        // Registrar devolución en historial_pagos (como monto negativo)
+        if (montoDevuelto > 0) {
+            console.log('💸 Registrando devolución en historial:', montoDevuelto);
+            
+            const historialDevolucion = {
+                servicio_id: window.servicioEnEntrega.id,
+                numero_servicio: window.servicioEnEntrega.numero_servicio || '',
+                cliente_id: window.servicioEnEntrega.cliente_id || '',
+                monto: -Math.abs(montoDevuelto), // Monto negativo para indicar devolución
+                metodo_pago: metodoDevolucion,
+                referencia: datosEntrega.comprobanteEntrega || '',
+                notas: `Devolución al cliente: ${observacionesDevolucion || 'Exceso de pago devuelto'}`,
+                usuario_registro: localStorage.getItem('usuario_nombre') || 'Sistema'
+            };
+            
+            try {
+                const historialResponse = await fetch(`${API_URL}/api/historial-pagos`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(historialDevolucion)
+                });
+                
+                if (historialResponse.ok) {
+                    console.log('✅ Devolución registrada en historial');
+                } else {
+                    console.warn('⚠️ No se pudo registrar la devolución en historial');
+                }
+            } catch (error) {
+                console.warn('⚠️ Error al registrar devolución en historial:', error);
+            }
+        }
+        
         // Limpiar fotos
         limpiarFotosEntrega();
         
         cerrarModalEntrega();
         
         // Mostrar notificación según resultado financiero
-        if (nuevoSaldo === 0) {
+        if (montoDevuelto > 0) {
+            mostrarNotificacionExito(`Servicio entregado - Se devolvió S/ ${montoDevuelto.toFixed(2)} al cliente`);
+        } else if (nuevoSaldo === 0) {
             mostrarNotificacionExito('Servicio entregado - Deuda saldada completamente');
         } else if (montoCobraHoy > 0) {
             mostrarNotificacionAdvertencia(`Servicio entregado con saldo pendiente de S/ ${nuevoSaldo.toFixed(2)}`);

@@ -87,6 +87,7 @@ export function cerrarModalNuevoEquipo() {
 
 /**
  * Guardar equipo
+ * OPTIMIZADO: Actualiza caché de servicios
  */
 export async function guardarEquipo(e) {
     e.preventDefault();
@@ -116,8 +117,17 @@ export async function guardarEquipo(e) {
 
         document.getElementById('formEquipo').reset();
         cerrarModalNuevoEquipo();
-        await cargarEquipos();
+        
+        // Agregar al caché y actualizar tabla sin recargar
+        equiposCache.unshift(equipoGuardado);
+        renderTablaEquipos(equiposCache);
         await actualizarSelectsEquipos();
+        
+        // 🚀 OPTIMIZACIÓN: Actualizar caché de Servicios
+        if (window.Servicios && window.Servicios.equiposCache) {
+            window.Servicios.equiposCache.unshift(equipoGuardado);
+            console.log('✅ Caché de equipos (Servicios) actualizado');
+        }
         
         mostrarNotificacionExito('Equipo guardado');
     } catch (error) {
@@ -219,7 +229,7 @@ export async function abrirModalEditarEquipo(id) {
         // Cargar nombre del cliente
         if (equipo.cliente_id) {
             try {
-                const clientesRes = await fetch(`${API_CLIENTES}`);
+                const clientesRes = await fetch(`${API.CLIENTES}`);
                 const clientes = await clientesRes.json();
                 const cliente = clientes.find(c => c._id === equipo.cliente_id);
                 if (cliente) {
@@ -271,11 +281,21 @@ export async function guardarCambiosEquipo(e) {
     try {
         mostrarModalCarga('Guardando...');
         
-        await putJSON(`${API.EQUIPOS}/${equipoEnEdicion._id}`, datosActualizados);
+        const equipoActualizado = await putJSON(`${API.EQUIPOS}/${equipoEnEdicion._id}`, datosActualizados);
+
+        if (!equipoActualizado || !equipoActualizado._id) {
+            throw new Error('El servidor no devolvió un equipo válido');
+        }
 
         cerrarModalCarga();
         cerrarModalEditarEquipo();
-        await cargarEquipos();
+        
+        // Actualizar en el caché
+        const index = equiposCache.findIndex(e => e._id === equipoActualizado._id);
+        if (index !== -1) {
+            equiposCache[index] = equipoActualizado;
+        }
+        renderTablaEquipos(equiposCache);
         await actualizarSelectsEquipos();
         
         mostrarNotificacionExito('Equipo actualizado');
