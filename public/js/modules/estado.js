@@ -1487,13 +1487,18 @@ export async function confirmarEntregaServicio() {
     }
 
     try {
+        // Mostrar modal de carga
+        mostrarModalCarga('Procesando entrega...');
+        
         // Subir fotos a Cloudinary si hay
         let fotosUrls = [];
         const fotos = obtenerFotosEntrega();
         if (fotos && fotos.length > 0) {
             try {
+                mostrarModalCarga('Subiendo fotos de entrega...');
                 fotosUrls = await subirFotosEntregaACloudinary();
             } catch (error) {
+                cerrarModalCarga();
                 console.error('Error al subir fotos:', error);
                 alert('Error al subir fotos: ' + error.message);
                 return;
@@ -1520,6 +1525,7 @@ export async function confirmarEntregaServicio() {
             
             // Validar que se haya confirmado la devolución
             if (!confirmarDevolucion) {
+                cerrarModalCarga();
                 alert('❌ Debes confirmar que se devolvió el dinero al cliente');
                 document.getElementById('entConfirmarDevolucion').focus();
                 return;
@@ -1527,6 +1533,7 @@ export async function confirmarEntregaServicio() {
             
             // Validar método de devolución
             if (!metodoDevolucion) {
+                cerrarModalCarga();
                 alert('❌ Debes seleccionar el método de devolución');
                 document.getElementById('entMetodoDevolucion').style.borderColor = '#d32f2f';
                 document.getElementById('entMetodoDevolucion').focus();
@@ -1535,6 +1542,7 @@ export async function confirmarEntregaServicio() {
         } else {
             // Validar que no exceda el saldo
             if (montoCobraHoy > saldoPendiente) {
+                cerrarModalCarga();
                 alert(`❌ El monto no puede exceder el saldo pendiente de S/ ${saldoPendiente.toFixed(2)}`);
                 document.getElementById('entMontoCobraHoy').focus();
                 return;
@@ -1587,11 +1595,13 @@ export async function confirmarEntregaServicio() {
         console.log('💾 Confirmando entrega:', datosEntrega);
 
         // Cambiar estado a 'Entregado' pasando datos de entrega
+        mostrarModalCarga('Guardando entrega...');
         await cambiarEstadoServicio(window.servicioEnEntrega.id, 'Entregado', datosEntregaJSON);
         
         // Registrar pago de entrega en historial_pagos
         if (montoCobraHoy > 0) {
             console.log('💰 Registrando pago de entrega en historial:', montoCobraHoy);
+            mostrarModalCarga('Registrando pago...');
             
             const historialPago = {
                 servicio_id: window.servicioEnEntrega.id,
@@ -1656,6 +1666,9 @@ export async function confirmarEntregaServicio() {
         // Limpiar fotos
         limpiarFotosEntrega();
         
+        // Cerrar modal de carga
+        cerrarModalCarga();
+        
         cerrarModalEntrega();
         
         // Mostrar notificación según resultado financiero
@@ -1674,6 +1687,7 @@ export async function confirmarEntregaServicio() {
             window.cargarServicios();
         }
     } catch (error) {
+        cerrarModalCarga();
         console.error('❌ Error:', error);
         alert('Error al confirmar entrega: ' + error.message);
     }
