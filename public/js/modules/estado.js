@@ -1547,9 +1547,11 @@ export async function confirmarEntregaServicio() {
         
         // Determinar estado de pago
         let estadoPago = 'pendiente';
-        if (nuevoSaldo === 0 || saldoPendiente < 0) {
+        if (nuevoSaldo <= 0) {
+            // Si el nuevo saldo es 0 o negativo (pagado completamente o con exceso)
             estadoPago = 'pagado';
         } else if (nuevoAdelanto > 0) {
+            // Si hay adelanto pero aún queda saldo
             estadoPago = 'parcial';
         }
 

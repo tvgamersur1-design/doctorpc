@@ -204,11 +204,15 @@ exports.handler = async (event, context) => {
       // Eliminar campos que no deben ser actualizados desde el frontend
       delete updateData._id;
       
-      // 🔒 PROTEGER CAMPOS FINANCIEROS: No permitir sobrescribir estos campos desde PUT
-      // Estos campos solo deben ser actualizados por el endpoint de pagos
-      delete updateData.adelanto;
-      delete updateData.saldo_pendiente;
-      delete updateData.estado_pago;
+      // 🔒 PROTEGER CAMPOS FINANCIEROS: Solo permitir actualización si viene con datos_entrega
+      // Estos campos solo deben ser actualizados por el endpoint de pagos o durante la entrega
+      if (!body.datos_entrega) {
+        // Si NO es una entrega, proteger campos financieros
+        delete updateData.adelanto;
+        delete updateData.saldo_pendiente;
+        delete updateData.estado_pago;
+      }
+      // Si es una entrega (tiene datos_entrega), permitir actualización de campos financieros
       
       console.log('[servicios] Campos a actualizar:', Object.keys(updateData));
 
