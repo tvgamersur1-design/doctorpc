@@ -1,0 +1,224 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1100">
+  <defs>
+    <style>
+      .table-box { fill: #ffffff; stroke: #2c3e50; stroke-width: 2; }
+      .table-header { fill: #3498db; }
+      .table-title { fill: #ffffff; font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; }
+      .field-text { fill: #2c3e50; font-family: 'Courier New', monospace; font-size: 12px; }
+      .pk { fill: #e74c3c; font-weight: bold; }
+      .fk { fill: #27ae60; }
+      .relation-line { stroke: #7f8c8d; stroke-width: 2; fill: none; }
+      .relation-arrow { fill: #7f8c8d; }
+      .index-icon { fill: #f39c12; }
+    </style>
+  </defs>
+
+  <!-- TABLA: usuarios -->
+  <g id="usuarios">
+    <rect class="table-box" x="50" y="50" width="280" height="240" rx="5"/>
+    <rect class="table-header" x="50" y="50" width="280" height="35" rx="5"/>
+    <text class="table-title" x="190" y="73" text-anchor="middle">👤 usuarios</text>
+    
+    <text class="field-text pk" x="60" y="105">🔑 _id: ObjectId</text>
+    <text class="field-text" x="60" y="125">📝 usuario: String (unique)</text>
+    <text class="field-text" x="60" y="145">📧 correo: String (unique)</text>
+    <text class="field-text" x="60" y="165">🔒 clave: String (hash)</text>
+    <text class="field-text" x="60" y="185">👔 rol: String (admin/usuario)</text>
+    <text class="field-text" x="60" y="205">✅ activo: Boolean</text>
+    <text class="field-text" x="60" y="225">📅 fecha_creacion: ISODate</text>
+    <text class="field-text" x="60" y="245">📅 fecha_actualizacion: ISODate</text>
+    <text class="field-text" x="60" y="265">📅 fecha_desactivacion: ISODate</text>
+  </g>
+
+  <!-- TABLA: clientes -->
+  <g id="clientes">
+    <rect class="table-box" x="450" y="50" width="280" height="280" rx="5"/>
+    <rect class="table-header" x="450" y="50" width="280" height="35" rx="5"/>
+    <text class="table-title" x="590" y="73" text-anchor="middle">👥 clientes</text>
+    
+    <text class="field-text pk" x="460" y="105">🔑 _id: ObjectId</text>
+    <text class="field-text" x="460" y="125">👤 nombre: String</text>
+    <text class="field-text" x="460" y="145">🆔 dni: String (unique, 8 dígitos)</text>
+    <text class="field-text" x="460" y="165">📧 email: String</text>
+    <text class="field-text" x="460" y="185">📞 telefono: String</text>
+    <text class="field-text" x="460" y="205">📍 direccion: String</text>
+    <text class="field-text" x="460" y="225">🏢 empresa: String</text>
+    <text class="field-text" x="460" y="245">💼 ruc: String</text>
+    <text class="field-text" x="460" y="265">✅ estado: String (activo/inactivo)</text>
+    <text class="field-text" x="460" y="285">📅 fecha_registro: ISODate</text>
+    <text class="field-text" x="460" y="305">🗑️ eliminado: Boolean</text>
+  </g>
+
+  <!-- TABLA: equipos -->
+  <g id="equipos">
+    <rect class="table-box" x="850" y="50" width="280" height="300" rx="5"/>
+    <rect class="table-header" x="850" y="50" width="280" height="35" rx="5"/>
+    <text class="table-title" x="990" y="73" text-anchor="middle">💻 equipos</text>
+    
+    <text class="field-text pk" x="860" y="105">🔑 _id: ObjectId</text>
+    <text class="field-text fk" x="860" y="125">🔗 cliente_id: ObjectId</text>
+    <text class="field-text" x="860" y="145">🏷️ tipo: String</text>
+    <text class="field-text" x="860" y="165">🏭 marca: String</text>
+    <text class="field-text" x="860" y="185">📦 modelo: String</text>
+    <text class="field-text" x="860" y="205">🔢 numero_serie: String (unique)</text>
+    <text class="field-text" x="860" y="225">🎨 color: String</text>
+    <text class="field-text" x="860" y="245">📝 descripcion: String</text>
+    <text class="field-text" x="860" y="265">📋 observaciones: String</text>
+    <text class="field-text" x="860" y="285">✅ estado: String</text>
+    <text class="field-text" x="860" y="305">📅 fecha_registro: ISODate</text>
+    <text class="field-text" x="860" y="325">🗑️ eliminado: Boolean</text>
+  </g>
+
+  <!-- TABLA: servicios -->
+  <g id="servicios">
+    <rect class="table-box" x="50" y="400" width="320" height="620" rx="5"/>
+    <rect class="table-header" x="50" y="400" width="320" height="35" rx="5"/>
+    <text class="table-title" x="210" y="423" text-anchor="middle">🔧 servicios</text>
+    
+    <text class="field-text pk" x="60" y="455">🔑 _id: ObjectId</text>
+    <text class="field-text" x="60" y="475">📋 numero_servicio: String</text>
+    <text class="field-text fk" x="60" y="495">🔗 cliente_id: ObjectId</text>
+    <text class="field-text fk" x="60" y="515">🔗 equipo_id: ObjectId</text>
+    <text class="field-text" x="60" y="535">📅 fecha: String</text>
+    <text class="field-text" x="60" y="555">🕐 hora: String</text>
+    <text class="field-text" x="60" y="575">🏢 local: String</text>
+    <text class="field-text" x="60" y="595">⚠️ problemas: String</text>
+    <text class="field-text" x="60" y="615">📝 observaciones: String</text>
+    <text class="field-text" x="60" y="635">💰 monto: Number</text>
+    <text class="field-text" x="60" y="655">💵 adelanto: Number</text>
+    <text class="field-text" x="60" y="675">💳 saldo_pendiente: Number</text>
+    <text class="field-text" x="60" y="695">💸 estado_pago: String</text>
+    <text class="field-text" x="60" y="715">📊 estado: String</text>
+    <text class="field-text" x="60" y="735">🏷️ nombre_servicio: String</text>
+    <text class="field-text" x="60" y="755">📂 categoria: String</text>
+    <text class="field-text" x="60" y="775">📄 descripcion: String</text>
+    <text class="field-text" x="60" y="795">📝 notas: String</text>
+    <text class="field-text" x="60" y="815">🔬 diagnostico: JSON</text>
+    <text class="field-text" x="60" y="835">📸 fotos_equipo: Array[String]</text>
+    <text class="field-text" x="60" y="855">📦 datos_entrega: JSON</text>
+    <text class="field-text" x="60" y="875">📅 fecha_creacion: ISODate</text>
+    <text class="field-text" x="60" y="895">📅 fecha_actualizacion: ISODate</text>
+    <text class="field-text" x="60" y="915">📅 fecha_inicio_diagnostico: String</text>
+    <text class="field-text" x="60" y="935">📅 fecha_inicio_reparacion: String</text>
+    <text class="field-text" x="60" y="955">📅 fecha_completado: String</text>
+    <text class="field-text" x="60" y="975">📅 fecha_entrega: String</text>
+    <text class="field-text" x="60" y="995">📅 fecha_cancelacion: String</text>
+  </g>
+
+  <!-- TABLA: historial_pagos -->
+  <g id="historial_pagos">
+    <rect class="table-box" x="450" y="450" width="320" height="340" rx="5"/>
+    <rect class="table-header" x="450" y="450" width="320" height="35" rx="5"/>
+    <text class="table-title" x="610" y="473" text-anchor="middle">💳 historial_pagos</text>
+    
+    <text class="field-text pk" x="460" y="505">🔑 _id: ObjectId</text>
+    <text class="field-text fk" x="460" y="525">🔗 servicio_id: ObjectId</text>
+    <text class="field-text" x="460" y="545">📋 numero_servicio: String</text>
+    <text class="field-text fk" x="460" y="565">🔗 cliente_id: ObjectId</text>
+    <text class="field-text" x="460" y="585">💰 monto: Number</text>
+    <text class="field-text" x="460" y="605">💳 metodo_pago: String</text>
+    <text class="field-text" x="460" y="625">🧾 referencia: String</text>
+    <text class="field-text" x="460" y="645">📝 notas: String</text>
+    <text class="field-text" x="460" y="665">👤 usuario_registro: String</text>
+    <text class="field-text" x="460" y="685">📅 fecha_pago: ISODate</text>
+    <text class="field-text" x="460" y="705">📅 fecha_registro: ISODate</text>
+    
+    <text class="field-text" x="460" y="735" font-style="italic" fill="#7f8c8d">💡 Nota: monto negativo = devolución</text>
+    <text class="field-text" x="460" y="755" font-style="italic" fill="#7f8c8d">💡 Registra pagos y devoluciones</text>
+  </g>
+
+  <!-- TABLA: pagos (legacy) -->
+  <g id="pagos">
+    <rect class="table-box" x="850" y="450" width="280" height="240" rx="5"/>
+    <rect class="table-header" x="850" y="450" width="280" height="35" rx="5"/>
+    <text class="table-title" x="990" y="473" text-anchor="middle">💵 pagos (legacy)</text>
+    
+    <text class="field-text pk" x="860" y="505">🔑 _id: ObjectId</text>
+    <text class="field-text fk" x="860" y="525">🔗 servicio_equipo_id: ObjectId</text>
+    <text class="field-text" x="860" y="545">💰 monto_pagado: Number</text>
+    <text class="field-text" x="860" y="565">💳 metodo_pago: String</text>
+    <text class="field-text" x="860" y="585">🧾 referencia: String</text>
+    <text class="field-text" x="860" y="605">📝 notas: String</text>
+    <text class="field-text" x="860" y="625">📅 fecha_pago: ISODate</text>
+    <text class="field-text" x="860" y="645">📅 fecha_registro: ISODate</text>
+    
+    <text class="field-text" x="860" y="670" font-style="italic" fill="#e74c3c">⚠️ Colección legacy</text>
+  </g>
+
+  <!-- TABLA: servicio_equipo (legacy) -->
+  <g id="servicio_equipo">
+    <rect class="table-box" x="850" y="750" width="280" height="260" rx="5"/>
+    <rect class="table-header" x="850" y="750" width="280" height="35" rx="5"/>
+    <text class="table-title" x="990" y="773" text-anchor="middle">🔗 servicio_equipo (legacy)</text>
+    
+    <text class="field-text pk" x="860" y="805">🔑 _id: ObjectId</text>
+    <text class="field-text fk" x="860" y="825">🔗 cliente_id: ObjectId</text>
+    <text class="field-text fk" x="860" y="845">🔗 equipo_id: ObjectId</text>
+    <text class="field-text" x="860" y="865">📋 numero_orden: String (unique)</text>
+    <text class="field-text" x="860" y="885">📊 estado: String</text>
+    <text class="field-text" x="860" y="905">💰 costo_total: Number</text>
+    <text class="field-text" x="860" y="925">📝 descripcion: String</text>
+    <text class="field-text" x="860" y="945">📅 fecha_creacion: ISODate</text>
+    <text class="field-text" x="860" y="965">📅 fecha_actualizacion: ISODate</text>
+    
+    <text class="field-text" x="860" y="990" font-style="italic" fill="#e74c3c">⚠️ Colección legacy</text>
+  </g>
+
+  <!-- RELACIONES -->
+  
+  <!-- clientes -> equipos (1:N) -->
+  <path class="relation-line" d="M 730 180 L 850 180"/>
+  <polygon class="relation-arrow" points="850,180 840,175 840,185"/>
+  <text class="field-text" x="780" y="170" fill="#7f8c8d">1:N</text>
+
+  <!-- clientes -> servicios (1:N) -->
+  <path class="relation-line" d="M 590 330 L 590 400 L 210 400"/>
+  <polygon class="relation-arrow" points="210,400 220,395 220,405"/>
+  <text class="field-text" x="400" y="390" fill="#7f8c8d">1:N</text>
+
+  <!-- equipos -> servicios (1:N) -->
+  <path class="relation-line" d="M 990 350 L 990 380 L 370 380 L 370 495"/>
+  <polygon class="relation-arrow" points="370,495 365,485 375,485"/>
+  <text class="field-text" x="680" y="370" fill="#7f8c8d">1:N</text>
+
+  <!-- servicios -> historial_pagos (1:N) -->
+  <path class="relation-line" d="M 370 650 L 450 650"/>
+  <polygon class="relation-arrow" points="450,650 440,645 440,655"/>
+  <text class="field-text" x="400" y="640" fill="#7f8c8d">1:N</text>
+
+  <!-- clientes -> historial_pagos (1:N) -->
+  <path class="relation-line" d="M 590 330 L 590 565 L 450 565"/>
+  <polygon class="relation-arrow" points="450,565 460,560 460,570"/>
+  <text class="field-text" x="510" y="555" fill="#7f8c8d">1:N</text>
+
+  <!-- servicios -> pagos (1:N) - legacy -->
+  <path class="relation-line" d="M 370 550 L 850 550" stroke-dasharray="5,5"/>
+  <polygon class="relation-arrow" points="850,550 840,545 840,555"/>
+  <text class="field-text" x="600" y="540" fill="#e74c3c">1:N (legacy)</text>
+
+  <!-- clientes -> servicio_equipo (1:N) - legacy -->
+  <path class="relation-line" d="M 730 280 L 800 280 L 800 870 L 850 870" stroke-dasharray="5,5"/>
+  <polygon class="relation-arrow" points="850,870 840,865 840,875"/>
+  <text class="field-text" x="760" y="270" fill="#e74c3c">1:N (legacy)</text>
+
+  <!-- equipos -> servicio_equipo (1:N) - legacy -->
+  <path class="relation-line" d="M 990 350 L 990 845 L 850 845" stroke-dasharray="5,5"/>
+  <polygon class="relation-arrow" points="850,845 860,840 860,850"/>
+  <text class="field-text" x="920" y="600" fill="#e74c3c">1:N (legacy)</text>
+
+  <!-- LEYENDA -->
+  <g id="leyenda">
+    <rect x="50" y="1040" width="500" height="50" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" rx="3"/>
+    <text class="field-text pk" x="60" y="1060">🔑 Primary Key</text>
+    <text class="field-text fk" x="180" y="1060">🔗 Foreign Key</text>
+    <text class="field-text" x="300" y="1060" fill="#7f8c8d">━━ Relación activa</text>
+    <text class="field-text" x="60" y="1080" fill="#e74c3c">- - - Relación legacy</text>
+    <text class="field-text" x="200" y="1080" fill="#e74c3c">⚠️ Colección legacy (no usar)</text>
+  </g>
+
+  <!-- TÍTULO -->
+  <text x="700" y="30" text-anchor="middle" style="font-family: Arial, sans-serif; font-size: 24px; font-weight: bold; fill: #2c3e50;">
+    📊 Base de Datos - Doctor PC
+  </text>
+
+</svg>
