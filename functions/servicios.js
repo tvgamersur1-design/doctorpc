@@ -194,11 +194,23 @@ exports.handler = async (event, context) => {
     // PUT /servicios/:id
     if (httpMethod === 'PUT' && id) {
       console.log(`[servicios] PUT: Actualizando servicio ${id}`);
+      
+      // Preparar datos de actualización
       const updateData = {
         ...body,
         fecha_actualizacion: new Date().toISOString()
       };
+      
+      // Eliminar campos que no deben ser actualizados desde el frontend
       delete updateData._id;
+      
+      // 🔒 PROTEGER CAMPOS FINANCIEROS: No permitir sobrescribir estos campos desde PUT
+      // Estos campos solo deben ser actualizados por el endpoint de pagos
+      delete updateData.adelanto;
+      delete updateData.saldo_pendiente;
+      delete updateData.estado_pago;
+      
+      console.log('[servicios] Campos a actualizar:', Object.keys(updateData));
 
       const result = await db.collection('servicios').findOneAndUpdate(
         { _id: new ObjectId(id) },

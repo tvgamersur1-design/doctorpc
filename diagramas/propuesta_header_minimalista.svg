@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 120">
+  <defs>
+    <linearGradient id="subtleGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f8f9fa;stop-opacity:1" />
+    </linearGradient>
+    <filter id="softShadow">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+  
+  <!-- Fondo blanco limpio -->
+  <rect width="1400" height="120" fill="url(#subtleGradient)"/>
+  
+  <!-- Barra de acento superior (marca corporativa) -->
+  <rect width="1400" height="3" fill="#1b7fb8"/>
+  
+  <!-- Logo y marca -->
+  <g transform="translate(50, 35)">
+    <!-- Logo circular moderno -->
+    <circle cx="25" cy="25" r="25" fill="#1b7fb8"/>
+    <circle cx="25" cy="25" r="22" fill="none" stroke="white" stroke-width="2"/>
+    <text x="25" y="33" font-family="'Segoe UI', Arial, sans-serif" font-size="20" font-weight="bold" fill="white" text-anchor="middle">PC</text>
+  </g>
+  
+  <!-- Información de marca -->
+  <g transform="translate(110, 35)">
+    <text x="0" y="20" font-family="'Segoe UI', Arial, sans-serif" font-size="24" font-weight="600" fill="#0f4c75">
+      Doctor PC
+    </text>
+    <text x="0" y="40" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6c757d">
+      Sistema de Administración Profesional
+    </text>
+  </g>
+  
+  <!-- Línea divisoria sutil -->
+  <line x1="480" y1="30" x2="480" y2="90" stroke="#dee2e6" stroke-width="1"/>
+  
+  <!-- Navegación rápida / Breadcrumb -->
+  <g transform="translate(520, 55)">
+    <g>
+      <rect x="0" y="-18" width="90" height="36" rx="6" fill="#e3f2fd"/>
+      <text x="45" y="6" font-family="'Segoe UI', Arial, sans-serif" font-size="13" font-weight="500" fill="#1976d2" text-anchor="middle">
+        Usuarios
+      </text>
+    </g>
+    <text x="110" y="6" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#adb5bd">›</text>
+    <text x="130" y="6" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6c757d">Gestión</text>
+  </g>
+  
+  <!-- Panel de usuario y acciones -->
+  <g transform="translate(950, 45)">
+    <!-- Notificaciones -->
+    <g>
+      <circle cx="20" cy="18" r="18" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1"/>
+      <path d="M 14,12 L 14,16 C 14,19 16,20 20,20 C 24,20 26,19 26,16 L 26,12 C 26,10 24,9 20,9 C 16,9 14,10 14,12 Z" fill="#6c757d"/>
+      <ellipse cx="20" cy="22" rx="2" ry="1" fill="#6c757d"/>
+      <!-- Badge -->
+      <circle cx="28" cy="10" r="5" fill="#dc3545"/>
+      <text x="28" y="13" font-family="Arial" font-size="8" font-weight="bold" fill="white" text-anchor="middle">5</text>
+    </g>
+    
+    <!-- Separador -->
+    <line x1="55" y1="8" x2="55" y2="28" stroke="#dee2e6" stroke-width="1"/>
+    
+    <!-- Perfil de usuario -->
+    <g transform="translate(75, 0)">
+      <!-- Avatar -->
+      <circle cx="18" cy="18" r="18" fill="#1b7fb8"/>
+      <text x="18" y="24" font-family="'Segoe UI', Arial, sans-serif" font-size="14" font-weight="600" fill="white" text-anchor="middle">
+        JD
+      </text>
+      
+      <!-- Info usuario -->
+      <text x="45" y="16" font-family="'Segoe UI', Arial, sans-serif" font-size="13" font-weight="500" fill="#212529">
+        Juan Pérez
+      </text>
+      <text x="45" y="30" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#6c757d">
+        Administrador
+      </text>
+      
+      <!-- Dropdown indicator -->
+      <path d="M 185,16 L 190,21 L 195,16" fill="none" stroke="#6c757d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    
+    <!-- Configuración -->
+    <g transform="translate(280, 0)">
+      <circle cx="18" cy="18" r="18" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1"/>
+      <circle cx="18" cy="18" r="5" fill="none" stroke="#6c757d" stroke-width="2"/>
+      <g stroke="#6c757d" stroke-width="1.5">
+        <line x1="18" y1="10" x2="18" y2="12"/>
+        <line x1="18" y1="24" x2="18" y2="26"/>
+        <line x1="26" y1="18" x2="24" y2="18"/>
+        <line x1="12" y1="18" x2="10" y2="18"/>
+      </g>
+    </g>
+  </g>
+  
+  <!-- Sombra inferior sutil -->
+  <rect y="117" width="1400" height="3" fill="url(#subtleGradient)" opacity="0.5"/>
+  <rect y="119" width="1400" height="1" fill="#dee2e6"/>
+</svg>

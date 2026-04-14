@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1400">
+  <defs>
+    <style>
+      .title { font: bold 26px sans-serif; fill: #1a1a1a; }
+      .subtitle { font: bold 18px sans-serif; fill: #2192B8; }
+      .text { font: 14px sans-serif; fill: #333; }
+      .small-text { font: 12px sans-serif; fill: #666; }
+      .code { font: 12px monospace; fill: #2196F3; }
+      .card { fill: white; stroke: #e0e0e0; stroke-width: 2; }
+      .moment1 { fill: #e3f2fd; stroke: #2196F3; stroke-width: 3; }
+      .moment2 { fill: #f3e5f5; stroke: #9C27B0; stroke-width: 3; }
+      .success { fill: #e8f5e9; stroke: #4CAF50; stroke-width: 2; }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#2192B8" />
+    </marker>
+  </defs>
+  
+  <!-- Título -->
+  <text x="700" y="50" class="title" text-anchor="middle">📋 Lógica Completa: Historial de Pagos</text>
+  
+  <!-- MOMENTO 1 -->
+  <text x="50" y="100" class="subtitle">🔵 Momento 1: Al Crear el Servicio</text>
+  
+  <rect x="50" y="120" width="600" height="280" class="moment1" rx="8"/>
+  <text x="350" y="155" class="text" font-weight="bold" text-anchor="middle">Cliente trae su equipo y da adelanto inicial</text>
+  
+  <!-- Formulario -->
+  <rect x="80" y="175" width="540" height="200" fill="white" rx="6"/>
+  <text x="100" y="205" class="text" font-weight="bold">Formulario de Registro de Servicio:</text>
+  <text x="120" y="235" class="small-text">• Cliente: JESUS FERNANDO LUCERO</text>
+  <text x="120" y="260" class="small-text">• Equipo: Laptop HP</text>
+  <text x="120" y="285" class="small-text">• Problema: No enciende</text>
+  <text x="120" y="310" class="small-text">• Monto Total: S/ 200.00</text>
+  <text x="120" y="335" class="small-text" fill="#4CAF50" font-weight="bold">• Adelanto: S/ 50.00 ← Cliente paga al dejar equipo</text>
+  <text x="120" y="360" class="small-text">• Saldo: S/ 150.00</text>
+  
+  <!-- Flecha -->
+  <path d="M 350 400 L 350 440" stroke="#2196F3" stroke-width="3" marker-end="url(#arrow)"/>
+  
+  <!-- Acción -->
+  <rect x="200" y="440" width="300" height="80" class="success" rx="8"/>
+  <text x="350" y="470" class="text" font-weight="bold" text-anchor="middle">✅ Se Guarda en 2 Lugares:</text>
+  <text x="350" y="495" class="small-text" text-anchor="middle">1. servicios → adelanto: 50.00</text>
+  <text x="350" y="515" class="small-text" text-anchor="middle">2. historial_pagos → Pago #1</text>
+  
+  <!-- MOMENTO 2 -->
+  <text x="750" y="100" class="subtitle">🟣 Momento 2: Durante Gestión de Pagos</text>
+  
+  <rect x="750" y="120" width="600" height="280" class="moment2" rx="8"/>
+  <text x="1050" y="155" class="text" font-weight="bold" text-anchor="middle">Cliente regresa y hace pagos adicionales</text>
+  
+  <!-- Pagos -->
+  <rect x="780" y="175" width="540" height="200" fill="white" rx="6"/>
+  <text x="800" y="205" class="text" font-weight="bold">Gestión de Pagos:</text>
+  
+  <text x="820" y="235" class="small-text" fill="#4CAF50" font-weight="bold">Pago #2 - 05/04/2026:</text>
+  <text x="840" y="260" class="small-text">• Monto: S/ 100.00</text>
+  <text x="840" y="280" class="small-text">• Método: Yape</text>
+  <text x="840" y="300" class="small-text">• Referencia: REF123456</text>
+  
+  <text x="820" y="330" class="small-text" fill="#4CAF50" font-weight="bold">Pago #3 - 08/04/2026:</text>
+  <text x="840" y="355" class="small-text">• Monto: S/ 50.00</text>
+  
+  <!-- Flecha -->
+  <path d="M 1050 400 L 1050 440" stroke="#9C27B0" stroke-width="3" marker-end="url(#arrow)"/>
+  
+  <!-- Acción -->
+  <rect x="900" y="440" width="300" height="80" class="success" rx="8"/>
+  <text x="1050" y="470" class="text" font-weight="bold" text-anchor="middle">✅ Cada Pago se Guarda:</text>
+  <text x="1050" y="495" class="small-text" text-anchor="middle">1. servicios → adelanto += monto</text>
+  <text x="1050" y="515" class="small-text" text-anchor="middle">2. historial_pagos → Nuevo registro</text>
+  
+  <!-- RESULTADO FINAL -->
+  <text x="50" y="580" class="subtitle">📊 Resultado: Historial Completo en historial_pagos</text>
+  
+  <rect x="50" y="600" width="1300" height="350" class="card" rx="8"/>
+  
+  <!-- Tabla -->
+  <rect x="80" y="630" width="1240" height="40" fill="#2196F3"/>
+  <text x="700" y="657" class="text" fill="white" font-weight="bold" text-anchor="middle">Colección: historial_pagos</text>
+  
+  <rect x="80" y="670" width="1240" height="30" fill="#f5f5f5"/>
+  <text x="120" y="692" class="small-text" font-weight="bold">N°</text>
+  <text x="220" y="692" class="small-text" font-weight="bold">Fecha</text>
+  <text x="380" y="692" class="small-text" font-weight="bold">Monto</text>
+  <text x="520" y="692" class="small-text" font-weight="bold">Método</text>
+  <text x="680" y="692" class="small-text" font-weight="bold">Referencia</text>
+  <text x="880" y="692" class="small-text" font-weight="bold">Notas</text>
+  <text x="1150" y="692" class="small-text" font-weight="bold">Origen</text>
+  
+  <!-- Pago 1 -->
+  <rect x="80" y="700" width="1240" height="1" fill="#e0e0e0"/>
+  <text x="120" y="730" class="small-text">1</text>
+  <text x="220" y="730" class="small-text">01/04/2026</text>
+  <text x="380" y="730" class="small-text" fill="#4CAF50" font-weight="bold">S/ 50.00</text>
+  <text x="520" y="730" class="small-text">Efectivo</text>
+  <text x="680" y="730" class="small-text">-</text>
+  <text x="880" y="730" class="small-text">Adelanto inicial al registrar servicio</text>
+  <text x="1150" y="730" class="small-text" fill="#2196F3">Registro Servicio</text>
+  
+  <!-- Pago 2 -->
+  <rect x="80" y="745" width="1240" height="1" fill="#e0e0e0"/>
+  <text x="120" y="775" class="small-text">2</text>
+  <text x="220" y="775" class="small-text">05/04/2026</text>
+  <text x="380" y="775" class="small-text" fill="#4CAF50" font-weight="bold">S/ 100.00</text>
+  <text x="520" y="775" class="small-text">Yape</text>
+  <text x="680" y="775" class="small-text">REF123456</text>
+  <text x="880" y="775" class="small-text">Segundo pago</text>
+  <text x="1150" y="775" class="small-text" fill="#9C27B0">Gestión Pagos</text>
+  
+  <!-- Pago 3 -->
+  <rect x="80" y="790" width="1240" height="1" fill="#e0e0e0"/>
+  <text x="120" y="820" class="small-text">3</text>
+  <text x="220" y="820" class="small-text">08/04/2026</text>
+  <text x="380" y="820" class="small-text" fill="#4CAF50" font-weight="bold">S/ 50.00</text>
+  <text x="520" y="820" class="small-text">Transferencia</text>
+  <text x="680" y="820" class="small-text">REF789012</text>
+  <text x="880" y="820" class="small-text">Pago final</text>
+  <text x="1150" y="820" class="small-text" fill="#9C27B0">Gestión Pagos</text>
+  
+  <!-- Totales -->
+  <rect x="80" y="850" width="1240" height="40" fill="#e8f5e9"/>
+  <text x="300" y="877" class="text" font-weight="bold">TOTAL PAGADO:</text>
+  <text x="500" y="877" class="text" font-weight="bold" fill="#4CAF50">S/ 200.00</text>
+  <text x="750" y="877" class="small-text">Estado: PAGADO ✅</text>
+  <text x="1050" y="877" class="small-text">3 pagos registrados</text>
+  
+  <!-- Resumen -->
+  <rect x="80" y="910" width="1240" height="30" fill="#fff3e0"/>
+  <text x="700" y="932" class="small-text" text-anchor="middle">📝 Cada pago queda registrado con fecha, método, referencia y origen</text>
+  
+  <!-- VENTAJAS -->
+  <text x="50" y="1000" class="subtitle">✅ Ventajas de Este Sistema</text>
+  
+  <rect x="50" y="1020" width="400" height="180" class="card" rx="8"/>
+  <text x="250" y="1050" class="text" font-weight="bold" text-anchor="middle">🔍 Trazabilidad Total</text>
+  <text x="80" y="1080" class="small-text">• Cada pago tiene fecha exacta</text>
+  <text x="80" y="1105" class="small-text">• Método de pago registrado</text>
+  <text x="80" y="1130" class="small-text">• Referencias para auditoría</text>
+  <text x="80" y="1155" class="small-text">• Origen del pago identificado</text>
+  <text x="80" y="1180" class="small-text">• Usuario que registró</text>
+  
+  <rect x="475" y="1020" width="400" height="180" class="card" rx="8"/>
+  <text x="675" y="1050" class="text" font-weight="bold" text-anchor="middle">📊 Reportes Detallados</text>
+  <text x="505" y="1080" class="small-text">• Historial por servicio</text>
+  <text x="505" y="1105" class="small-text">• Historial por cliente</text>
+  <text x="505" y="1130" class="small-text">• Pagos por fecha</text>
+  <text x="505" y="1155" class="small-text">• Pagos por método</text>
+  <text x="505" y="1180" class="small-text">• Análisis de cobros</text>
+  
+  <rect x="900" y="1020" width="450" height="180" class="card" rx="8"/>
+  <text x="1125" y="1050" class="text" font-weight="bold" text-anchor="middle">💼 Control Financiero</text>
+  <text x="930" y="1080" class="small-text">• Saber cuándo se pagó cada monto</text>
+  <text x="930" y="1105" class="small-text">• Verificar referencias bancarias</text>
+  <text x="930" y="1130" class="small-text">• Generar comprobantes individuales</text>
+  <text x="930" y="1155" class="small-text">• Auditoría completa de pagos</text>
+  <text x="930" y="1180" class="small-text">• Transparencia con el cliente</text>
+  
+  <!-- CÓDIGO -->
+  <text x="50" y="1250" class="subtitle">💻 Implementación en el Código</text>
+  
+  <rect x="50" y="1270" width="650" height="100" class="card" rx="8"/>
+  <text x="375" y="1300" class="text" font-weight="bold" text-anchor="middle">Al Crear Servicio (servicios.js)</text>
+  <text x="80" y="1330" class="code">if (adelantoInicial > 0) {</text>
+  <text x="100" y="1350" class="code">  guardarEnHistorial(adelanto, "Adelanto inicial");</text>
+  <text x="80" y="1370" class="code">}</text>
+  
+  <rect x="725" y="1270" width="625" height="100" class="card" rx="8"/>
+  <text x="1037" y="1300" class="text" font-weight="bold" text-anchor="middle">Al Registrar Pago (pagos.js)</text>
+  <text x="755" y="1330" class="code">// Actualizar servicio</text>
+  <text x="755" y="1350" class="code">servicio.adelanto += monto;</text>
+  <text x="755" y="1370" class="code">guardarEnHistorial(monto, metodo, referencia);</text>
+  
+</svg>

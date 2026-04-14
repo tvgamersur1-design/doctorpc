@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900">
+  <defs>
+    <style>
+      .title { font: bold 24px sans-serif; fill: #1a1a1a; }
+      .subtitle { font: bold 18px sans-serif; fill: #2192B8; }
+      .text { font: 14px sans-serif; fill: #333; }
+      .small-text { font: 12px sans-serif; fill: #666; }
+      .code { font: 12px monospace; fill: #2196F3; }
+      .card { fill: white; stroke: #e0e0e0; stroke-width: 2; }
+      .error-bg { fill: #ffebee; stroke: #f44336; }
+      .success-bg { fill: #e8f5e9; stroke: #4CAF50; }
+      .warning-bg { fill: #fff3e0; stroke: #FF9800; }
+    </style>
+  </defs>
+  
+  <!-- Título -->
+  <text x="600" y="40" class="title" text-anchor="middle">🔧 Solución: Historial de Pagos no se Guarda</text>
+  
+  <!-- Problema -->
+  <text x="50" y="80" class="subtitle">❌ Problema Detectado</text>
+  
+  <rect x="50" y="100" width="1100" height="120" class="error-bg" rx="8"/>
+  <text x="100" y="135" class="text" font-weight="bold">La tabla/colección "historial_pagos" no existe en MongoDB</text>
+  <text x="100" y="165" class="small-text">• El pago se registra en "servicios" (actualiza adelanto y saldo)</text>
+  <text x="100" y="190" class="small-text">• Pero NO se guarda en "historial_pagos" porque la colección no existe</text>
+  <text x="100" y="215" class="small-text">• Error 404 al intentar consultar el historial</text>
+  
+  <!-- Solución -->
+  <text x="50" y="270" class="subtitle">✅ Solución en 3 Pasos</text>
+  
+  <!-- Paso 1 -->
+  <rect x="50" y="290" width="350" height="200" class="warning-bg" rx="8"/>
+  <text x="225" y="320" class="text" font-weight="bold" text-anchor="middle">Paso 1: Crear la Colección</text>
+  <text x="80" y="355" class="small-text" font-weight="bold">Opción A - Automático (Recomendado):</text>
+  <text x="90" y="380" class="code">node crear-coleccion-historial.js</text>
+  
+  <text x="80" y="415" class="small-text" font-weight="bold">Opción B - Manual en MongoDB:</text>
+  <text x="90" y="440" class="small-text">1. Abrir MongoDB Compass/Atlas</text>
+  <text x="90" y="460" class="small-text">2. Crear colección "historial_pagos"</text>
+  <text x="90" y="480" class="small-text">3. Listo para usar</text>
+  
+  <!-- Paso 2 -->
+  <rect x="425" y="290" width="350" height="200" class="warning-bg" rx="8"/>
+  <text x="600" y="320" class="text" font-weight="bold" text-anchor="middle">Paso 2: Reiniciar Servidor</text>
+  <text x="455" y="355" class="small-text" font-weight="bold">Si estás en desarrollo local:</text>
+  <text x="465" y="380" class="code">Ctrl + C (detener)</text>
+  <text x="465" y="405" class="code">netlify dev (reiniciar)</text>
+  
+  <text x="455" y="440" class="small-text" font-weight="bold">Si está en producción:</text>
+  <text x="465" y="465" class="code">git push</text>
+  <text x="465" y="485" class="small-text">(Netlify redespliega automático)</text>
+  
+  <!-- Paso 3 -->
+  <rect x="800" y="290" width="350" height="200" class="success-bg" rx="8"/>
+  <text x="975" y="320" class="text" font-weight="bold" text-anchor="middle">Paso 3: Probar</text>
+  <text x="830" y="355" class="small-text">1. Ir a "Gestión de Pagos"</text>
+  <text x="830" y="380" class="small-text">2. Registrar un pago de prueba</text>
+  <text x="830" y="405" class="small-text">3. Click en "📋 Ver Pagos"</text>
+  <text x="830" y="430" class="small-text">4. Verificar que aparece el pago</text>
+  <text x="830" y="455" class="small-text">5. Revisar consola del navegador</text>
+  <text x="830" y="480" class="small-text">   (F12 → Console)</text>
+  
+  <!-- Verificación -->
+  <text x="50" y="540" class="subtitle">🔍 Cómo Verificar que Funciona</text>
+  
+  <rect x="50" y="560" width="550" height="280" class="card" rx="8"/>
+  <text x="325" y="590" class="text" font-weight="bold" text-anchor="middle">En la Consola del Navegador (F12)</text>
+  
+  <text x="80" y="625" class="small-text" font-weight="bold">Mensajes que debes ver:</text>
+  <rect x="80" y="635" width="490" height="190" fill="#f5f5f5" rx="4"/>
+  
+  <text x="95" y="660" class="code" fill="#4CAF50">💰 Registrando pago: { servicioId, monto, ... }</text>
+  <text x="95" y="685" class="code" fill="#2196F3">📝 Guardando en historial: { servicio_id, ... }</text>
+  <text x="95" y="710" class="code" fill="#4CAF50">✅ Historial guardado: { _id: "...", ... }</text>
+  <text x="95" y="735" class="code" fill="#4CAF50">✅ Pago registrado - Saldo pendiente: S/ X.XX</text>
+  
+  <text x="80" y="770" class="small-text" font-weight="bold" fill="#f44336">Si ves este error:</text>
+  <text x="95" y="795" class="code" fill="#f44336">❌ Error al guardar historial: 404</text>
+  <text x="95" y="815" class="small-text">→ La colección no existe o el servidor no reinició</text>
+  
+  <!-- MongoDB -->
+  <rect x="625" y="560" width="525" height="280" class="card" rx="8"/>
+  <text x="887" y="590" class="text" font-weight="bold" text-anchor="middle">En MongoDB Compass/Atlas</text>
+  
+  <text x="655" y="625" class="small-text" font-weight="bold">Debes ver:</text>
+  <text x="665" y="650" class="small-text">1. Base de datos: "doctorpc"</text>
+  <text x="665" y="675" class="small-text">2. Colecciones:</text>
+  <text x="685" y="700" class="small-text">   • clientes</text>
+  <text x="685" y="720" class="small-text">   • equipos</text>
+  <text x="685" y="740" class="small-text">   • servicios</text>
+  <text x="685" y="760" class="small-text" fill="#4CAF50" font-weight="bold">   • historial_pagos ← NUEVA</text>
+  <text x="685" y="780" class="small-text">   • usuarios</text>
+  
+  <text x="655" y="810" class="small-text" font-weight="bold">Dentro de "historial_pagos":</text>
+  <text x="665" y="830" class="small-text">Verás cada pago con sus detalles completos</text>
+  
+  <!-- Comandos Útiles -->
+  <text x="50" y="880" class="subtitle">⚡ Comandos Útiles</text>
+  
+</svg>

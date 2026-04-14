@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200">
+  <!-- Fondo -->
+  <rect width="1200" height="200" fill="#f8f9fa"/>
+  
+  <!-- Título de sección -->
+  <text x="40" y="40" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#2c3e50">
+    Resumen Financiero
+  </text>
+  
+  <!-- Tarjeta 1: Total Facturado -->
+  <g>
+    <!-- Borde izquierdo azul -->
+    <rect x="40" y="70" width="4" height="100" fill="#3498db" rx="2"/>
+    <!-- Contenedor -->
+    <rect x="44" y="70" width="340" height="100" fill="#ffffff" stroke="#e0e0e0" stroke-width="1" rx="8"/>
+    
+    <!-- Icono -->
+    <circle cx="80" cy="105" r="18" fill="#f0f4f8" stroke="#3498db" stroke-width="1.5"/>
+    <text x="80" y="113" font-family="Arial, sans-serif" font-size="20" fill="#3498db" text-anchor="middle" font-weight="600">$</text>
+    
+    <!-- Etiqueta -->
+    <text x="115" y="100" font-family="Arial, sans-serif" font-size="13" fill="#6c757d" font-weight="500">
+      TOTAL FACTURADO
+    </text>
+    
+    <!-- Valor -->
+    <text x="115" y="130" font-family="Arial, sans-serif" font-size="28" fill="#2c3e50" font-weight="700">
+      S/ 300.00
+    </text>
+  </g>
+  
+  <!-- Tarjeta 2: Total Cobrado -->
+  <g>
+    <!-- Borde izquierdo verde -->
+    <rect x="420" y="70" width="4" height="100" fill="#27ae60" rx="2"/>
+    <!-- Contenedor -->
+    <rect x="424" y="70" width="340" height="100" fill="#ffffff" stroke="#e0e0e0" stroke-width="1" rx="8"/>
+    
+    <!-- Icono -->
+    <circle cx="460" cy="105" r="18" fill="#f0f8f4" stroke="#27ae60" stroke-width="1.5"/>
+    <path d="M 454 105 L 458 110 L 467 98" stroke="#27ae60" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Etiqueta -->
+    <text x="495" y="100" font-family="Arial, sans-serif" font-size="13" fill="#6c757d" font-weight="500">
+      TOTAL COBRADO
+    </text>
+    
+    <!-- Valor -->
+    <text x="495" y="130" font-family="Arial, sans-serif" font-size="28" fill="#2c3e50" font-weight="700">
+      S/ 300.00
+    </text>
+  </g>
+  
+  <!-- Tarjeta 3: Saldo Pendiente -->
+  <g>
+    <!-- Borde izquierdo naranja -->
+    <rect x="800" y="70" width="4" height="100" fill="#e67e22" rx="2"/>
+    <!-- Contenedor -->
+    <rect x="804" y="70" width="340" height="100" fill="#ffffff" stroke="#e0e0e0" stroke-width="1" rx="8"/>
+    
+    <!-- Icono -->
+    <circle cx="840" cy="105" r="18" fill="#fef5f0" stroke="#e67e22" stroke-width="1.5"/>
+    <text x="840" y="112" font-family="Arial, sans-serif" font-size="22" fill="#e67e22" text-anchor="middle" font-weight="700">!</text>
+    
+    <!-- Etiqueta -->
+    <text x="875" y="100" font-family="Arial, sans-serif" font-size="13" fill="#6c757d" font-weight="500">
+      SALDO PENDIENTE
+    </text>
+    
+    <!-- Valor -->
+    <text x="875" y="130" font-family="Arial, sans-serif" font-size="28" fill="#2c3e50" font-weight="700">
+      S/ 0.00
+    </text>
+  </g>
+</svg>

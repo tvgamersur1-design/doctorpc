@@ -88,45 +88,44 @@ export function mostrarNotificacionAdvertencia(mensaje) {
     const notif = document.createElement('div');
     notif.style.cssText = `
         position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        top: 20px;
+        right: 20px;
         background: white;
         color: #5f6368;
-        padding: 24px 32px;
+        padding: 16px 20px;
         border-radius: 8px;
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
         border-left: 4px solid #f9a825;
         z-index: 10000;
-        font-size: 15px;
+        font-size: 14px;
         font-weight: 500;
         text-align: left;
-        max-width: 400px;
-        animation: slideIn 0.3s ease-out;
+        max-width: 350px;
+        animation: slideInRight 0.3s ease-out;
     `;
     notif.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="width: 40px; height: 40px; background: #fff8e1; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f9a825" stroke-width="2">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 32px; height: 32px; background: #fff8e1; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f9a825" stroke-width="2">
                     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
                     <line x1="12" y1="9" x2="12" y2="13"/>
                     <line x1="12" y1="17" x2="12.01" y2="17"/>
                 </svg>
             </div>
             <div style="flex: 1;">
-                <div style="font-weight: 600; color: #202124; margin-bottom: 4px;">Atención</div>
-                <div style="font-size: 14px; color: #5f6368; line-height: 1.4;">${mensaje}</div>
+                <div style="font-weight: 600; color: #202124; margin-bottom: 2px; font-size: 13px;">Atención</div>
+                <div style="font-size: 13px; color: #5f6368; line-height: 1.4;">${mensaje}</div>
             </div>
         </div>
     `;
     
     document.body.appendChild(notif);
     
-    // Remover después de 4 segundos
+    // Remover después de 5 segundos (más tiempo para leer mensaje de deuda)
     setTimeout(() => {
-        notif.style.animation = 'slideOut 0.3s ease-in';
+        notif.style.animation = 'slideOutRight 0.3s ease-in';
         setTimeout(() => notif.remove(), 300);
-    }, 4000);
+    }, 5000);
 }
 
 /**
@@ -149,6 +148,7 @@ export function mostrarModalCarga(mensaje = 'Cargando...') {
         modal = document.createElement('div');
         modal.id = 'modalCarga';
         modal.className = 'modal';
+        modal.style.zIndex = '99999'; // Z-index muy alto para estar sobre todos los modales
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 300px; text-align: center; padding: 40px;">
                 <div class="loading-spinner-circle" style="margin: 0 auto 20px;"></div>
@@ -157,6 +157,9 @@ export function mostrarModalCarga(mensaje = 'Cargando...') {
         `;
         document.body.appendChild(modal);
     }
+    
+    // Asegurar z-index alto cada vez que se muestra
+    modal.style.zIndex = '99999';
     
     const mensajeElement = document.getElementById('mensajeCarga');
     if (mensajeElement) {

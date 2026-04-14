@@ -5,6 +5,9 @@ import { getJSON, postJSON, putJSON, patchJSON, deleteJSON } from '../api.js';
 import { mostrarModalCarga, cerrarModalCarga, mostrarNotificacionExito, mostrarModalNotificacion } from '../ui.js';
 import { getUsuarioActual } from '../auth.js';
 
+// ==================== CACHÉ LOCAL ====================
+let usuariosCache = [];
+
 // ==================== FUNCIONES PÚBLICAS ====================
 
 /**
@@ -50,90 +53,105 @@ export async function guardarNuevoUsuario(e) {
 }
 
 /**
- * Cargar usuarios
+ * Cargar usuarios con caché optimizado
  */
-export async function cargarUsuarios() {
+export async function cargarUsuarios(forzarRecarga = false) {
     const container = document.getElementById('usuariosContainer');
     if (!container) return;
     
-    container.innerHTML = `
-        <div class="loading-spinner-inline">
-            <div class="loading-spinner-circle"></div>
-            <p class="loading-spinner-text">Cargando usuarios...</p>
-        </div>`;
-
     try {
-        const usuarios = await getJSON(API_USUARIOS);
-        const usuarioActual = getUsuarioActual();
-
-        if (usuarios.length === 0) {
-            container.innerHTML = '<div class="no-records">No hay usuarios registrados</div>';
+        // Usar caché si está disponible y no se fuerza recarga
+        if (!forzarRecarga && usuariosCache.length > 0) {
+            renderTablaUsuarios(usuariosCache);
             return;
         }
+        
+        container.innerHTML = `
+            <div class="loading-spinner-inline">
+                <div class="loading-spinner-circle"></div>
+                <p class="loading-spinner-text">Cargando usuarios...</p>
+            </div>`;
 
-        let html = `<table class="records-table">
-            <thead>
-                <tr>
-                    <th>Usuario</th>
-                    <th>Correo</th>
-                    <th>Rol</th>
-                    <th>Estado</th>
-                    <th>Fecha Creación</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>`;
-
-        usuarios.forEach(u => {
-            const esMiUsuario = usuarioActual && u._id === usuarioActual.id;
-            const fechaCreacion = u.fecha_creacion ? new Date(u.fecha_creacion).toLocaleDateString('es-PE') : 'N/A';
-            const rolBadge = u.rol === 'admin' 
-                ? '<span style="background: #e3f2fd; color: #1565C0; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;"><i class="fas fa-shield-alt"></i> Admin</span>'
-                : '<span style="background: #f5f5f5; color: #666; padding: 3px 10px; border-radius: 12px; font-size: 12px;"><i class="fas fa-user"></i> Usuario</span>';
-
-            // ✅ NUEVO: Badge de estado activo/inactivo
-            const activo = u.activo !== false; // Por defecto true si no existe el campo
-            const estadoBadge = activo
-                ? '<span style="background: #C8E6C9; color: #2E7D32; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;"><i class="fas fa-check-circle"></i> Activo</span>'
-                : '<span style="background: #FFCDD2; color: #C62828; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;"><i class="fas fa-ban"></i> Inactivo</span>';
-
-            // ✅ Toggle para activar/desactivar (solo si no es mi usuario)
-            const toggleEstado = esMiUsuario 
-                ? '<span style="color: #999; font-size: 11px;"><i class="fas fa-lock"></i> Tu cuenta</span>'
-                : `<label class="switch" style="display: inline-block; position: relative; width: 50px; height: 24px;">
-                    <input type="checkbox" id="toggle-${u._id}" ${activo ? 'checked' : ''} onclick="event.preventDefault(); window.handleToggleUsuario('${u._id}', '${u.usuario}', ${activo})" style="opacity: 0; width: 0; height: 0;">
-                    <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: ${activo ? '#4CAF50' : '#ccc'}; transition: .4s; border-radius: 24px;"></span>
-                   </label>`;
-
-            html += `<tr style="${!activo ? 'opacity: 0.6; background-color: #ffebee;' : ''}">
-                <td data-label="Usuario"><strong>${u.usuario}</strong></td>
-                <td data-label="Correo">${u.correo}</td>
-                <td data-label="Rol">${rolBadge}</td>
-                <td data-label="Estado">${estadoBadge}</td>
-                <td data-label="Fecha">${fechaCreacion}</td>
-                <td data-label="Acciones">
-                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                        ${toggleEstado}
-                        <button class="btn-edit" onclick="abrirModalEditarUsuario('${u._id}', '${u.usuario}', '${u.correo}', '${u.rol}')" style="padding: 6px 12px; font-size: 12px;">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-                        ${esMiUsuario 
-                            ? ''
-                            : `<button class="btn-danger" onclick="eliminarUsuario('${u._id}', '${u.usuario}')" style="padding: 6px 12px; font-size: 12px;">
-                                <i class="fas fa-trash"></i> Eliminar
-                              </button>`
-                        }
-                    </div>
-                </td>
-            </tr>`;
-        });
-
-        html += '</tbody></table>';
-        container.innerHTML = html;
+        const usuarios = await getJSON(API_USUARIOS);
+        usuariosCache = usuarios;
+        renderTablaUsuarios(usuarios);
     } catch (error) {
         console.error('Error:', error);
         container.innerHTML = '<div class="no-records" style="color: #c62828;">Error al cargar usuarios</div>';
     }
+}
+
+/**
+ * Renderizar tabla de usuarios
+ */
+function renderTablaUsuarios(usuarios) {
+    const container = document.getElementById('usuariosContainer');
+    if (!container) return;
+    
+    const usuarioActual = getUsuarioActual();
+
+    if (usuarios.length === 0) {
+        container.innerHTML = '<div class="no-records">No hay usuarios registrados</div>';
+        return;
+    }
+
+    let html = `<table class="records-table">
+        <thead>
+            <tr>
+                <th>Usuario</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Fecha Creación</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>`;
+
+    usuarios.forEach(u => {
+        const esMiUsuario = usuarioActual && u._id === usuarioActual.id;
+        const fechaCreacion = u.fecha_creacion ? new Date(u.fecha_creacion).toLocaleDateString('es-PE') : 'N/A';
+        const rolBadge = u.rol === 'admin' 
+            ? '<span style="background: #e3f2fd; color: #1565C0; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;"><i class="fas fa-shield-alt"></i> Admin</span>'
+            : '<span style="background: #f5f5f5; color: #666; padding: 3px 10px; border-radius: 12px; font-size: 12px;"><i class="fas fa-user"></i> Usuario</span>';
+
+        const activo = u.activo !== false;
+        const estadoBadge = activo
+            ? '<span style="background: #C8E6C9; color: #2E7D32; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;"><i class="fas fa-check-circle"></i> Activo</span>'
+            : '<span style="background: #FFCDD2; color: #C62828; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;"><i class="fas fa-ban"></i> Inactivo</span>';
+
+        const toggleEstado = esMiUsuario 
+            ? '<span style="color: #999; font-size: 11px;"><i class="fas fa-lock"></i> Tu cuenta</span>'
+            : `<label class="switch" style="display: inline-block; position: relative; width: 50px; height: 24px;">
+                <input type="checkbox" id="toggle-${u._id}" ${activo ? 'checked' : ''} onclick="event.preventDefault(); window.handleToggleUsuario('${u._id}', '${u.usuario}', ${activo})" style="opacity: 0; width: 0; height: 0;">
+                <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: ${activo ? '#4CAF50' : '#ccc'}; transition: .4s; border-radius: 24px;"></span>
+               </label>`;
+
+        html += `<tr style="${!activo ? 'opacity: 0.6; background-color: #ffebee;' : ''}">
+            <td data-label="Usuario"><strong>${u.usuario}</strong></td>
+            <td data-label="Correo">${u.correo}</td>
+            <td data-label="Rol">${rolBadge}</td>
+            <td data-label="Estado">${estadoBadge}</td>
+            <td data-label="Fecha">${fechaCreacion}</td>
+            <td data-label="Acciones">
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    ${toggleEstado}
+                    <button class="btn-edit" onclick="abrirModalEditarUsuario('${u._id}', '${u.usuario}', '${u.correo}', '${u.rol}')" style="padding: 6px 12px; font-size: 12px;">
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
+                    ${esMiUsuario 
+                        ? ''
+                        : `<button class="btn-danger" onclick="eliminarUsuario('${u._id}', '${u.usuario}')" style="padding: 6px 12px; font-size: 12px;">
+                            <i class="fas fa-trash"></i> Eliminar
+                          </button>`
+                    }
+                </div>
+            </td>
+        </tr>`;
+    });
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
 }
 
 /**
@@ -148,7 +166,10 @@ export async function eliminarUsuario(id, nombre) {
 
         cerrarModalCarga();
         mostrarNotificacionExito('Usuario eliminado');
-        cargarUsuarios();
+        
+        // Actualizar caché y renderizar
+        usuariosCache = usuariosCache.filter(u => u._id !== id);
+        renderTablaUsuarios(usuariosCache);
     } catch (error) {
         cerrarModalCarga();
         alert('Error: ' + error.message);
@@ -220,100 +241,50 @@ export async function guardarEdicionUsuario(e) {
 }
 
 /**
- * ✅ Manejar click en toggle de usuario
+ * Manejar click en toggle de usuario (optimizado con caché)
  */
 export async function handleToggleUsuario(id, nombreUsuario, estadoActual) {
     const nuevoEstado = !estadoActual;
     
-    // Mostrar modal de confirmación personalizado
     const confirmar = await mostrarModalConfirmacionEstado(nombreUsuario, nuevoEstado);
     
-    if (!confirmar) {
-        // No hacer nada si cancela
-        return;
-    }
+    if (!confirmar) return;
 
     try {
         mostrarModalCarga(nuevoEstado ? 'Activando usuario...' : 'Desactivando usuario...');
         
-        console.log('Cambiando estado de usuario:', {
-            id,
-            nombre: nombreUsuario,
-            estadoActual,
-            nuevoEstado
-        });
-        
-        // Usar endpoint específico PATCH /usuarios/:id/estado
         const respuesta = await patchJSON(`${API_USUARIOS}/${id}/estado`, { 
             activo: nuevoEstado 
         });
-
-        console.log('Respuesta del servidor:', JSON.stringify(respuesta, null, 2));
-        console.log('Campo activo en respuesta:', respuesta.activo);
-        console.log('¿Se actualizó correctamente?', respuesta.activo === nuevoEstado);
 
         cerrarModalCarga();
         
         if (respuesta.activo === nuevoEstado) {
             mostrarNotificacionExito(`Usuario ${nuevoEstado ? 'activado' : 'desactivado'} exitosamente`);
+            
+            // Actualizar caché localmente sin recargar
+            const index = usuariosCache.findIndex(u => u._id === id);
+            if (index !== -1) {
+                usuariosCache[index] = respuesta;
+            }
+            renderTablaUsuarios(usuariosCache);
         } else {
-            throw new Error('El estado no se actualizó correctamente en la base de datos');
+            throw new Error('El estado no se actualizó correctamente');
         }
-        
-        // Recargar usuarios para mostrar el cambio
-        await cargarUsuarios();
     } catch (error) {
-        console.error('Error al cambiar estado de usuario:', error);
+        console.error('Error al cambiar estado:', error);
         cerrarModalCarga();
-        mostrarModalNotificacion('Error al ' + (nuevoEstado ? 'activar' : 'desactivar') + ' usuario: ' + error.message, 'error');
-        // Recargar para mostrar el estado real
-        cargarUsuarios();
+        mostrarModalNotificacion('Error: ' + error.message, 'error');
+        cargarUsuarios(true); // Forzar recarga en caso de error
     }
 }
 
 /**
- * ✅ NUEVO: Toggle estado activo/inactivo de usuario (DEPRECADO - usar handleToggleUsuario)
+ * DEPRECADO: Usar handleToggleUsuario en su lugar
  */
 export async function toggleEstadoUsuario(id, nombreUsuario, nuevoEstado) {
-    // Mostrar modal de confirmación personalizado
-    const confirmar = await mostrarModalConfirmacionEstado(nombreUsuario, nuevoEstado);
-    
-    if (!confirmar) {
-        // Revertir el toggle si cancela
-        cargarUsuarios();
-        return;
-    }
-
-    try {
-        mostrarModalCarga(nuevoEstado ? 'Activando usuario...' : 'Desactivando usuario...');
-        
-        // Obtener datos completos del usuario primero
-        const usuarios = await getJSON(API_USUARIOS);
-        const usuario = usuarios.find(u => u._id === id);
-        
-        if (!usuario) {
-            throw new Error('Usuario no encontrado');
-        }
-        
-        // Actualizar con todos los datos requeridos
-        const respuesta = await putJSON(`${API_USUARIOS}/${id}`, { 
-            usuario: usuario.usuario,
-            correo: usuario.correo,
-            rol: usuario.rol,
-            activo: nuevoEstado 
-        });
-
-        cerrarModalCarga();
-        mostrarNotificacionExito(`Usuario ${nuevoEstado ? 'activado' : 'desactivado'} exitosamente`);
-        
-        // Recargar usuarios para verificar el cambio
-        await cargarUsuarios();
-    } catch (error) {
-        console.error('Error al cambiar estado de usuario:', error);
-        cerrarModalCarga();
-        mostrarModalNotificacion('Error al ' + (nuevoEstado ? 'activar' : 'desactivar') + ' usuario: ' + error.message, 'error');
-        cargarUsuarios(); // Recargar para revertir el toggle
-    }
+    console.warn('toggleEstadoUsuario está deprecado. Usa handleToggleUsuario');
+    return handleToggleUsuario(id, nombreUsuario, !nuevoEstado);
 }
 
 /**

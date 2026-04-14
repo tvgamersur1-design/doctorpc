@@ -54,13 +54,10 @@ export async function cargarServicios(page = 1, busqueda = '', forzarRecarga = f
             const equiposRes = await fetch(`${API_EQUIPOS}`);
             equiposCache = await equiposRes.json();
 
-            // Verificar si se deben incluir servicios cancelados
-            const checkbox = document.getElementById('mostrarCancelados');
-            const mostrarCancelados = checkbox ? checkbox.checked : false;
-            
-            // Cargar TODOS los servicios sin paginación
+            // Cargar TODOS los servicios (incluidos cancelados) una sola vez
+            // El filtrado se hace en el frontend según el checkbox
             const params = new URLSearchParams();
-            if (mostrarCancelados) params.set('incluir_cancelados', 'true');
+            params.set('incluir_cancelados', 'true');
             
             const serviciosRes = await fetch(`${API_SERVICIOS}?${params.toString()}`);
             const respuesta = await serviciosRes.json();
@@ -72,11 +69,18 @@ export async function cargarServicios(page = 1, busqueda = '', forzarRecarga = f
             serviciosEquipoCache = await servicioEquipoRes.json();
         }
         
-        // Filtrar servicios localmente
-        let serviciosFiltrados = serviciosCache;
+        // Filtrar servicios cancelados según el checkbox
+        const checkbox = document.getElementById('mostrarCancelados');
+        const mostrarCancelados = checkbox ? checkbox.checked : false;
+        
+        let serviciosFiltrados = mostrarCancelados 
+            ? serviciosCache 
+            : serviciosCache.filter(srv => srv.estado !== 'Cancelado');
+        
+        // Filtrar por búsqueda
         if (busqueda) {
             const busquedaLower = busqueda.toLowerCase();
-            serviciosFiltrados = serviciosCache.filter(srv => {
+            serviciosFiltrados = serviciosFiltrados.filter(srv => {
                 const cliente = clientesCache.find(c => c._id == srv.cliente_id);
                 const clienteNombre = cliente ? cliente.nombre.toLowerCase() : '';
                 
@@ -1061,8 +1065,30 @@ async function mostrarResumenServicio(servicio) {
 
 /**
  * Confirmar guardar servicio
+ * OPTIMIZADO: Cierra modal y deshabilita botón para evitar clics múltiples
  */
 export function confirmarGuardarServicio() {
+    // Buscar y deshabilitar todos los botones del modal para evitar clics múltiples
+    const modal = document.getElementById('modalResumen');
+    if (modal) {
+        const botones = modal.querySelectorAll('button');
+        botones.forEach(btn => {
+            btn.disabled = true;
+            btn.style.opacity = '0.6';
+            btn.style.cursor = 'not-allowed';
+        });
+        
+        // Actualizar el texto del botón de confirmar
+        const botonConfirmar = Array.from(botones).find(btn => btn.textContent.includes('Confirmar'));
+        if (botonConfirmar) {
+            botonConfirmar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+        }
+    }
+    
+    // Cerrar el modal de resumen inmediatamente
+    cerrarModalResumen();
+    
+    // Guardar el servicio (esto mostrará el modal de carga con z-index alto)
     guardarServicioRealConFoto(servicioParaGuardar || window.servicioParaGuardar);
 }
 

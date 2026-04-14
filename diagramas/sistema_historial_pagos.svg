@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1600">
+  <defs>
+    <style>
+      .title { font: bold 26px sans-serif; fill: #1a1a1a; }
+      .subtitle { font: bold 18px sans-serif; fill: #2192B8; }
+      .text { font: 14px sans-serif; fill: #333; }
+      .small-text { font: 12px sans-serif; fill: #666; }
+      .code { font: 12px monospace; fill: #2196F3; }
+      .card { fill: white; stroke: #e0e0e0; stroke-width: 2; }
+      .header-bg { fill: #2196F3; }
+      .success-bg { fill: #4CAF50; }
+      .warning-bg { fill: #FF9800; }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#2192B8" />
+    </marker>
+  </defs>
+  
+  <!-- Título -->
+  <text x="700" y="50" class="title" text-anchor="middle">Sistema de Historial de Pagos Múltiples</text>
+  
+  <!-- SECCIÓN 1: Problema -->
+  <text x="50" y="100" class="subtitle">1. Problema a Resolver</text>
+  
+  <rect x="50" y="120" width="1300" height="140" class="card" rx="8"/>
+  <text x="100" y="155" class="text" font-weight="bold">Escenario:</text>
+  <text x="100" y="180" class="small-text">Un cliente paga un servicio de S/ 200.00 en 3 partes:</text>
+  <text x="120" y="205" class="small-text">• Pago 1: S/ 50.00 (Efectivo) - 01/04/2026</text>
+  <text x="120" y="230" class="small-text">• Pago 2: S/ 100.00 (Yape) - 05/04/2026</text>
+  <text x="120" y="255" class="small-text">• Pago 3: S/ 50.00 (Transferencia) - 08/04/2026</text>
+  
+  <!-- SECCIÓN 2: Solución -->
+  <text x="50" y="310" class="subtitle">2. Solución: Colección de Historial de Pagos</text>
+  
+  <rect x="50" y="330" width="630" height="280" class="card" rx="8"/>
+  <rect x="50" y="330" width="630" height="40" class="header-bg"/>
+  <text x="365" y="357" class="text" fill="white" font-weight="bold" text-anchor="middle">Colección: servicios</text>
+  
+  <text x="80" y="395" class="code">_id: "abc123"</text>
+  <text x="80" y="420" class="code">numero_servicio: "SRV-2026-005"</text>
+  <text x="80" y="445" class="code">cliente_id: "xyz789"</text>
+  <text x="80" y="470" class="code">monto: 200.00</text>
+  <text x="80" y="495" class="code" fill="#4CAF50">adelanto: 150.00  // Suma de todos los pagos</text>
+  <text x="80" y="520" class="code" fill="#FF9800">saldo_pendiente: 50.00  // Calculado</text>
+  <text x="80" y="545" class="code">estado_pago: "parcial"</text>
+  <text x="80" y="570" class="code">ultimo_pago: { fecha, monto, metodo }</text>
+  <text x="80" y="595" class="code">fecha_actualizacion: "2026-04-08"</text>
+  
+  <rect x="720" y="330" width="630" height="280" class="card" rx="8"/>
+  <rect x="720" y="330" width="630" height="40" class="success-bg"/>
+  <text x="1035" y="357" class="text" fill="white" font-weight="bold" text-anchor="middle">Colección: historial_pagos (NUEVA)</text>
+  
+  <text x="750" y="395" class="code">// Pago 1</text>
+  <text x="750" y="415" class="code">{ servicio_id: "abc123", monto: 50.00,</text>
+  <text x="750" y="435" class="code">  metodo_pago: "efectivo", fecha: "2026-04-01" }</text>
+  
+  <text x="750" y="470" class="code">// Pago 2</text>
+  <text x="750" y="490" class="code">{ servicio_id: "abc123", monto: 100.00,</text>
+  <text x="750" y="510" class="code">  metodo_pago: "yape", referencia: "REF123",</text>
+  <text x="750" y="530" class="code">  fecha: "2026-04-05" }</text>
+  
+  <text x="750" y="565" class="code">// Pago 3</text>
+  <text x="750" y="585" class="code">{ servicio_id: "abc123", monto: 50.00,</text>
+  <text x="750" y="605" class="code">  metodo_pago: "transferencia", fecha: "2026-04-08" }</text>
+  
+  <!-- SECCIÓN 3: Flujo de Registro -->
+  <text x="50" y="660" class="subtitle">3. Flujo al Registrar un Pago</text>
+  
+  <!-- Paso 1 -->
+  <rect x="50" y="680" width="250" height="120" class="card" rx="8"/>
+  <text x="175" y="710" class="text" font-weight="bold" text-anchor="middle">1️⃣ Usuario Registra Pago</text>
+  <text x="175" y="735" class="small-text" text-anchor="middle">Monto: S/ 50.00</text>
+  <text x="175" y="755" class="small-text" text-anchor="middle">Método: Efectivo</text>
+  <text x="175" y="775" class="small-text" text-anchor="middle">Servicio: SRV-2026-005</text>
+  
+  <path d="M 300 740 L 340 740" stroke="#2192B8" stroke-width="3" marker-end="url(#arrow)"/>
+  
+  <!-- Paso 2 -->
+  <rect x="340" y="680" width="250" height="120" class="card" rx="8"/>
+  <text x="465" y="710" class="text" font-weight="bold" text-anchor="middle">2️⃣ Actualizar Servicio</text>
+  <text x="465" y="735" class="small-text" text-anchor="middle">adelanto += 50.00</text>
+  <text x="465" y="755" class="small-text" text-anchor="middle">saldo = monto - adelanto</text>
+  <text x="465" y="775" class="small-text" text-anchor="middle">Actualizar estado_pago</text>
+  
+  <path d="M 590 740 L 630 740" stroke="#2192B8" stroke-width="3" marker-end="url(#arrow)"/>
+  
+  <!-- Paso 3 -->
+  <rect x="630" y="680" width="250" height="120" class="card" rx="8"/>
+  <text x="755" y="710" class="text" font-weight="bold" text-anchor="middle">3️⃣ Guardar en Historial</text>
+  <text x="755" y="735" class="small-text" text-anchor="middle">Crear registro en</text>
+  <text x="755" y="755" class="small-text" text-anchor="middle">historial_pagos con</text>
+  <text x="755" y="775" class="small-text" text-anchor="middle">todos los detalles</text>
+  
+  <path d="M 880 740 L 920 740" stroke="#2192B8" stroke-width="3" marker-end="url(#arrow)"/>
+  
+  <!-- Paso 4 -->
+  <rect x="920" y="680" width="250" height="120" class="card" rx="8"/>
+  <text x="1045" y="710" class="text" font-weight="bold" text-anchor="middle">4️⃣ Confirmación</text>
+  <text x="1045" y="735" class="small-text" text-anchor="middle">Mostrar notificación</text>
+  <text x="1045" y="755" class="small-text" text-anchor="middle">Recargar tabla</text>
+  <text x="1045" y="775" class="small-text" text-anchor="middle">Actualizar totales</text>
+  
+  <!-- SECCIÓN 4: Interfaz de Usuario -->
+  <text x="50" y="850" class="subtitle">4. Interfaz de Usuario</text>
+  
+  <!-- Tabla de Servicios -->
+  <rect x="50" y="870" width="1300" height="200" class="card" rx="8"/>
+  <rect x="50" y="870" width="1300" height="40" class="header-bg"/>
+  <text x="700" y="897" class="text" fill="white" font-weight="bold" text-anchor="middle">Tabla de Gestión de Pagos</text>
+  
+  <text x="80" y="935" class="text" font-weight="bold">Cliente | Servicio | Fecha | Total | Pagado | Saldo | Estado | Acciones</text>
+  <rect x="80" y="945" width="1240" height="1" fill="#e0e0e0"/>
+  
+  <text x="80" y="975" class="small-text">JESUS FERNANDO | SRV-2026-005 | 7/4/2026 | S/ 200.00 | S/ 150.00 | S/ 50.00 | Parcial |</text>
+  
+  <!-- Botones -->
+  <rect x="1000" y="955" width="80" height="30" fill="#4CAF50" rx="4"/>
+  <text x="1040" y="977" class="text" fill="white" text-anchor="middle" font-size="12">💰 Pagar</text>
+  
+  <rect x="1090" y="955" width="100" height="30" fill="#2196F3" rx="4"/>
+  <text x="1140" y="977" class="text" fill="white" text-anchor="middle" font-size="12">📋 Ver Pagos</text>
+  
+  <rect x="1200" y="955" width="100" height="30" fill="#9C27B0" rx="4"/>
+  <text x="1250" y="977" class="text" fill="white" text-anchor="middle" font-size="12">📊 Historial</text>
+  
+  <text x="80" y="1015" class="small-text">MARIA LOPEZ | SRV-2026-006 | 8/4/2026 | S/ 150.00 | S/ 150.00 | S/ 0.00 | Pagado |</text>
+  
+  <rect x="1090" y="995" width="100" height="30" fill="#2196F3" rx="4"/>
+  <text x="1140" y="1017" class="text" fill="white" text-anchor="middle" font-size="12">📋 Ver Pagos</text>
+  
+  <rect x="1200" y="995" width="100" height="30" fill="#9C27B0" rx="4"/>
+  <text x="1250" y="1017" class="text" fill="white" text-anchor="middle" font-size="12">📊 Historial</text>
+  
+  <!-- SECCIÓN 5: Modal de Historial -->
+  <text x="50" y="1120" class="subtitle">5. Modal: Historial de Pagos del Servicio</text>
+  
+  <rect x="50" y="1140" width="1300" height="400" class="card" rx="8"/>
+  <rect x="50" y="1140" width="1300" height="50" class="header-bg"/>
+  <text x="700" y="1172" class="text" fill="white" font-weight="bold" text-anchor="middle" font-size="18">📋 Historial de Pagos - SRV-2026-005</text>
+  
+  <!-- Resumen -->
+  <rect x="80" y="1210" width="380" height="80" fill="#f3e5f5" rx="6"/>
+  <text x="100" y="1235" class="small-text">Monto Total</text>
+  <text x="100" y="1265" class="text" font-size="22" fill="#9C27B0">S/ 200.00</text>
+  
+  <rect x="480" y="1210" width="380" height="80" fill="#e8f5e9" rx="6"/>
+  <text x="500" y="1235" class="small-text">Total Pagado</text>
+  <text x="500" y="1265" class="text" font-size="22" fill="#4CAF50">S/ 150.00</text>
+  
+  <rect x="880" y="1210" width="380" height="80" fill="#fff3e0" rx="6"/>
+  <text x="900" y="1235" class="small-text">Saldo Pendiente</text>
+  <text x="900" y="1265" class="text" font-size="22" fill="#FF9800">S/ 50.00</text>
+  
+  <!-- Tabla de Pagos -->
+  <text x="80" y="1325" class="text" font-weight="bold">Detalle de Pagos:</text>
+  
+  <rect x="80" y="1335" width="1240" height="30" fill="#f8f9fa"/>
+  <text x="100" y="1357" class="small-text" font-weight="bold">N° | Fecha | Monto | Método | Referencia | Notas</text>
+  
+  <rect x="80" y="1365" width="1240" height="1" fill="#e0e0e0"/>
+  
+  <text x="100" y="1390" class="small-text">3 | 08/04/2026 | S/ 50.00 | Transferencia | REF789 | Pago final</text>
+  <text x="100" y="1420" class="small-text">2 | 05/04/2026 | S/ 100.00 | Yape | REF456 | Segundo pago</text>
+  <text x="100" y="1450" class="small-text">1 | 01/04/2026 | S/ 50.00 | Efectivo | - | Adelanto inicial</text>
+  
+  <!-- Botón Cerrar -->
+  <rect x="1180" y="1490" width="140" height="35" fill="#757575" rx="6"/>
+  <text x="1250" y="1513" class="text" fill="white" text-anchor="middle">✖ Cerrar</text>
+  
+  <!-- SECCIÓN 6: Ventajas -->
+  <text x="50" y="1580" class="subtitle">6. Ventajas del Sistema</text>
+  
+</svg>

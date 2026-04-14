@@ -29,6 +29,7 @@ export function cerrarModalCancelarServicio() {
 
 /**
  * Confirmar cancelación de servicio
+ * OPTIMIZADO: Actualiza caché correctamente y fuerza re-renderizado
  */
 export async function confirmarCancelacionServicio() {
     const motivo = document.getElementById('motivoCancelacion').value.trim();
@@ -64,23 +65,55 @@ export async function confirmarCancelacionServicio() {
             throw new Error('Error al cancelar el servicio');
         }
 
-        const servicioActualizado = await response.json();
+        const resultado = await response.json();
+        console.log('📥 Respuesta del servidor:', resultado);
 
-        cerrarModalCarga();
-        cerrarModalCancelarServicio();
-        
-        // Actualizar servicio en el caché y tabla
+        // Actualizar caché de servicios
         if (window.Servicios && window.Servicios.serviciosCache) {
-            const index = window.Servicios.serviciosCache.findIndex(s => s._id === servicioActualizado._id);
+            const serviciosCache = window.Servicios.serviciosCache;
+            const index = serviciosCache.findIndex(s => s._id === servicioIdACancelar);
+            
+            console.log('🔍 Buscando servicio en caché:', {
+                servicioId: servicioIdACancelar,
+                encontrado: index !== -1,
+                totalServicios: serviciosCache.length
+            });
+            
             if (index !== -1) {
-                window.Servicios.serviciosCache[index] = servicioActualizado;
-                window.Servicios.renderTablaServicios(window.Servicios.serviciosCache);
+                const servicioAntes = { ...serviciosCache[index] };
+                
+                // Actualizar el estado en el caché
+                serviciosCache[index].estado = 'Cancelado';
+                serviciosCache[index].motivo_cancelacion = motivo;
+                serviciosCache[index].cancelado_por = usuarioActual ? usuarioActual.usuario : 'Sistema';
+                serviciosCache[index].fecha_cancelacion = new Date().toISOString();
+                
+                console.log('✅ Caché actualizado:', {
+                    numeroServicio: serviciosCache[index].numero_servicio,
+                    estadoAntes: servicioAntes.estado,
+                    estadoDespues: serviciosCache[index].estado
+                });
+            } else {
+                console.error('❌ Servicio no encontrado en caché');
             }
+        } else {
+            console.error('❌ window.Servicios.serviciosCache no disponible');
         }
         
+        cerrarModalCarga();
+        cerrarModalCancelarServicio();
         mostrarNotificacionExito('Servicio cancelado exitosamente');
+        
+        // Forzar recarga de la vista (sin parámetros usa el caché actualizado)
+        console.log('🔄 Recargando vista de servicios...');
+        if (window.cargarServicios) {
+            await window.cargarServicios(1, '');
+        } else {
+            console.error('❌ window.cargarServicios no disponible');
+        }
+        
     } catch (error) {
-        console.error('Error:', error);
+        console.error('❌ Error al cancelar servicio:', error);
         cerrarModalCarga();
         alert('Error al cancelar servicio: ' + error.message);
     }

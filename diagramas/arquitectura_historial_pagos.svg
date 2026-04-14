@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900">
+  <defs>
+    <style>
+      .title { font: bold 24px sans-serif; fill: #1a1a1a; }
+      .subtitle { font: bold 18px sans-serif; fill: #2c3e50; }
+      .text { font: 14px sans-serif; fill: #34495e; }
+      .small-text { font: 12px sans-serif; fill: #555; }
+      .layer-title { font: bold 16px sans-serif; fill: white; }
+      .frontend { fill: #3498db; }
+      .backend { fill: #2ecc71; }
+      .database { fill: #e74c3c; }
+      .box { fill: white; stroke: #2c3e50; stroke-width: 2; }
+      .arrow { stroke: #34495e; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .code-text { font: 11px monospace; fill: #2c3e50; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#34495e" />
+    </marker>
+  </defs>
+
+  <!-- Título -->
+  <text x="600" y="40" text-anchor="middle" class="title">ARQUITECTURA DEL SISTEMA DE HISTORIAL DE PAGOS</text>
+
+  <!-- CAPA FRONTEND -->
+  <rect x="50" y="80" width="1100" height="220" rx="10" class="frontend" opacity="0.2"/>
+  <rect x="50" y="80" width="1100" height="40" rx="10" class="frontend"/>
+  <text x="600" y="105" text-anchor="middle" class="layer-title">FRONTEND (Cliente - JavaScript)</text>
+
+  <!-- Módulo servicios.js -->
+  <rect x="100" y="150" width="280" height="120" rx="8" class="box"/>
+  <text x="240" y="175" text-anchor="middle" class="subtitle">servicios.js</text>
+  <text x="120" y="200" class="text">• Crear servicio</text>
+  <text x="120" y="225" class="text">• Capturar adelanto inicial</text>
+  <text x="120" y="250" class="text">• Registrar en historial</text>
+
+  <!-- Módulo pagos.js -->
+  <rect x="460" y="150" width="280" height="120" rx="8" class="box"/>
+  <text x="600" y="175" text-anchor="middle" class="subtitle">pagos.js</text>
+  <text x="480" y="200" class="text">• Registrar pago posterior</text>
+  <text x="480" y="225" class="text">• Actualizar saldo</text>
+  <text x="480" y="250" class="text">• Guardar en historial</text>
+
+  <!-- Módulo dashboard.html -->
+  <rect x="820" y="150" width="280" height="120" rx="8" class="box"/>
+  <text x="960" y="175" text-anchor="middle" class="subtitle">dashboard.html</text>
+  <text x="840" y="200" class="text">• Modal de historial</text>
+  <text x="840" y="225" class="text">• Tabla de pagos</text>
+  <text x="840" y="250" class="text">• Botones de acción</text>
+
+  <!-- CAPA BACKEND -->
+  <rect x="50" y="350" width="1100" height="260" rx="10" class="backend" opacity="0.2"/>
+  <rect x="50" y="350" width="1100" height="40" rx="10" class="backend"/>
+  <text x="600" y="375" text-anchor="middle" class="layer-title">BACKEND (Netlify Functions - Serverless)</text>
+
+  <!-- Function historial-pagos.js -->
+  <rect x="150" y="420" width="900" height="160" rx="8" class="box"/>
+  <text x="600" y="445" text-anchor="middle" class="subtitle">historial-pagos.js</text>
+  
+  <!-- POST endpoint -->
+  <rect x="180" y="460" width="400" height="120" rx="5" fill="#e8f5e9" stroke="#2ecc71" stroke-width="2"/>
+  <text x="190" y="480" class="text" font-weight="bold">POST /api/historial-pagos</text>
+  <text x="200" y="505" class="small-text">├─ Validar datos (servicio_id, monto, método)</text>
+  <text x="200" y="525" class="small-text">├─ Agregar timestamps automáticos</text>
+  <text x="200" y="545" class="small-text">├─ Insertar documento en MongoDB</text>
+  <text x="200" y="565" class="small-text">└─ Retornar respuesta JSON</text>
+
+  <!-- GET endpoint -->
+  <rect x="620" y="460" width="400" height="120" rx="5" fill="#e3f2fd" stroke="#2196f3" stroke-width="2"/>
+  <text x="630" y="480" class="text" font-weight="bold">GET /api/historial-pagos/:id</text>
+  <text x="640" y="505" class="small-text">├─ Validar ObjectId de MongoDB</text>
+  <text x="640" y="525" class="small-text">├─ Consultar por servicio_id</text>
+  <text x="640" y="545" class="small-text">├─ Ordenar por fecha descendente</text>
+  <text x="640" y="565" class="small-text">└─ Retornar array de pagos</text>
+
+  <!-- CAPA DATABASE -->
+  <rect x="50" y="660" width="1100" height="200" rx="10" class="database" opacity="0.2"/>
+  <rect x="50" y="660" width="1100" height="40" rx="10" class="database"/>
+  <text x="600" y="685" text-anchor="middle" class="layer-title">BASE DE DATOS (MongoDB)</text>
+
+  <!-- Colección historial_pagos -->
+  <rect x="150" y="720" width="900" height="120" rx="8" class="box"/>
+  <text x="600" y="745" text-anchor="middle" class="subtitle">Colección: historial_pagos</text>
+  
+  <rect x="200" y="760" width="800" height="70" rx="5" fill="#fff3e0" stroke="#ff9800" stroke-width="1"/>
+  <text x="220" y="780" class="code-text">{ _id, servicio_id, numero_servicio, cliente_id, monto, metodo_pago,</text>
+  <text x="220" y="795" class="code-text">  referencia, notas, fecha_pago, usuario_registro, fecha_creacion }</text>
+  <text x="220" y="815" class="small-text" font-weight="bold">Índices: servicio_id ↑ | cliente_id ↑ | fecha_pago ↓</text>
+
+  <!-- FLECHAS DE CONEXIÓN -->
+  <!-- Frontend a Backend -->
+  <path d="M 240 270 L 240 320 L 380 320 L 380 420" class="arrow"/>
+  <text x="250" y="310" class="small-text" fill="#2ecc71">POST</text>
+  
+  <path d="M 600 270 L 600 320 L 380 320 L 380 420" class="arrow"/>
+  <text x="610" y="310" class="small-text" fill="#2ecc71">POST</text>
+
+  <path d="M 960 270 L 960 320 L 820 320 L 820 420" class="arrow"/>
+  <text x="830" y="310" class="small-text" fill="#2196f3">GET</text>
+
+  <!-- Backend a Database -->
+  <path d="M 380 580 L 380 640 L 450 640 L 450 720" class="arrow"/>
+  <text x="390" y="630" class="small-text" fill="#e74c3c">INSERT</text>
+
+  <path d="M 820 580 L 820 640 L 750 640 L 750 720" class="arrow"/>
+  <text x="760" y="630" class="small-text" fill="#e74c3c">SELECT</text>
+
+  <!-- Leyenda -->
+  <rect x="50" y="870" width="15" height="15" class="frontend"/>
+  <text x="75" y="882" class="small-text">Capa de Presentación</text>
+
+  <rect x="250" y="870" width="15" height="15" class="backend"/>
+  <text x="275" y="882" class="small-text">Capa de Lógica de Negocio</text>
+
+  <rect x="500" y="870" width="15" height="15" class="database"/>
+  <text x="525" y="882" class="small-text">Capa de Datos</text>
+</svg>

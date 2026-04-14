@@ -82,18 +82,32 @@ export async function cargarPagos(forzarRecarga = false) {
                 const cliente = clientes.find(c => c._id === srv.cliente_id);
                 const equipo = equipos.find(e => e._id === srv.equipo_id);
                 
-                // Obtener datos financieros
+                // Obtener datos financieros directamente de la BD
                 const montoTotal = parseFloat(srv.monto || 0);
                 const montoPagado = parseFloat(srv.adelanto || 0);
-                const saldoPendiente = Math.max(0, montoTotal - montoPagado);
                 
-                // Determinar estado de pago
-                let estadoPago = 'pendiente';
-                if (montoTotal > 0 && montoPagado >= montoTotal) {
-                    estadoPago = 'pagado';
-                } else if (montoPagado > 0) {
-                    estadoPago = 'parcial';
+                // Usar saldo_pendiente de la BD si existe, sino calcularlo
+                let saldoPendiente;
+                if (srv.saldo_pendiente !== undefined && srv.saldo_pendiente !== null) {
+                    saldoPendiente = parseFloat(srv.saldo_pendiente);
+                } else {
+                    saldoPendiente = Math.max(0, montoTotal - montoPagado);
                 }
+                
+                // Usar estado_pago de la BD si existe, sino determinarlo
+                let estadoPago;
+                if (srv.estado_pago) {
+                    estadoPago = srv.estado_pago;
+                } else {
+                    estadoPago = 'pendiente';
+                    if (montoTotal > 0 && montoPagado >= montoTotal) {
+                        estadoPago = 'pagado';
+                    } else if (montoPagado > 0) {
+                        estadoPago = 'parcial';
+                    }
+                }
+                
+                console.log(`Servicio ${srv.numero_servicio}: Total=${montoTotal}, Pagado=${montoPagado}, Saldo=${saldoPendiente}, Estado=${estadoPago}`);
                 
                 return {
                     _id: srv._id,
@@ -127,6 +141,9 @@ export async function cargarPagos(forzarRecarga = false) {
 function renderizarPanelPagos() {
     const container = document.getElementById('pagosContainer');
     
+    console.log('🎨 Renderizando panel de pagos...');
+    console.log('📦 Total de servicios en caché:', pagosCache.length);
+    
     // Filtrar pagos
     let pagosFiltrados = pagosCache;
     
@@ -148,35 +165,59 @@ function renderizarPanelPagos() {
     const totalPagado = pagosCache.reduce((sum, d) => sum + d.montoPagado, 0);
     const totalPendiente = pagosCache.reduce((sum, d) => sum + d.saldoPendiente, 0);
     
+    console.log('💰 Totales calculados:', {
+        totalGeneral,
+        totalPagado,
+        totalPendiente
+    });
+    
     let html = `
-        <!-- Tarjetas de resumen -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
-            <div style="background: linear-gradient(135deg, #2192B8 0%, #1976a2 100%); padding: 20px; border-radius: 12px; color: white; box-shadow: 0 4px 15px rgba(33, 146, 184, 0.3);">
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <i class="fas fa-dollar-sign" style="font-size: 36px; opacity: 0.9;"></i>
-                    <div>
-                        <p style="margin: 0; font-size: 13px; opacity: 0.9;">Total Facturado</p>
-                        <h3 style="margin: 5px 0 0 0; font-size: 28px; font-weight: 700;">${formatearMoneda(totalGeneral)}</h3>
+        <!-- Tarjetas de resumen estilo empresarial -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px;">
+            <!-- Total Facturado -->
+            <div style="position: relative; background: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden;">
+                <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: #3498db; border-radius: 2px 0 0 2px;"></div>
+                <div style="padding: 20px 20px 20px 24px;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 48px; height: 48px; border-radius: 50%; background: #f0f4f8; border: 2px solid #3498db; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-dollar-sign" style="font-size: 20px; color: #3498db;"></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <p style="margin: 0; font-size: 13px; color: #6c757d; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">Total Facturado</p>
+                            <h3 style="margin: 5px 0 0 0; font-size: 28px; font-weight: 700; color: #2c3e50;">${formatearMoneda(totalGeneral)}</h3>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); padding: 20px; border-radius: 12px; color: white; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);">
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <i class="fas fa-check-circle" style="font-size: 36px; opacity: 0.9;"></i>
-                    <div>
-                        <p style="margin: 0; font-size: 13px; opacity: 0.9;">Total Cobrado</p>
-                        <h3 style="margin: 5px 0 0 0; font-size: 28px; font-weight: 700;">${formatearMoneda(totalPagado)}</h3>
+            <!-- Total Cobrado -->
+            <div style="position: relative; background: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden;">
+                <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: #27ae60; border-radius: 2px 0 0 2px;"></div>
+                <div style="padding: 20px 20px 20px 24px;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 48px; height: 48px; border-radius: 50%; background: #f0f8f4; border: 2px solid #27ae60; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-check-circle" style="font-size: 20px; color: #27ae60;"></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <p style="margin: 0; font-size: 13px; color: #6c757d; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">Total Cobrado</p>
+                            <h3 style="margin: 5px 0 0 0; font-size: 28px; font-weight: 700; color: #2c3e50;">${formatearMoneda(totalPagado)}</h3>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div style="background: linear-gradient(135deg, ${totalPendiente < 0 ? '#4CAF50' : '#FF9800'} 0%, ${totalPendiente < 0 ? '#388E3C' : '#F57C00'} 100%); padding: 20px; border-radius: 12px; color: white; box-shadow: 0 4px 15px rgba(${totalPendiente < 0 ? '76, 175, 80' : '255, 152, 0'}, 0.3);">
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <i class="fas ${totalPendiente < 0 ? 'fa-hand-holding-usd' : 'fa-exclamation-triangle'}" style="font-size: 36px; opacity: 0.9;"></i>
-                    <div>
-                        <p style="margin: 0; font-size: 13px; opacity: 0.9;">${totalPendiente < 0 ? 'Saldo a Devolver' : 'Saldo Pendiente'}</p>
-                        <h3 style="margin: 5px 0 0 0; font-size: 28px; font-weight: 700;">${formatearMoneda(Math.abs(totalPendiente))}</h3>
+            <!-- Saldo Pendiente -->
+            <div style="position: relative; background: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden;">
+                <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: ${totalPendiente < 0 ? '#27ae60' : '#e67e22'}; border-radius: 2px 0 0 2px;"></div>
+                <div style="padding: 20px 20px 20px 24px;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 48px; height: 48px; border-radius: 50%; background: ${totalPendiente < 0 ? '#f0f8f4' : '#fef5f0'}; border: 2px solid ${totalPendiente < 0 ? '#27ae60' : '#e67e22'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas ${totalPendiente < 0 ? 'fa-hand-holding-usd' : 'fa-exclamation-triangle'}" style="font-size: 20px; color: ${totalPendiente < 0 ? '#27ae60' : '#e67e22'};"></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <p style="margin: 0; font-size: 13px; color: #6c757d; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">${totalPendiente < 0 ? 'Saldo a Devolver' : 'Saldo Pendiente'}</p>
+                            <h3 style="margin: 5px 0 0 0; font-size: 28px; font-weight: 700; color: #2c3e50;">${formatearMoneda(Math.abs(totalPendiente))}</h3>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -334,111 +375,8 @@ export function buscarClientePago(busqueda) {
  * Actualizar solo la tabla de pagos (sin re-renderizar todo)
  */
 function actualizarTablaPagos() {
-    // Filtrar pagos
-    let pagosFiltrados = pagosCache;
-    
-    if (filtroEstadoPago !== 'todos') {
-        pagosFiltrados = pagosFiltrados.filter(d => d.estadoPago === filtroEstadoPago);
-    }
-    
-    if (busquedaCliente) {
-        const busqueda = busquedaCliente.toLowerCase();
-        pagosFiltrados = pagosFiltrados.filter(d => 
-            d.cliente?.nombre?.toLowerCase().includes(busqueda) ||
-            d.cliente?.dni?.includes(busqueda) ||
-            d.numero_servicio?.toLowerCase().includes(busqueda)
-        );
-    }
-    
-    // Buscar el contenedor de la tabla
-    const tabla = document.querySelector('#pagosContainer .records-table');
-    
-    if (!tabla) {
-        // Si no existe la tabla, renderizar todo
-        renderizarPanelPagos();
-        return;
-    }
-    
-    // Generar HTML de la tabla
-    let html = `
-        <thead>
-            <tr>
-                <th>Cliente</th>
-                <th>Servicio</th>
-                <th>Fecha</th>
-                <th>Monto Total</th>
-                <th>Pagado</th>
-                <th>Saldo</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-    `;
-    
-    if (pagosFiltrados.length === 0) {
-        html += `<tr><td colspan="8" style="text-align: center; padding: 40px; color: #666;">No se encontraron registros</td></tr>`;
-    } else {
-        pagosFiltrados.forEach(pago => {
-            const fechaFormateada = formatearFecha(pago.fecha || pago.fecha_inicio || pago.fecha_creacion);
-            const clienteNombre = pago.cliente ? `${pago.cliente.nombre} ${pago.cliente.apellido_paterno || ''}`.trim() : 'Sin cliente';
-            const equipoInfo = pago.equipo ? `${pago.equipo.tipo_equipo} ${pago.equipo.marca}` : 'Sin equipo';
-            
-            let estadoHtml = '';
-            let rowClass = '';
-            
-            if (pago.estadoPago === 'pagado') {
-                estadoHtml = '<span style="color: #4CAF50; font-weight: 600;"><i class="fas fa-check-circle"></i> Pagado</span>';
-                rowClass = 'style="background: #f1f8f4;"';
-            } else if (pago.estadoPago === 'parcial') {
-                estadoHtml = '<span style="color: #FF9800; font-weight: 600;"><i class="fas fa-clock"></i> Parcial</span>';
-                rowClass = 'style="background: #fff8f0;"';
-            } else {
-                estadoHtml = '<span style="color: #f44336; font-weight: 600;"><i class="fas fa-exclamation-circle"></i> Pendiente</span>';
-                rowClass = 'style="background: #ffebee;"';
-            }
-            
-            html += `
-                <tr ${rowClass}>
-                    <td data-label="Cliente">
-                        <div style="font-weight: 600;">${clienteNombre}</div>
-                        <div style="font-size: 12px; color: #666;">DNI: ${pago.cliente?.dni || 'N/A'}</div>
-                    </td>
-                    <td data-label="Servicio">
-                        <div style="font-weight: 600; color: #2196F3;">${pago.numero_servicio || 'N/A'}</div>
-                        <div style="font-size: 12px; color: #666;">${equipoInfo}</div>
-                    </td>
-                    <td data-label="Fecha">${fechaFormateada}</td>
-                    <td data-label="Monto Total"><strong>${formatearMoneda(pago.montoTotal)}</strong></td>
-                    <td data-label="Pagado" style="color: #4CAF50; font-weight: 600;">${formatearMoneda(pago.montoPagado)}</td>
-                    <td data-label="Saldo" style="color: ${pago.saldoPendiente > 0 ? '#f44336' : '#4CAF50'}; font-weight: 700; font-size: 16px;">
-                        ${formatearMoneda(pago.saldoPendiente)}
-                    </td>
-                    <td data-label="Estado">${estadoHtml}</td>
-                    <td data-label="Acciones">
-                        <div class="actions">
-                            ${pago.saldoPendiente > 0 ? `
-                                <button class="btn-success" onclick="abrirModalRegistrarPago('${pago._id}')">
-                                    <i class="fas fa-money-bill-wave"></i> Pagar
-                                </button>
-                            ` : ''}
-                            <button class="btn-info" onclick="verHistorialPagosServicio('${pago._id}')" title="Ver historial de pagos">
-                                <i class="fas fa-receipt"></i> Ver Pagos
-                            </button>
-                            <button class="btn-edit" onclick="verHistorialCliente('${pago.cliente_id}')">
-                                <i class="fas fa-history"></i> Historial
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `;
-        });
-    }
-    
-    html += `</tbody>`;
-    
-    // Actualizar solo la tabla
-    tabla.innerHTML = html;
+    // Re-renderizar todo el panel para actualizar también las tarjetas de resumen
+    renderizarPanelPagos();
 }
 
 /**
@@ -462,8 +400,52 @@ export async function abrirModalRegistrarPago(servicioId) {
     document.getElementById('pagoReferencia').value = '';
     document.getElementById('pagoNotas').value = '';
     
+    // Ocultar mensaje de error
+    const errorElement = document.getElementById('pagoMontoError');
+    if (errorElement) {
+        errorElement.style.display = 'none';
+    }
+    
     mostrarModal('modalRegistrarPago');
 };
+
+/**
+ * Validar monto de pago en tiempo real
+ */
+export function validarMontoPago(input) {
+    const servicioId = document.getElementById('pagoServicioId').value;
+    const pago = pagosCache.find(d => d._id === servicioId);
+    
+    if (!pago) return;
+    
+    const montoIngresado = parseFloat(input.value);
+    const errorElement = document.getElementById('pagoMontoError');
+    
+    if (isNaN(montoIngresado) || montoIngresado <= 0) {
+        input.style.borderColor = '#d32f2f';
+        if (errorElement) {
+            errorElement.textContent = 'El monto debe ser mayor a 0';
+            errorElement.style.display = 'block';
+        }
+        return false;
+    }
+    
+    if (montoIngresado > pago.saldoPendiente) {
+        input.style.borderColor = '#d32f2f';
+        if (errorElement) {
+            errorElement.textContent = `El monto no puede exceder el saldo pendiente de ${formatearMoneda(pago.saldoPendiente)}`;
+            errorElement.style.display = 'block';
+        }
+        return false;
+    }
+    
+    // Monto válido
+    input.style.borderColor = '#4CAF50';
+    if (errorElement) {
+        errorElement.style.display = 'none';
+    }
+    return true;
+}
 
 /**
  * Cerrar modal de pago
@@ -474,7 +456,7 @@ export function cerrarModalRegistrarPago() {
 
 /**
  * Guardar pago
- * OPTIMIZADO: Actualiza caché en lugar de recargar todo
+ * OPTIMIZADO: Actualiza caché y registra en colección pagos
  */
 export async function guardarPago(e) {
     e.preventDefault();
@@ -485,21 +467,21 @@ export async function guardarPago(e) {
     const referencia = document.getElementById('pagoReferencia').value;
     const notas = document.getElementById('pagoNotas').value;
     
-    if (monto <= 0) {
+    // Validación 1: Monto debe ser mayor a 0
+    if (isNaN(monto) || monto <= 0) {
         alert('El monto debe ser mayor a 0');
         return;
     }
     
-    // Obtener el servicio actual
     const pago = pagosCache.find(d => d._id === servicioId);
     if (!pago) {
         alert('Error: Servicio no encontrado');
         return;
     }
     
-    // Validar que el monto no exceda el saldo
+    // Validación 2: El monto no puede exceder el saldo pendiente
     if (monto > pago.saldoPendiente) {
-        alert(`El monto no puede exceder el saldo pendiente de ${formatearMoneda(pago.saldoPendiente)}`);
+        alert(`❌ El monto ingresado (${formatearMoneda(monto)}) excede el saldo pendiente de ${formatearMoneda(pago.saldoPendiente)}`);
         return;
     }
     
@@ -507,52 +489,52 @@ export async function guardarPago(e) {
     
     try {
         // Calcular nuevos valores
-        const nuevoAdelanto = pago.montoPagado + monto;
-        const nuevoSaldo = pago.montoTotal - nuevoAdelanto;
+        const montoTotalServicio = parseFloat(pago.montoTotal);
+        const montoPagadoActual = parseFloat(pago.montoPagado);
+        const nuevoMontoPagado = montoPagadoActual + monto;
+        const nuevoSaldoPendiente = montoTotalServicio - nuevoMontoPagado;
         
-        let estadoPago = 'pendiente';
-        if (nuevoSaldo === 0) {
-            estadoPago = 'pagado';
-        } else if (nuevoAdelanto > 0) {
-            estadoPago = 'parcial';
+        let nuevoEstadoPago = 'pendiente';
+        if (nuevoSaldoPendiente <= 0) {
+            nuevoEstadoPago = 'pagado';
+        } else if (nuevoMontoPagado > 0) {
+            nuevoEstadoPago = 'parcial';
         }
         
-        console.log('💰 Registrando pago:', {
-            servicioId,
-            montoAnterior: pago.montoPagado,
+        console.log('💰 Cálculos de pago:', {
+            montoTotalServicio,
+            montoPagadoActual,
             montoPago: monto,
-            nuevoAdelanto,
-            nuevoSaldo,
-            estadoPago
+            nuevoMontoPagado,
+            nuevoSaldoPendiente,
+            nuevoEstadoPago
         });
         
-        // Actualizar el servicio en la colección servicios
-        const updateData = {
-            adelanto: nuevoAdelanto,
-            saldo_pendiente: nuevoSaldo,
-            estado_pago: estadoPago,
-            ultimo_pago: {
-                fecha: new Date().toISOString(),
-                monto: monto,
-                metodo: metodo,
-                referencia: referencia,
-                notas: notas
-            },
-            fecha_actualizacion: new Date().toISOString()
+        // 1. Registrar en colección pagos (esto actualiza automáticamente el servicio en BD)
+        const pagoData = {
+            servicio_equipo_id: servicioId,
+            monto_pagado: monto,
+            metodo_pago: metodo,
+            numero_referencia: referencia,
+            notas: notas,
+            registrado_por: localStorage.getItem('usuario_nombre') || 'Sistema'
         };
         
-        // 1. Actualizar el servicio
-        const response = await fetch(`${API_BASE}/api/servicios/${servicioId}`, {
-            method: 'PUT',
+        const pagoResponse = await fetch(`${API_BASE}/api/pagos`, {
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updateData)
+            body: JSON.stringify(pagoData)
         });
         
-        if (!response.ok) {
-            throw new Error('Error al actualizar el servicio');
+        if (!pagoResponse.ok) {
+            const errorData = await pagoResponse.json();
+            throw new Error(errorData.error || 'Error al registrar el pago');
         }
         
-        // 2. Registrar en el historial de pagos
+        const pagoResult = await pagoResponse.json();
+        console.log('✅ Pago registrado exitosamente en BD:', pagoResult);
+        
+        // 2. Registrar en historial de pagos
         const historialPago = {
             servicio_id: servicioId,
             numero_servicio: pago.numero_servicio,
@@ -564,62 +546,73 @@ export async function guardarPago(e) {
             usuario_registro: localStorage.getItem('usuario_nombre') || 'Sistema'
         };
         
-        console.log('📝 Guardando en historial:', historialPago);
-        
         const historialResponse = await fetch(`${API_BASE}/api/historial-pagos`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(historialPago)
         });
         
-        if (!historialResponse.ok) {
-            const errorText = await historialResponse.text();
-            console.error('❌ Error al guardar historial:', errorText);
-            // No detenemos el proceso, solo registramos el error
-        } else {
+        if (historialResponse.ok) {
             const historialResult = await historialResponse.json();
-            console.log('✅ Historial guardado:', historialResult);
+            console.log('✅ Historial de pago registrado:', historialResult);
             
-            // 🚀 OPTIMIZACIÓN: Actualizar caché de historial
-            if (historialPagosCache[servicioId]) {
-                historialPagosCache[servicioId].unshift(historialResult);
-            }
+            // Limpiar caché de historial para que se recargue cuando se consulte
+            delete historialPagosCache[servicioId];
         }
         
-        // 🚀 OPTIMIZACIÓN: Actualizar caché en lugar de recargar todo
+        // 3. ✅ ACTUALIZAR CACHÉ LOCAL DE PAGOS (sin consultar BD)
+        console.log('💾 Actualizando caché local de pagos...');
         const index = pagosCache.findIndex(p => p._id === servicioId);
         if (index !== -1) {
-            pagosCache[index].montoPagado = nuevoAdelanto;
-            pagosCache[index].saldoPendiente = nuevoSaldo;
-            pagosCache[index].estadoPago = estadoPago;
-            console.log('✅ Caché actualizado localmente (sin recargar BD)');
+            console.log('📊 Valores ANTES de actualizar caché:', {
+                montoPagado: pagosCache[index].montoPagado,
+                saldoPendiente: pagosCache[index].saldoPendiente,
+                estadoPago: pagosCache[index].estadoPago
+            });
+            
+            // Actualizar valores en el caché
+            pagosCache[index].montoPagado = nuevoMontoPagado;
+            pagosCache[index].saldoPendiente = nuevoSaldoPendiente;
+            pagosCache[index].estadoPago = nuevoEstadoPago;
+            
+            console.log('📊 Valores DESPUÉS de actualizar caché:', {
+                montoPagado: pagosCache[index].montoPagado,
+                saldoPendiente: pagosCache[index].saldoPendiente,
+                estadoPago: pagosCache[index].estadoPago
+            });
+            console.log('✅ Caché de pagos actualizado correctamente');
+        } else {
+            console.error('❌ No se encontró el servicio en el caché de pagos');
         }
         
-        // 🚀 Actualizar caché global de Servicios si existe
+        // 4. ✅ SINCRONIZAR CACHÉ DE SERVICIOS (sin consultar BD)
         if (window.Servicios && window.Servicios.serviciosCache) {
             const srvIndex = window.Servicios.serviciosCache.findIndex(s => s._id === servicioId);
             if (srvIndex !== -1) {
-                window.Servicios.serviciosCache[srvIndex].adelanto = nuevoAdelanto;
-                console.log('✅ Caché de Servicios sincronizado');
+                console.log('📊 Actualizando caché de servicios...');
+                window.Servicios.serviciosCache[srvIndex].adelanto = nuevoMontoPagado;
+                window.Servicios.serviciosCache[srvIndex].saldo_pendiente = nuevoSaldoPendiente;
+                window.Servicios.serviciosCache[srvIndex].estado_pago = nuevoEstadoPago;
+                console.log('✅ Caché de servicios actualizado');
             }
         }
         
         cerrarModalCarga();
         cerrarModal('modalRegistrarPago');
         
-        // Mostrar notificación según resultado
-        if (nuevoSaldo === 0) {
+        // 5. Actualizar la tabla visualmente DESPUÉS de cerrar modales
+        console.log('🔄 Re-renderizando panel de pagos...');
+        renderizarPanelPagos();
+        
+        if (nuevoSaldoPendiente <= 0) {
             mostrarNotificacionExito('✅ Pago registrado - Deuda saldada completamente');
         } else {
-            mostrarNotificacionExito(`✅ Pago registrado - Saldo pendiente: ${formatearMoneda(nuevoSaldo)}`);
+            mostrarNotificacionExito(`✅ Pago registrado - Saldo pendiente: ${formatearMoneda(nuevoSaldoPendiente)}`);
         }
-        
-        // 🚀 OPTIMIZACIÓN: Solo re-renderizar la tabla (no recargar desde BD)
-        actualizarTablaPagos();
         
     } catch (error) {
         cerrarModalCarga();
-        console.error('Error al registrar pago:', error);
+        console.error('❌ Error al registrar pago:', error);
         alert('Error al registrar el pago: ' + error.message);
     }
 };
@@ -753,7 +746,7 @@ export async function verHistorialPagosServicio(servicioId) {
         let tablaHtml = '';
         
         if (historialPagos.length === 0) {
-            tablaHtml = '<tr><td colspan="5" style="text-align: center; padding: 20px; color: #666;">No hay pagos registrados</td></tr>';
+            tablaHtml = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: #666;">No hay pagos registrados</td></tr>';
         } else {
             historialPagos.forEach((pago, index) => {
                 const fecha = formatearFecha(pago.fecha_pago);
@@ -793,6 +786,49 @@ export async function verHistorialPagosServicio(servicioId) {
  */
 export function cerrarModalHistorialPagosServicio() {
     cerrarModal('modalHistorialPagosServicio');
+}
+
+/**
+ * Eliminar un pago registrado (solo admin)
+ */
+export async function eliminarPago(pagoId, servicioId) {
+    if (!confirm('¿Estás seguro de eliminar este pago? Esta acción no se puede deshacer.')) {
+        return;
+    }
+    
+    mostrarModalCarga('Eliminando pago...');
+    
+    try {
+        // Eliminar el pago
+        const response = await fetch(`${API_BASE}/api/pagos/${pagoId}`, {
+            method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al eliminar el pago');
+        }
+        
+        // Limpiar caché de historial para forzar recarga
+        delete historialPagosCache[servicioId];
+        
+        // Forzar recarga de pagos para actualizar saldos
+        await cargarPagos(true);
+        
+        cerrarModalCarga();
+        mostrarNotificacionExito('Pago eliminado exitosamente');
+        
+        // Si el modal de historial está abierto, recargarlo
+        const modalHistorial = document.getElementById('modalHistorialPagosServicio');
+        if (modalHistorial && modalHistorial.classList.contains('show')) {
+            await verHistorialPagosServicio(servicioId);
+        }
+        
+    } catch (error) {
+        cerrarModalCarga();
+        console.error('Error al eliminar pago:', error);
+        alert('Error al eliminar el pago: ' + error.message);
+    }
 }
 
 // Exportar funciones

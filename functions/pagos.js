@@ -154,11 +154,22 @@ exports.handler = async (event, context) => {
       
       const result = await db.collection('pagos').insertOne(nuevoPago);
       
+      console.log('[pagos] Pago insertado en BD, ahora actualizando servicio...');
+      
       // Actualizar el servicio con el nuevo monto pagado
       const montoTotalActual = parseFloat(servicio.monto || servicio.costo_total || 0);
       const montoPagadoActual = parseFloat(servicio.adelanto || 0);
       const nuevoMontoPagado = montoPagadoActual + parseFloat(monto_pagado);
       const nuevoSaldoPendiente = montoTotalActual - nuevoMontoPagado;
+      
+      console.log('[pagos] Cálculos:', {
+        servicio_id: servicio_equipo_id,
+        montoTotalActual,
+        montoPagadoActual,
+        montoPago: parseFloat(monto_pagado),
+        nuevoMontoPagado,
+        nuevoSaldoPendiente
+      });
       
       let estadoPago = 'pendiente';
       if (montoTotalActual === 0) {
@@ -169,7 +180,9 @@ exports.handler = async (event, context) => {
         estadoPago = 'parcial';
       }
       
-      await db.collection('servicios').updateOne(
+      console.log('[pagos] Estado de pago calculado:', estadoPago);
+      
+      const updateResult = await db.collection('servicios').updateOne(
         { _id: new ObjectId(servicio_equipo_id) },
         { 
           $set: { 
@@ -180,6 +193,18 @@ exports.handler = async (event, context) => {
           } 
         }
       );
+      
+      console.log('[pagos] Resultado de actualización del servicio:', {
+        matchedCount: updateResult.matchedCount,
+        modifiedCount: updateResult.modifiedCount,
+        acknowledged: updateResult.acknowledged
+      });
+      
+      if (updateResult.modifiedCount === 0) {
+        console.warn('[pagos] ⚠️ ADVERTENCIA: El servicio no fue modificado');
+      } else {
+        console.log('[pagos] ✅ Servicio actualizado exitosamente');
+      }
       
       console.log('[pagos] Pago creado exitosamente:', result.insertedId);
       

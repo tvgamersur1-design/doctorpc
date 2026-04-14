@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600">
+  <defs>
+    <style>
+      .title { font: bold 20px sans-serif; fill: #202124; }
+      .subtitle { font: bold 16px sans-serif; fill: #5f6368; }
+      .text { font: 14px sans-serif; fill: #5f6368; }
+      .small-text { font: 12px sans-serif; fill: #80868b; }
+    </style>
+  </defs>
+  
+  <!-- Título -->
+  <text x="500" y="40" class="title" text-anchor="middle">Notificaciones Profesionales - Antes y Después</text>
+  
+  <!-- ANTES -->
+  <text x="250" y="80" class="subtitle" text-anchor="middle">❌ Antes (Colores Intensos)</text>
+  
+  <!-- Notificación Advertencia Antigua -->
+  <defs>
+    <linearGradient id="oldWarning" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF9800"/>
+      <stop offset="100%" style="stop-color:#F57C00"/>
+    </linearGradient>
+  </defs>
+  <rect x="50" y="100" width="400" height="80" fill="url(#oldWarning)" rx="12"/>
+  <text x="250" y="145" class="text" fill="white" text-anchor="middle" font-size="18" font-weight="600">
+    ⚠️ Servicio entregado - Deuda pendiente: S/ 240.00
+  </text>
+  
+  <!-- Notificación Éxito Antigua -->
+  <defs>
+    <linearGradient id="oldSuccess" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4CAF50"/>
+      <stop offset="100%" style="stop-color:#45a049"/>
+    </linearGradient>
+  </defs>
+  <rect x="50" y="200" width="400" height="80" fill="url(#oldSuccess)" rx="12"/>
+  <text x="250" y="245" class="text" fill="white" text-anchor="middle" font-size="18" font-weight="600">
+    ✅ Servicio entregado - Deuda saldada
+  </text>
+  
+  <!-- DESPUÉS -->
+  <text x="750" y="80" class="subtitle" text-anchor="middle">✅ Después (Diseño Profesional)</text>
+  
+  <!-- Notificación Advertencia Nueva -->
+  <rect x="550" y="100" width="400" height="100" fill="white" rx="8" stroke="#e0e0e0" stroke-width="1"/>
+  <rect x="550" y="100" width="4" height="100" fill="#f9a825" rx="2"/>
+  
+  <!-- Icono Advertencia -->
+  <circle cx="585" cy="150" r="20" fill="#fff8e1"/>
+  <path d="M 580 140 L 585 155 L 590 140 Z" fill="none" stroke="#f9a825" stroke-width="2"/>
+  <circle cx="585" cy="160" r="1.5" fill="#f9a825"/>
+  
+  <!-- Texto -->
+  <text x="620" y="140" class="text" font-weight="600" fill="#202124">Atención</text>
+  <text x="620" y="160" class="small-text">Servicio entregado con saldo</text>
+  <text x="620" y="175" class="small-text">pendiente de S/ 240.00</text>
+  
+  <!-- Notificación Éxito Nueva -->
+  <rect x="550" y="220" width="400" height="100" fill="white" rx="8" stroke="#e0e0e0" stroke-width="1"/>
+  <rect x="550" y="220" width="4" height="100" fill="#34a853" rx="2"/>
+  
+  <!-- Icono Éxito -->
+  <circle cx="585" cy="270" r="20" fill="#e8f5e9"/>
+  <path d="M 575 270 L 582 277 L 595 264" fill="none" stroke="#34a853" stroke-width="2.5" stroke-linecap="round"/>
+  
+  <!-- Texto -->
+  <text x="620" y="260" class="text" font-weight="600" fill="#202124">Éxito</text>
+  <text x="620" y="280" class="small-text">Servicio entregado - Deuda</text>
+  <text x="620" y="295" class="small-text">saldada completamente</text>
+  
+  <!-- Características -->
+  <text x="50" y="360" class="subtitle">Mejoras Implementadas:</text>
+  
+  <rect x="50" y="380" width="450" height="180" fill="#f8f9fa" rx="8"/>
+  <text x="70" y="410" class="text" font-weight="600">Diseño Profesional:</text>
+  <text x="90" y="435" class="small-text">• Fondo blanco con sombra suave</text>
+  <text x="90" y="455" class="small-text">• Borde de color en lugar de fondo intenso</text>
+  <text x="90" y="475" class="small-text">• Iconos SVG en lugar de emojis</text>
+  <text x="90" y="495" class="small-text">• Tipografía clara y legible</text>
+  <text x="90" y="515" class="small-text">• Colores suaves (#f9a825, #34a853)</text>
+  <text x="90" y="535" class="small-text">• Mensaje dividido en título y descripción</text>
+  
+  <rect x="520" y="380" width="450" height="180" fill="#f8f9fa" rx="8"/>
+  <text x="540" y="410" class="text" font-weight="600">Experiencia de Usuario:</text>
+  <text x="560" y="435" class="small-text">• Más fácil de leer</text>
+  <text x="560" y="455" class="small-text">• No distrae con colores brillantes</text>
+  <text x="560" y="475" class="small-text">• Aspecto más corporativo</text>
+  <text x="560" y="495" class="small-text">• Duración: 3-4 segundos</text>
+  <text x="560" y="515" class="small-text">• Animación suave de entrada/salida</text>
+  <text x="560" y="535" class="small-text">• Compatible con temas claros</text>
+  
+</svg>

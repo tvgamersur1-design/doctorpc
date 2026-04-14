@@ -17,6 +17,14 @@ import {
 let clientesCache = [];
 let clienteEnEdicion = null;
 
+// Exponer caché globalmente para acceso desde otras funciones
+if (typeof window !== 'undefined') {
+    window.Clientes = window.Clientes || {};
+    Object.defineProperty(window.Clientes, 'clientesCache', {
+        get: () => clientesCache
+    });
+}
+
 // ==================== FUNCIONES PÚBLICAS ====================
 
 /**
@@ -109,17 +117,22 @@ export async function guardarClienteDesdeModal(e) {
 
 /**
  * Cargar lista de clientes
+ * OPTIMIZADO: Carga todo al inicio y filtra localmente
  */
-export async function cargarClientes() {
+export async function cargarClientes(forzarRecarga = false) {
     const container = document.getElementById('clientesContainer');
-    mostrarSpinnerInline('clientesContainer', 'Cargando clientes...');
     
     try {
-        // Verificar si se deben incluir eliminados
-        const toggleEliminados = document.getElementById('toggleClientesEliminados');
-        const incluirEliminados = toggleEliminados && toggleEliminados.checked;
+        // Usar caché si está disponible y no se fuerza recarga
+        if (!forzarRecarga && clientesCache.length > 0) {
+            renderTablaClientes(clientesCache);
+            return;
+        }
         
-        const url = incluirEliminados ? `${API.CLIENTES}?incluirEliminados=true` : API.CLIENTES;
+        mostrarSpinnerInline('clientesContainer', 'Cargando clientes...');
+        
+        // Cargar TODOS los clientes (incluidos eliminados) una sola vez
+        const url = `${API.CLIENTES}?incluirEliminados=true`;
         clientesCache = await getJSON(url);
 
         if (clientesCache.length === 0) {
@@ -268,6 +281,7 @@ export function confirmarEliminarClienteDesdeModal(id) {
 
 /**
  * Restaurar cliente eliminado
+ * OPTIMIZADO: Actualiza caché localmente
  */
 export async function restaurarCliente(id) {
     try {
@@ -275,8 +289,19 @@ export async function restaurarCliente(id) {
         
         await putJSON(`${API.CLIENTES}/${id}/restaurar`, {});
 
+        // Actualizar caché localmente
+        const index = clientesCache.findIndex(c => c._id === id);
+        if (index !== -1) {
+            clientesCache[index].eliminado = false;
+            console.log('✅ Caché actualizado - Cliente restaurado:', clientesCache[index].nombre);
+        }
+
         cerrarModalCarga();
-        await cargarClientes();
+        
+        // Re-renderizar tabla con caché actualizado
+        renderTablaClientes(clientesCache);
+        await actualizarSelectsClientes();
+        
         mostrarNotificacionExito('Cliente restaurado');
     } catch (error) {
         cerrarModalCarga();
@@ -289,9 +314,23 @@ export async function restaurarCliente(id) {
 
 /**
  * Renderizar tabla de clientes
+ * OPTIMIZADO: Filtra según el checkbox de eliminados
  */
-function renderTablaClientes(clientes) {
+export function renderTablaClientes(clientes) {
     const container = document.getElementById('clientesContainer');
+    
+    // Filtrar según el checkbox de eliminados
+    const toggleEliminados = document.getElementById('toggleClientesEliminados');
+    const mostrarEliminados = toggleEliminados ? toggleEliminados.checked : false;
+    
+    const clientesFiltrados = mostrarEliminados 
+        ? clientes 
+        : clientes.filter(c => c.eliminado !== true);
+    
+    if (clientesFiltrados.length === 0) {
+        container.innerHTML = '<div class="no-records">No se encontraron clientes</div>';
+        return;
+    }
     
     let html = `
         <table class="records-table">
@@ -307,7 +346,7 @@ function renderTablaClientes(clientes) {
             <tbody>
     `;
 
-    clientes.forEach(cliente => {
+    clientesFiltrados.forEach(cliente => {
         const esEliminado = cliente.eliminado === true;
         const rowStyle = esEliminado ? 'style="background-color: #ffebee; opacity: 0.7;"' : '';
         
@@ -507,6 +546,7 @@ async function guardarCambiosClienteDirecto(clienteId, telefonoNuevo, emailNuevo
 
 /**
  * Eliminar cliente (soft delete)
+ * OPTIMIZADO: Actualiza caché localmente
  */
 async function eliminarCliente(id) {
     try {
@@ -515,9 +555,19 @@ async function eliminarCliente(id) {
         // Soft delete: marcar como eliminado
         await putJSON(`${API.CLIENTES}/${id}`, { eliminado: true });
 
+        // Actualizar caché localmente
+        const index = clientesCache.findIndex(c => c._id === id);
+        if (index !== -1) {
+            clientesCache[index].eliminado = true;
+            console.log('✅ Caché actualizado - Cliente eliminado:', clientesCache[index].nombre);
+        }
+
         cerrarModalCarga();
-        await cargarClientes();
         cerrarModal('confirmModal');
+        
+        // Re-renderizar tabla con caché actualizado
+        renderTablaClientes(clientesCache);
+        await actualizarSelectsClientes();
         
         mostrarNotificacionExito('Cliente eliminado');
     } catch (error) {

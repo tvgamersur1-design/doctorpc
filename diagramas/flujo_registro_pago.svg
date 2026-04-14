@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1200">
+  <defs>
+    <style>
+      .title { font: bold 24px sans-serif; fill: #1a1a1a; }
+      .actor-title { font: bold 16px sans-serif; fill: #2c3e50; text-anchor: middle; }
+      .step-text { font: 13px sans-serif; fill: #2c3e50; }
+      .step-detail { font: 11px sans-serif; fill: #555; }
+      .lifeline { stroke: #95a5a6; stroke-width: 2; stroke-dasharray: 5,5; }
+      .arrow { stroke: #34495e; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .arrow-return { stroke: #27ae60; stroke-width: 2; fill: none; marker-end: url(#arrowhead-return); stroke-dasharray: 5,3; }
+      .actor-box { fill: #3498db; stroke: #2c3e50; stroke-width: 2; }
+      .process-box { fill: #ecf0f1; stroke: #34495e; stroke-width: 2; rx: 5; }
+      .success-box { fill: #d5f4e6; stroke: #27ae60; stroke-width: 2; rx: 5; }
+      .validation-box { fill: #fff3cd; stroke: #ffc107; stroke-width: 2; rx: 5; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#34495e" />
+    </marker>
+    <marker id="arrowhead-return" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#27ae60" />
+    </marker>
+  </defs>
+
+  <!-- Título -->
+  <text x="700" y="40" text-anchor="middle" class="title">FLUJO DE DATOS - REGISTRO DE PAGO</text>
+
+  <!-- Actores -->
+  <!-- Usuario -->
+  <rect x="100" y="80" width="120" height="50" class="actor-box" rx="5"/>
+  <text x="160" y="110" class="actor-title" fill="white">USUARIO</text>
+  <line x1="160" y1="130" x2="160" y2="1150" class="lifeline"/>
+
+  <!-- Frontend -->
+  <rect x="400" y="80" width="120" height="50" class="actor-box" rx="5"/>
+  <text x="460" y="110" class="actor-title" fill="white">FRONTEND</text>
+  <line x1="460" y1="130" x2="460" y2="1150" class="lifeline"/>
+
+  <!-- Backend -->
+  <rect x="750" y="80" width="120" height="50" class="actor-box" rx="5"/>
+  <text x="810" y="110" class="actor-title" fill="white">BACKEND</text>
+  <line x1="810" y1="130" x2="810" y2="1150" class="lifeline"/>
+
+  <!-- Database -->
+  <rect x="1100" y="80" width="120" height="50" class="actor-box" rx="5"/>
+  <text x="1160" y="110" class="actor-title" fill="white">DATABASE</text>
+  <line x1="1160" y1="130" x2="1160" y2="1150" class="lifeline"/>
+
+  <!-- Paso 1: Click Pagar -->
+  <path d="M 160 170 L 460 170" class="arrow"/>
+  <text x="180" y="165" class="step-text">1. Click "Pagar"</text>
+
+  <!-- Paso 2: Ingresa datos -->
+  <rect x="170" y="200" width="280" height="70" class="process-box"/>
+  <text x="180" y="220" class="step-text" font-weight="bold">2. Ingresa datos del pago:</text>
+  <text x="190" y="240" class="step-detail">• Monto: S/ 100.00</text>
+  <text x="190" y="255" class="step-detail">• Método: Yape</text>
+  <text x="190" y="270" class="step-detail">• Referencia: REF123456</text>
+  <path d="M 160 235 L 460 235" class="arrow"/>
+
+  <!-- Paso 3: Click Guardar -->
+  <path d="M 160 300 L 460 300" class="arrow"/>
+  <text x="180" y="295" class="step-text">3. Click "Guardar"</text>
+
+  <!-- Paso 4: Validar datos -->
+  <rect x="470" y="330" width="200" height="50" class="validation-box"/>
+  <text x="480" y="350" class="step-text" font-weight="bold">4. Validar datos</text>
+  <text x="490" y="368" class="step-detail">(monto > 0, método válido)</text>
+
+  <!-- Paso 5: PUT servicios -->
+  <path d="M 460 410 L 810 410" class="arrow"/>
+  <text x="480" y="405" class="step-text">5. PUT /api/servicios/:id</text>
+  <text x="480" y="425" class="step-detail">(actualizar adelanto y saldo)</text>
+
+  <!-- Paso 6: UPDATE servicios -->
+  <path d="M 810 450 L 1160 450" class="arrow"/>
+  <rect x="820" y="470" width="330" height="40" class="process-box"/>
+  <text x="830" y="490" class="step-text">6. UPDATE servicios</text>
+  <text x="840" y="505" class="step-detail">SET adelanto = adelanto + 100</text>
+
+  <!-- Paso 7: Respuesta OK -->
+  <path d="M 1160 540 L 810 540" class="arrow-return"/>
+  <text x="900" y="535" class="step-text" fill="#27ae60">7. Respuesta OK</text>
+
+  <!-- Paso 8: POST historial-pagos -->
+  <path d="M 460 580 L 810 580" class="arrow"/>
+  <text x="480" y="575" class="step-text">8. POST /api/historial-pagos</text>
+  <text x="480" y="595" class="step-detail">(registrar pago en historial)</text>
+
+  <!-- Paso 9: Validar datos -->
+  <rect x="820" y="620" width="280" height="70" class="validation-box"/>
+  <text x="830" y="640" class="step-text" font-weight="bold">9. Validar datos:</text>
+  <text x="840" y="658" class="step-detail">• servicio_id (ObjectId válido)</text>
+  <text x="840" y="673" class="step-detail">• monto (Number > 0)</text>
+  <text x="840" y="688" class="step-detail">• metodo_pago (String no vacío)</text>
+
+  <!-- Paso 10: Agregar timestamps -->
+  <rect x="820" y="710" width="280" height="55" class="process-box"/>
+  <text x="830" y="730" class="step-text" font-weight="bold">10. Agregar timestamps:</text>
+  <text x="840" y="748" class="step-detail">• fecha_pago: new Date()</text>
+  <text x="840" y="763" class="step-detail">• fecha_creacion: new Date()</text>
+
+  <!-- Paso 11: INSERT documento -->
+  <path d="M 810 790 L 1160 790" class="arrow"/>
+  <rect x="820" y="810" width="330" height="40" class="process-box"/>
+  <text x="830" y="830" class="step-text">11. INSERT INTO historial_pagos</text>
+  <text x="840" y="845" class="step-detail">(documento completo con timestamps)</text>
+
+  <!-- Paso 12: Respuesta con _id -->
+  <path d="M 1160 870 L 810 870" class="arrow-return"/>
+  <text x="900" y="865" class="step-text" fill="#27ae60">12. Respuesta con _id</text>
+
+  <!-- Paso 13: Respuesta OK -->
+  <path d="M 810 910 L 460 910" class="arrow-return"/>
+  <text x="550" y="905" class="step-text" fill="#27ae60">13. Respuesta OK</text>
+
+  <!-- Paso 14: Notificación éxito -->
+  <path d="M 460 950 L 160 950" class="arrow-return"/>
+  <rect x="170" y="970" width="280" height="50" class="success-box"/>
+  <text x="180" y="990" class="step-text" font-weight="bold">14. Notificación de éxito</text>
+  <text x="190" y="1008" class="step-detail">"✅ Pago registrado correctamente"</text>
+
+  <!-- Paso 15: Recargar tabla -->
+  <rect x="470" y="1050" width="280" height="50" class="process-box"/>
+  <text x="480" y="1070" class="step-text" font-weight="bold">15. Recargar tabla de servicios</text>
+  <text x="490" y="1088" class="step-detail">(actualizar vista con nuevo saldo)</text>
+
+  <!-- Resultado final -->
+  <rect x="50" y="1120" width="1300" height="50" fill="#d5f4e6" stroke="#27ae60" stroke-width="3" rx="8"/>
+  <text x="700" y="1145" text-anchor="middle" class="step-text" font-weight="bold" fill="#27ae60">
+    ✅ RESULTADO: Servicio actualizado + Pago registrado en historial con trazabilidad completa
+  </text>
+
+  <!-- Leyenda -->
+  <text x="50" y="1190" class="step-text" font-weight="bold">Leyenda:</text>
+  <line x1="150" y1="1185" x2="220" y2="1185" class="arrow"/>
+  <text x="230" y="1190" class="step-detail">Solicitud</text>
+  
+  <line x1="320" y1="1185" x2="390" y2="1185" class="arrow-return"/>
+  <text x="400" y="1190" class="step-detail">Respuesta</text>
+
+  <rect x="500" y="1175" width="80" height="20" class="validation-box"/>
+  <text x="590" y="1190" class="step-detail">Validación</text>
+
+  <rect x="700" y="1175" width="80" height="20" class="process-box"/>
+  <text x="790" y="1190" class="step-detail">Proceso</text>
+
+  <rect x="900" y="1175" width="80" height="20" class="success-box"/>
+  <text x="990" y="1190" class="step-detail">Éxito</text>
+</svg>

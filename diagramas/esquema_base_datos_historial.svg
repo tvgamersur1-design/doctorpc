@@ -1,0 +1,187 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 800">
+  <defs>
+    <style>
+      .title { font: bold 24px sans-serif; fill: #1a1a1a; }
+      .table-title { font: bold 16px sans-serif; fill: white; }
+      .field-name { font: 13px monospace; fill: #2c3e50; font-weight: bold; }
+      .field-type { font: 12px monospace; fill: #7f8c8d; }
+      .pk { fill: #f39c12; }
+      .fk { fill: #3498db; }
+      .index { fill: #9b59b6; }
+      .relation { stroke: #e74c3c; stroke-width: 3; fill: none; marker-end: url(#relation-arrow); }
+      .note { font: 12px sans-serif; fill: #555; font-style: italic; }
+    </style>
+    <marker id="relation-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#e74c3c" />
+    </marker>
+  </defs>
+
+  <!-- Título -->
+  <text x="700" y="40" text-anchor="middle" class="title">ESQUEMA DE BASE DE DATOS - SISTEMA DE HISTORIAL DE PAGOS</text>
+
+  <!-- Tabla: clientes -->
+  <g id="clientes">
+    <rect x="100" y="100" width="300" height="200" rx="8" fill="#3498db" stroke="#2c3e50" stroke-width="2"/>
+    <rect x="100" y="100" width="300" height="40" rx="8" fill="#2980b9"/>
+    <text x="250" y="125" text-anchor="middle" class="table-title">clientes</text>
+    
+    <rect x="110" y="150" width="20" height="20" class="pk" rx="3"/>
+    <text x="140" y="165" class="field-name">_id</text>
+    <text x="320" y="165" class="field-type">ObjectId</text>
+    
+    <text x="140" y="190" class="field-name">nombre</text>
+    <text x="320" y="190" class="field-type">String</text>
+    
+    <text x="140" y="215" class="field-name">telefono</text>
+    <text x="320" y="215" class="field-type">String</text>
+    
+    <text x="140" y="240" class="field-name">email</text>
+    <text x="320" y="240" class="field-type">String</text>
+    
+    <text x="140" y="265" class="field-name">dni</text>
+    <text x="320" y="265" class="field-type">String</text>
+  </g>
+
+  <!-- Tabla: servicios -->
+  <g id="servicios">
+    <rect x="550" y="100" width="350" height="280" rx="8" fill="#2ecc71" stroke="#2c3e50" stroke-width="2"/>
+    <rect x="550" y="100" width="350" height="40" rx="8" fill="#27ae60"/>
+    <text x="725" y="125" text-anchor="middle" class="table-title">servicios</text>
+    
+    <rect x="560" y="150" width="20" height="20" class="pk" rx="3"/>
+    <text x="590" y="165" class="field-name">_id</text>
+    <text x="810" y="165" class="field-type">ObjectId</text>
+    
+    <text x="590" y="190" class="field-name">numero_servicio</text>
+    <text x="810" y="190" class="field-type">String</text>
+    
+    <rect x="560" y="200" width="20" height="20" class="fk" rx="3"/>
+    <text x="590" y="215" class="field-name">cliente_id</text>
+    <text x="810" y="215" class="field-type">ObjectId</text>
+    
+    <text x="590" y="240" class="field-name">monto</text>
+    <text x="810" y="240" class="field-type">Number</text>
+    
+    <text x="590" y="265" class="field-name">adelanto</text>
+    <text x="810" y="265" class="field-type">Number</text>
+    
+    <text x="590" y="290" class="field-name">saldo_pendiente</text>
+    <text x="810" y="290" class="field-type">Number</text>
+    
+    <text x="590" y="315" class="field-name">estado_pago</text>
+    <text x="810" y="315" class="field-type">String</text>
+    
+    <text x="590" y="340" class="field-name">fecha_creacion</text>
+    <text x="810" y="340" class="field-type">Date</text>
+  </g>
+
+  <!-- Tabla: historial_pagos (NUEVA) -->
+  <g id="historial_pagos">
+    <rect x="1000" y="100" width="350" height="360" rx="8" fill="#e74c3c" stroke="#2c3e50" stroke-width="3"/>
+    <rect x="1000" y="100" width="350" height="40" rx="8" fill="#c0392b"/>
+    <text x="1175" y="125" text-anchor="middle" class="table-title">historial_pagos ⭐ NUEVA</text>
+    
+    <rect x="1010" y="150" width="20" height="20" class="pk" rx="3"/>
+    <text x="1040" y="165" class="field-name">_id</text>
+    <text x="1280" y="165" class="field-type">ObjectId</text>
+    
+    <rect x="1010" y="175" width="20" height="20" class="fk" rx="3"/>
+    <text x="1040" y="190" class="field-name">servicio_id</text>
+    <text x="1280" y="190" class="field-type">ObjectId</text>
+    
+    <text x="1040" y="215" class="field-name">numero_servicio</text>
+    <text x="1280" y="215" class="field-type">String</text>
+    
+    <rect x="1010" y="225" width="20" height="20" class="fk" rx="3"/>
+    <text x="1040" y="240" class="field-name">cliente_id</text>
+    <text x="1280" y="240" class="field-type">ObjectId</text>
+    
+    <text x="1040" y="265" class="field-name">monto</text>
+    <text x="1280" y="265" class="field-type">Number</text>
+    
+    <text x="1040" y="290" class="field-name">metodo_pago</text>
+    <text x="1280" y="290" class="field-type">String</text>
+    
+    <text x="1040" y="315" class="field-name">referencia</text>
+    <text x="1280" y="315" class="field-type">String</text>
+    
+    <text x="1040" y="340" class="field-name">notas</text>
+    <text x="1280" y="340" class="field-type">String</text>
+    
+    <rect x="1010" y="350" width="20" height="20" class="index" rx="3"/>
+    <text x="1040" y="365" class="field-name">fecha_pago</text>
+    <text x="1280" y="365" class="field-type">Date</text>
+    
+    <text x="1040" y="390" class="field-name">usuario_registro</text>
+    <text x="1280" y="390" class="field-type">String</text>
+    
+    <text x="1040" y="415" class="field-name">fecha_creacion</text>
+    <text x="1280" y="415" class="field-type">Date</text>
+  </g>
+
+  <!-- Relaciones -->
+  <!-- clientes -> servicios -->
+  <path d="M 400 210 L 550 210" class="relation"/>
+  <text x="450" y="205" class="note">1:N</text>
+
+  <!-- servicios -> historial_pagos -->
+  <path d="M 900 190 L 1000 190" class="relation"/>
+  <text x="930" y="185" class="note">1:N</text>
+
+  <!-- clientes -> historial_pagos (indirecto) -->
+  <path d="M 400 240 Q 700 450 1000 240" class="relation" stroke-dasharray="5,5"/>
+  <text x="650" y="460" class="note">Relación indirecta</text>
+
+  <!-- Sección de Índices -->
+  <rect x="100" y="500" width="600" height="180" rx="8" fill="#ecf0f1" stroke="#34495e" stroke-width="2"/>
+  <text x="400" y="530" text-anchor="middle" class="table-title" fill="#2c3e50">ÍNDICES OPTIMIZADOS</text>
+  
+  <text x="120" y="560" class="field-name">historial_pagos.servicio_id</text>
+  <text x="450" y="560" class="field-type">Ascendente (1) - Consultas rápidas por servicio</text>
+  
+  <text x="120" y="590" class="field-name">historial_pagos.cliente_id</text>
+  <text x="450" y="590" class="field-type">Ascendente (1) - Consultas rápidas por cliente</text>
+  
+  <text x="120" y="620" class="field-name">historial_pagos.fecha_pago</text>
+  <text x="450" y="620" class="field-type">Descendente (-1) - Ordenamiento cronológico</text>
+  
+  <text x="120" y="655" class="note">Beneficio: Consultas 10x más rápidas | Ordenamiento eficiente | Filtrado optimizado</text>
+
+  <!-- Sección de Ejemplo de Datos -->
+  <rect x="750" y="500" width="600" height="180" rx="8" fill="#fff3e0" stroke="#ff9800" stroke-width="2"/>
+  <text x="1050" y="530" text-anchor="middle" class="table-title" fill="#2c3e50">EJEMPLO DE REGISTRO</text>
+  
+  <text x="770" y="560" class="field-type">Servicio: SRV-2026-005 | Monto Total: S/ 200.00</text>
+  
+  <text x="770" y="590" class="field-name">Pago 1:</text>
+  <text x="850" y="590" class="field-type">S/ 50 - Efectivo - "Adelanto inicial"</text>
+  
+  <text x="770" y="615" class="field-name">Pago 2:</text>
+  <text x="850" y="615" class="field-type">S/ 100 - Yape - REF123456</text>
+  
+  <text x="770" y="640" class="field-name">Pago 3:</text>
+  <text x="850" y="640" class="field-type">S/ 50 - Transferencia - REF789012</text>
+  
+  <text x="770" y="670" class="note">Total Pagado: S/ 200.00 | Estado: PAGADO ✅</text>
+
+  <!-- Leyenda -->
+  <text x="100" y="720" class="table-title" fill="#2c3e50">LEYENDA:</text>
+  
+  <rect x="100" y="730" width="20" height="20" class="pk" rx="3"/>
+  <text x="130" y="745" class="field-type">Primary Key (Clave Primaria)</text>
+  
+  <rect x="350" y="730" width="20" height="20" class="fk" rx="3"/>
+  <text x="380" y="745" class="field-type">Foreign Key (Clave Foránea)</text>
+  
+  <rect x="600" y="730" width="20" height="20" class="index" rx="3"/>
+  <text x="630" y="745" class="field-type">Indexed Field (Campo Indexado)</text>
+  
+  <line x1="900" y1="740" x2="950" y2="740" class="relation"/>
+  <text x="960" y="745" class="field-type">Relación 1:N (Uno a Muchos)</text>
+
+  <!-- Nota importante -->
+  <rect x="100" y="760" width="1250" height="30" rx="5" fill="#d5f4e6" stroke="#27ae60" stroke-width="2"/>
+  <text x="725" y="780" text-anchor="middle" class="note" font-weight="bold" fill="#27ae60">
+    ✅ La colección historial_pagos permite trazabilidad completa de cada transacción con fecha, método, referencia y usuario
+  </text>
+</svg>

@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 700">
+  <defs>
+    <style>
+      .title { font: bold 24px sans-serif; fill: #1a1a1a; }
+      .subtitle { font: bold 18px sans-serif; fill: #2c3e50; }
+      .text { font: 14px sans-serif; fill: #34495e; }
+      .small-text { font: 12px sans-serif; fill: #555; }
+      .moment-title { font: bold 20px sans-serif; fill: white; }
+      .code { font: 11px monospace; fill: #2c3e50; }
+      .moment1 { fill: #3498db; }
+      .moment2 { fill: #e74c3c; }
+      .arrow { stroke: #2c3e50; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .success { fill: #27ae60; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#2c3e50" />
+    </marker>
+  </defs>
+
+  <!-- Título -->
+  <text x="700" y="40" text-anchor="middle" class="title">DOS MOMENTOS DE CAPTURA DE PAGOS</text>
+
+  <!-- MOMENTO 1: Al crear servicio -->
+  <g id="momento1">
+    <rect x="50" y="80" width="600" height="550" rx="10" class="moment1" opacity="0.1"/>
+    <rect x="50" y="80" width="600" height="50" rx="10" class="moment1"/>
+    <text x="350" y="112" text-anchor="middle" class="moment-title">🔵 MOMENTO 1: Al Crear el Servicio</text>
+
+    <!-- Escenario -->
+    <rect x="80" y="160" width="540" height="100" rx="8" fill="#e8f5e9" stroke="#27ae60" stroke-width="2"/>
+    <text x="100" y="185" class="subtitle">Escenario:</text>
+    <text x="110" y="210" class="text">• Cliente trae su equipo para reparación</text>
+    <text x="110" y="235" class="text">• Se llena el formulario de servicio</text>
+    <text x="110" y="260" class="text">• Cliente entrega adelanto inicial: S/ 50.00</text>
+
+    <!-- Ubicación -->
+    <rect x="80" y="280" width="540" height="60" rx="8" fill="#fff3e0" stroke="#ff9800" stroke-width="2"/>
+    <text x="100" y="305" class="subtitle">Ubicación en código:</text>
+    <text x="110" y="330" class="code">📁 public/js/modules/servicios.js → guardarServicioReal()</text>
+
+    <!-- Proceso -->
+    <rect x="80" y="360" width="540" height="250" rx="8" fill="white" stroke="#3498db" stroke-width="2"/>
+    <text x="100" y="385" class="subtitle">Proceso:</text>
+    
+    <text x="110" y="415" class="text" font-weight="bold">1. Guardar servicio en colección "servicios":</text>
+    <rect x="120" y="425" width="480" height="70" rx="5" fill="#f0f8ff" stroke="#3498db" stroke-width="1"/>
+    <text x="130" y="445" class="code">numero_servicio: "SRV-2026-005"</text>
+    <text x="130" y="465" class="code">monto: 200.00</text>
+    <text x="130" y="485" class="code">adelanto: 50.00  ← Adelanto inicial</text>
+
+    <text x="110" y="520" class="text" font-weight="bold">2. Registrar en "historial_pagos":</text>
+    <rect x="120" y="530" width="480" height="70" rx="5" fill="#ffe0e0" stroke="#e74c3c" stroke-width="1"/>
+    <text x="130" y="550" class="code">monto: 50.00</text>
+    <text x="130" y="570" class="code">metodo_pago: "efectivo"</text>
+    <text x="130" y="590" class="code">notas: "Adelanto inicial al registrar servicio"</text>
+  </g>
+
+  <!-- MOMENTO 2: Durante gestión de pagos -->
+  <g id="momento2">
+    <rect x="750" y="80" width="600" height="550" rx="10" class="moment2" opacity="0.1"/>
+    <rect x="750" y="80" width="600" height="50" rx="10" class="moment2"/>
+    <text x="1050" y="112" text-anchor="middle" class="moment-title">🔴 MOMENTO 2: Durante Gestión de Pagos</text>
+
+    <!-- Escenario -->
+    <rect x="780" y="160" width="540" height="100" rx="8" fill="#e8f5e9" stroke="#27ae60" stroke-width="2"/>
+    <text x="800" y="185" class="subtitle">Escenario:</text>
+    <text x="810" y="210" class="text">• Cliente regresa días después</text>
+    <text x="810" y="235" class="text">• Realiza pagos adicionales</text>
+    <text x="810" y="260" class="text">• Ejemplo: Paga S/ 100.00 por Yape</text>
+
+    <!-- Ubicación -->
+    <rect x="780" y="280" width="540" height="60" rx="8" fill="#fff3e0" stroke="#ff9800" stroke-width="2"/>
+    <text x="800" y="305" class="subtitle">Ubicación en código:</text>
+    <text x="810" y="330" class="code">📁 public/js/modules/pagos.js → guardarPago()</text>
+
+    <!-- Proceso -->
+    <rect x="780" y="360" width="540" height="250" rx="8" fill="white" stroke="#e74c3c" stroke-width="2"/>
+    <text x="800" y="385" class="subtitle">Proceso:</text>
+    
+    <text x="810" y="415" class="text" font-weight="bold">1. Actualizar servicio en "servicios":</text>
+    <rect x="820" y="425" width="480" height="70" rx="5" fill="#f0f8ff" stroke="#3498db" stroke-width="1"/>
+    <text x="830" y="445" class="code">adelanto: 150.00  ← 50 + 100</text>
+    <text x="830" y="465" class="code">saldo_pendiente: 50.00  ← 200 - 150</text>
+    <text x="830" y="485" class="code">estado_pago: "parcial"</text>
+
+    <text x="810" y="520" class="text" font-weight="bold">2. Registrar en "historial_pagos":</text>
+    <rect x="820" y="530" width="480" height="70" rx="5" fill="#ffe0e0" stroke="#e74c3c" stroke-width="1"/>
+    <text x="830" y="550" class="code">monto: 100.00</text>
+    <text x="830" y="570" class="code">metodo_pago: "yape"</text>
+    <text x="830" y="590" class="code">referencia: "REF123456"</text>
+  </g>
+
+  <!-- Resultado final -->
+  <rect x="50" y="650" width="1300" height="40" rx="8" fill="#d5f4e6" stroke="#27ae60" stroke-width="3"/>
+  <text x="700" y="675" text-anchor="middle" class="text" font-weight="bold" fill="#27ae60" font-size="16">
+    ✅ RESULTADO: Cada pago queda registrado automáticamente con fecha, método, referencia y usuario
+  </text>
+</svg>

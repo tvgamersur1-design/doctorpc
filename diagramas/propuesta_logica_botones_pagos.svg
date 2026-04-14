@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1800">
+  <defs>
+    <style>
+      .title { font: bold 24px sans-serif; fill: #1a1a1a; }
+      .subtitle { font: bold 18px sans-serif; fill: #2192B8; }
+      .text { font: 14px sans-serif; fill: #333; }
+      .small-text { font: 12px sans-serif; fill: #666; }
+      .btn-text { font: bold 13px sans-serif; fill: white; }
+      .card { fill: white; stroke: #e0e0e0; stroke-width: 2; }
+      .header-bg { fill: #f8f9fa; }
+      .btn-pagar { fill: #4CAF50; }
+      .btn-historial { fill: #2196F3; }
+      .btn-recordar { fill: #FF9800; }
+      .btn-whatsapp { fill: #25D366; }
+      .btn-pdf { fill: #f44336; }
+      .btn-editar { fill: #9C27B0; }
+      .estado-pendiente { fill: #ffebee; stroke: #f44336; }
+      .estado-parcial { fill: #fff8f0; stroke: #FF9800; }
+      .estado-pagado { fill: #f1f8f4; stroke: #4CAF50; }
+    </style>
+  </defs>
+  
+  <!-- Título Principal -->
+  <text x="700" y="40" class="title" text-anchor="middle">PROPUESTA: Lógica y Botones - Gestión de Pagos</text>
+  
+  <!-- SECCIÓN 1: Estados de Pago -->
+  <text x="50" y="90" class="subtitle">1. Estados de Pago y Lógica (Todos los Servicios)</text>
+  
+  <!-- Estado Pendiente -->
+  <rect x="50" y="110" width="400" height="140" class="estado-pendiente" rx="8"/>
+  <text x="70" y="140" class="text" font-weight="bold">🔴 PENDIENTE (Sin pagos)</text>
+  <text x="70" y="165" class="small-text">• Adelanto = S/ 0.00</text>
+  <text x="70" y="185" class="small-text">• Saldo = Monto Total</text>
+  <text x="70" y="205" class="small-text">• Estado: "pendiente"</text>
+  <text x="70" y="230" class="text" font-weight="bold" fill="#f44336">Botones: Pagar | Recordar | WhatsApp</text>
+  
+  <!-- Estado Parcial -->
+  <rect x="500" y="110" width="400" height="140" class="estado-parcial" rx="8"/>
+  <text x="520" y="140" class="text" font-weight="bold">🟡 PARCIAL (Pago incompleto)</text>
+  <text x="520" y="165" class="small-text">• Adelanto > S/ 0.00 y &lt; Monto Total</text>
+  <text x="520" y="185" class="small-text">• Saldo = Monto Total - Adelanto</text>
+  <text x="520" y="205" class="small-text">• Estado: "parcial"</text>
+  <text x="520" y="230" class="text" font-weight="bold" fill="#FF9800">Botones: Pagar | Historial | WhatsApp</text>
+  
+  <!-- Estado Pagado -->
+  <rect x="950" y="110" width="400" height="140" class="estado-pagado" rx="8"/>
+  <text x="970" y="140" class="text" font-weight="bold">🟢 PAGADO (Completado)</text>
+  <text x="970" y="165" class="small-text">• Adelanto = Monto Total</text>
+  <text x="970" y="185" class="small-text">• Saldo = S/ 0.00</text>
+  <text x="970" y="205" class="small-text">• Estado: "pagado"</text>
+  <text x="970" y="230" class="text" font-weight="bold" fill="#4CAF50">Botones: Historial | PDF | Editar</text>
+  
+  <!-- SECCIÓN 2: Botones de Acción -->
+  <text x="50" y="310" class="subtitle">2. Botones de Acción por Estado</text>
+  
+  <!-- Tabla de Botones -->
+  <rect x="50" y="330" width="1300" height="50" class="header-bg"/>
+  <text x="150" y="360" class="text" font-weight="bold">Botón</text>
+  <text x="400" y="360" class="text" font-weight="bold">Pendiente</text>
+  <text x="650" y="360" class="text" font-weight="bold">Parcial</text>
+  <text x="900" y="360" class="text" font-weight="bold">Pagado</text>
+  <text x="1150" y="360" class="text" font-weight="bold">Función</text>
+  
+  <!-- Fila 1: Pagar -->
+  <rect x="50" y="380" width="1300" height="60" class="card"/>
+  <rect x="80" y="395" width="120" height="30" class="btn-pagar" rx="6"/>
+  <text x="140" y="415" class="btn-text" text-anchor="middle">💰 Pagar</text>
+  <text x="460" y="415" class="text" text-anchor="middle">✅ Visible</text>
+  <text x="710" y="415" class="text" text-anchor="middle">✅ Visible</text>
+  <text x="960" y="415" class="text" text-anchor="middle">❌ Oculto</text>
+  <text x="1000" y="415" class="small-text">Registrar pago parcial o total</text>
+  
+  <!-- Fila 2: Historial -->
+  <rect x="50" y="440" width="1300" height="60" class="card"/>
+  <rect x="80" y="455" width="120" height="30" class="btn-historial" rx="6"/>
+  <text x="140" y="475" class="btn-text" text-anchor="middle">📋 Historial</text>
+  <text x="460" y="475" class="text" text-anchor="middle">⚪ Opcional</text>
+  <text x="710" y="475" class="text" text-anchor="middle">✅ Visible</text>
+  <text x="960" y="475" class="text" text-anchor="middle">✅ Visible</text>
+  <text x="1000" y="475" class="small-text">Ver todos los servicios del cliente</text>
+  
+  <!-- Fila 3: Recordar -->
+  <rect x="50" y="500" width="1300" height="60" class="card"/>
+  <rect x="80" y="515" width="120" height="30" class="btn-recordar" rx="6"/>
+  <text x="140" y="535" class="btn-text" text-anchor="middle">🔔 Recordar</text>
+  <text x="460" y="535" class="text" text-anchor="middle">✅ Visible</text>
+  <text x="710" y="535" class="text" text-anchor="middle">✅ Visible</text>
+  <text x="960" y="535" class="text" text-anchor="middle">❌ Oculto</text>
+  <text x="1000" y="535" class="small-text">Enviar recordatorio de pago</text>
+  
+  <!-- Fila 4: WhatsApp -->
+  <rect x="50" y="560" width="1300" height="60" class="card"/>
+  <rect x="80" y="575" width="120" height="30" class="btn-whatsapp" rx="6"/>
+  <text x="140" y="595" class="btn-text" text-anchor="middle">📱 WhatsApp</text>
+  <text x="460" y="595" class="text" text-anchor="middle">✅ Visible</text>
+  <text x="710" y="595" class="text" text-anchor="middle">✅ Visible</text>
+  <text x="960" y="595" class="text" text-anchor="middle">⚪ Opcional</text>
+  <text x="1000" y="595" class="small-text">Enviar mensaje personalizado</text>
+  
+  <!-- Fila 5: PDF -->
+  <rect x="50" y="620" width="1300" height="60" class="card"/>
+  <rect x="80" y="635" width="120" height="30" class="btn-pdf" rx="6"/>
+  <text x="140" y="655" class="btn-text" text-anchor="middle">📄 PDF</text>
+  <text x="460" y="655" class="text" text-anchor="middle">⚪ Opcional</text>
+  <text x="710" y="655" class="text" text-anchor="middle">⚪ Opcional</text>
+  <text x="960" y="655" class="text" text-anchor="middle">✅ Visible</text>
+  <text x="1000" y="655" class="small-text">Generar comprobante de pago</text>
+  
+  <!-- Fila 6: Editar -->
+  <rect x="50" y="680" width="1300" height="60" class="card"/>
+  <rect x="80" y="695" width="120" height="30" class="btn-editar" rx="6"/>
+  <text x="140" y="715" class="btn-text" text-anchor="middle">✏️ Editar</text>
+  <text x="460" y="715" class="text" text-anchor="middle">⚪ Opcional</text>
+  <text x="710" y="715" class="text" text-anchor="middle">⚪ Opcional</text>
+  <text x="960" y="715" class="text" text-anchor="middle">✅ Visible</text>
+  <text x="1000" y="715" class="small-text">Ajustar monto o corregir pago</text>
+  
+  <!-- SECCIÓN 3: Flujo de Pago -->
+  <text x="50" y="790" class="subtitle">3. Flujo de Registro de Pago</text>
+  
+  <!-- Paso 1 -->
+  <rect x="50" y="810" width="250" height="100" class="card" rx="8"/>
+  <text x="175" y="840" class="text" font-weight="bold" text-anchor="middle">1️⃣ Click en "Pagar"</text>
+  <text x="175" y="865" class="small-text" text-anchor="middle">• Abrir modal</text>
+  <text x="175" y="885" class="small-text" text-anchor="middle">• Mostrar datos del servicio</text>
+  <text x="175" y="905" class="small-text" text-anchor="middle">• Prellenar saldo pendiente</text>
+  
+  <!-- Flecha -->
+  <path d="M 300 860 L 340 860" stroke="#2192B8" stroke-width="3" fill="none" marker-end="url(#arrowblue)"/>
+  
+  <!-- Paso 2 -->
+  <rect x="340" y="810" width="250" height="100" class="card" rx="8"/>
+  <text x="465" y="840" class="text" font-weight="bold" text-anchor="middle">2️⃣ Ingresar Datos</text>
+  <text x="465" y="865" class="small-text" text-anchor="middle">• Monto (editable)</text>
+  <text x="465" y="885" class="small-text" text-anchor="middle">• Método de pago</text>
+  <text x="465" y="905" class="small-text" text-anchor="middle">• Referencia (opcional)</text>
+  
+  <!-- Flecha -->
+  <path d="M 590 860 L 630 860" stroke="#2192B8" stroke-width="3" fill="none" marker-end="url(#arrowblue)"/>
+  
+  <!-- Paso 3 -->
+  <rect x="630" y="810" width="250" height="100" class="card" rx="8"/>
+  <text x="755" y="840" class="text" font-weight="bold" text-anchor="middle">3️⃣ Validar</text>
+  <text x="755" y="865" class="small-text" text-anchor="middle">• Monto > 0</text>
+  <text x="755" y="885" class="small-text" text-anchor="middle">• Monto ≤ Saldo pendiente</text>
+  <text x="755" y="905" class="small-text" text-anchor="middle">• Método seleccionado</text>
+  
+  <!-- Flecha -->
+  <path d="M 880 860 L 920 860" stroke="#2192B8" stroke-width="3" fill="none" marker-end="url(#arrowblue)"/>
+  
+  <!-- Paso 4 -->
+  <rect x="920" y="810" width="250" height="100" class="card" rx="8"/>
+  <text x="1045" y="840" class="text" font-weight="bold" text-anchor="middle">4️⃣ Actualizar</text>
+  <text x="1045" y="865" class="small-text" text-anchor="middle">• adelanto += monto</text>
+  <text x="1045" y="885" class="small-text" text-anchor="middle">• saldo = total - adelanto</text>
+  <text x="1045" y="905" class="small-text" text-anchor="middle">• Cambiar estado si aplica</text>
+  
+  <!-- SECCIÓN 4: Cálculo de Estado -->
+  <text x="50" y="960" class="subtitle">4. Lógica de Cálculo de Estado</text>
+  
+  <rect x="50" y="980" width="1300" height="200" class="card" rx="8"/>
+  
+  <!-- Código de lógica -->
+  <text x="80" y="1010" class="small-text" font-family="monospace" fill="#2196F3">const montoTotal = parseFloat(servicio.monto || 0);</text>
+  <text x="80" y="1035" class="small-text" font-family="monospace" fill="#2196F3">const montoPagado = parseFloat(servicio.adelanto || 0);</text>
+  <text x="80" y="1060" class="small-text" font-family="monospace" fill="#2196F3">const saldoPendiente = montoTotal - montoPagado;</text>
+  <text x="80" y="1085" class="small-text" font-family="monospace">// Determinar estado</text>
+  <text x="80" y="1110" class="small-text" font-family="monospace" fill="#4CAF50">if (saldoPendiente === 0) estadoPago = 'pagado';</text>
+  <text x="80" y="1135" class="small-text" font-family="monospace" fill="#FF9800">else if (montoPagado > 0) estadoPago = 'parcial';</text>
+  <text x="80" y="1160" class="small-text" font-family="monospace" fill="#f44336">else estadoPago = 'pendiente';</text>
+  
+  <!-- SECCIÓN 5: Propuesta de Mejora -->
+  <text x="50" y="1230" class="subtitle">5. Propuesta de Mejora: Botones Contextuales</text>
+  
+  <!-- Ejemplo Visual de Fila -->
+  <rect x="50" y="1250" width="1300" height="80" class="card" rx="8"/>
+  <rect x="50" y="1250" width="1300" height="40" class="header-bg"/>
+  <text x="70" y="1275" class="text" font-weight="bold">Cliente: JESUS FERNANDO LUCERO</text>
+  <text x="70" y="1295" class="small-text">DNI: 12345678 | Servicio: SRV-2026-005 | Laptop HP</text>
+  
+  <!-- Datos financieros -->
+  <text x="70" y="1320" class="small-text">Total: S/ 200.00 | Pagado: S/ 54.00 | </text>
+  <text x="280" y="1320" class="text" font-weight="bold" fill="#f44336">Saldo: S/ 146.00</text>
+  
+  <!-- Botones en la fila -->
+  <rect x="900" y="1295" width="100" height="30" class="btn-pagar" rx="6"/>
+  <text x="950" y="1315" class="btn-text" text-anchor="middle">💰 Pagar</text>
+  
+  <rect x="1010" y="1295" width="120" height="30" class="btn-recordar" rx="6"/>
+  <text x="1070" y="1315" class="btn-text" text-anchor="middle">🔔 Recordar</text>
+  
+  <rect x="1140" y="1295" width="120" height="30" class="btn-whatsapp" rx="6"/>
+  <text x="1200" y="1315" class="btn-text" text-anchor="middle">📱 WhatsApp</text>
+  
+  <rect x="1270" y="1295" width="70" height="30" class="btn-historial" rx="6"/>
+  <text x="1305" y="1315" class="btn-text" text-anchor="middle">📋</text>
+  
+  <!-- SECCIÓN 6: Funcionalidades Adicionales -->
+  <text x="50" y="1380" class="subtitle">6. Funcionalidades Adicionales Propuestas</text>
+  
+  <!-- Función 1: Recordatorio Automático -->
+  <rect x="50" y="1400" width="400" height="120" class="card" rx="8"/>
+  <text x="70" y="1430" class="text" font-weight="bold">🔔 Recordatorio Automático</text>
+  <text x="70" y="1455" class="small-text">• Enviar recordatorio por WhatsApp</text>
+  <text x="70" y="1475" class="small-text">• Plantilla personalizable</text>
+  <text x="70" y="1495" class="small-text">• Incluir link de pago (futuro)</text>
+  <text x="70" y="1515" class="small-text">• Registrar fecha de envío</text>
+  
+  <!-- Función 2: Historial de Pagos -->
+  <rect x="500" y="1400" width="400" height="120" class="card" rx="8"/>
+  <text x="520" y="1430" class="text" font-weight="bold">📋 Historial Detallado</text>
+  <text x="520" y="1455" class="small-text">• Ver todos los servicios del cliente</text>
+  <text x="520" y="1475" class="small-text">• Totales: facturado, pagado, pendiente</text>
+  <text x="520" y="1495" class="small-text">• Filtrar por estado de pago</text>
+  <text x="520" y="1515" class="small-text">• Exportar a Excel/PDF</text>
+  
+  <!-- Función 3: Comprobante PDF -->
+  <rect x="950" y="1400" width="400" height="120" class="card" rx="8"/>
+  <text x="970" y="1430" class="text" font-weight="bold">📄 Comprobante de Pago</text>
+  <text x="970" y="1455" class="small-text">• Generar PDF automático</text>
+  <text x="970" y="1475" class="small-text">• Incluir detalles del servicio</text>
+  <text x="970" y="1495" class="small-text">• Mostrar historial de pagos</text>
+  <text x="970" y="1515" class="small-text">• Enviar por WhatsApp/Email</text>
+  
+  <!-- SECCIÓN 7: Validaciones -->
+  <text x="50" y="1570" class="subtitle">7. Validaciones Importantes</text>
+  
+  <rect x="50" y="1590" width="1300" height="160" class="card" rx="8"/>
+  
+  <!-- Lista de validaciones -->
+  <text x="80" y="1620" class="text" font-weight="bold">✅ Validaciones al Registrar Pago:</text>
+  <text x="100" y="1645" class="small-text">1. El monto debe ser mayor a 0</text>
+  <text x="100" y="1665" class="small-text">2. El monto no puede exceder el saldo pendiente</text>
+  <text x="100" y="1685" class="small-text">3. Debe seleccionar un método de pago</text>
+  <text x="100" y="1705" class="small-text">4. Si el método es "transferencia" o "yape", la referencia es obligatoria</text>
+  <text x="100" y="1725" class="small-text">5. Actualizar automáticamente el estado según el nuevo saldo</text>
+  
+  <!-- Leyenda -->
+  <text x="50" y="1790" class="small-text" fill="#666">✅ = Siempre visible | ⚪ = Opcional/Condicional | ❌ = Oculto</text>
+  
+  <!-- Definición de marcadores de flecha -->
+  <defs>
+    <marker id="arrowblue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#2192B8" />
+    </marker>
+  </defs>
+  
+</svg>

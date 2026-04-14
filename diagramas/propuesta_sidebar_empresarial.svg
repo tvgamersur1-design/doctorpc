@@ -1,0 +1,259 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 1080">
+  <defs>
+    <!-- Gradientes profesionales -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a2332;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f1419;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Sombras -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.3"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Fondo principal con gradiente oscuro -->
+  <rect width="320" height="1080" fill="url(#bgGradient)"/>
+  
+  <!-- Línea de acento lateral -->
+  <rect x="0" y="0" width="4" height="1080" fill="url(#accentGradient)"/>
+  
+  <!-- Header Section -->
+  <g id="header">
+    <!-- Contenedor del logo con fondo sutil -->
+    <rect x="20" y="30" width="280" height="140" rx="12" fill="#1e293b" opacity="0.5"/>
+    
+    <!-- Logo placeholder (círculo con iniciales) -->
+    <circle cx="160" cy="80" r="35" fill="url(#accentGradient)" filter="url(#shadow)"/>
+    <text x="160" y="90" font-family="Arial, sans-serif" font-size="24" font-weight="bold" 
+          fill="#ffffff" text-anchor="middle">DP</text>
+    
+    <!-- Nombre de la empresa -->
+    <text x="160" y="135" font-family="Arial, sans-serif" font-size="18" font-weight="600" 
+          fill="#f1f5f9" text-anchor="middle">Doctor PC</text>
+    <text x="160" y="155" font-family="Arial, sans-serif" font-size="12" 
+          fill="#94a3b8" text-anchor="middle">Sistema de Gestión</text>
+  </g>
+  
+  <!-- Separador -->
+  <line x1="30" y1="200" x2="290" y2="200" stroke="#334155" stroke-width="1"/>
+  
+  <!-- Navigation Section -->
+  <g id="navigation">
+    <!-- Título de sección -->
+    <text x="30" y="235" font-family="Arial, sans-serif" font-size="11" font-weight="600" 
+          fill="#64748b" letter-spacing="1">MENÚ PRINCIPAL</text>
+    
+    <!-- Item 1: Clientes (Activo) -->
+    <g id="nav-clientes">
+      <rect x="20" y="250" width="280" height="52" rx="8" fill="#2563eb" filter="url(#shadow)"/>
+      <rect x="20" y="250" width="4" height="52" rx="2" fill="#60a5fa"/>
+      
+      <!-- Icono -->
+      <g transform="translate(40, 268)">
+        <circle cx="8" cy="8" r="7" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+        <path d="M8 8 L8 4 M8 8 L11 11 M8 8 L5 11" stroke="#ffffff" stroke-width="1.5" 
+              stroke-linecap="round" fill="none"/>
+      </g>
+      
+      <text x="70" y="281" font-family="Arial, sans-serif" font-size="14" font-weight="600" 
+            fill="#ffffff">Clientes</text>
+      
+      <!-- Badge de notificación -->
+      <circle cx="270" cy="276" r="10" fill="#ef4444"/>
+      <text x="270" y="280" font-family="Arial, sans-serif" font-size="10" font-weight="bold" 
+            fill="#ffffff" text-anchor="middle">3</text>
+    </g>
+    
+    <!-- Item 2: Servicios -->
+    <g id="nav-servicios">
+      <rect x="20" y="315" width="280" height="52" rx="8" fill="#1e293b" opacity="0.3"/>
+      
+      <!-- Icono -->
+      <g transform="translate(40, 333)">
+        <rect x="2" y="2" width="12" height="12" rx="2" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+        <path d="M5 7 L11 7 M8 4 L8 10" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round"/>
+      </g>
+      
+      <text x="70" y="346" font-family="Arial, sans-serif" font-size="14" font-weight="500" 
+            fill="#cbd5e1">Servicios</text>
+      
+      <!-- Flecha indicadora -->
+      <path d="M270 341 L275 346 L270 351" fill="none" stroke="#475569" stroke-width="1.5" 
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    
+    <!-- Item 3: Equipos -->
+    <g id="nav-equipos">
+      <rect x="20" y="380" width="280" height="52" rx="8" fill="#1e293b" opacity="0.3"/>
+      
+      <!-- Icono -->
+      <g transform="translate(40, 398)">
+        <rect x="1" y="3" width="14" height="10" rx="1" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+        <rect x="5" y="13" width="6" height="1" fill="#94a3b8"/>
+        <line x1="8" y1="14" x2="8" y2="15" stroke="#94a3b8" stroke-width="1.5"/>
+      </g>
+      
+      <text x="70" y="411" font-family="Arial, sans-serif" font-size="14" font-weight="500" 
+            fill="#cbd5e1">Equipos</text>
+      
+      <path d="M270 406 L275 411 L270 416" fill="none" stroke="#475569" stroke-width="1.5" 
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    
+    <!-- Item 4: Gestión de Pagos -->
+    <g id="nav-pagos">
+      <rect x="20" y="445" width="280" height="52" rx="8" fill="#1e293b" opacity="0.3"/>
+      
+      <!-- Icono -->
+      <g transform="translate(40, 463)">
+        <rect x="2" y="4" width="12" height="9" rx="1" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+        <line x1="2" y1="7" x2="14" y2="7" stroke="#94a3b8" stroke-width="1.5"/>
+        <circle cx="8" cy="10" r="1.5" fill="#94a3b8"/>
+      </g>
+      
+      <text x="70" y="476" font-family="Arial, sans-serif" font-size="14" font-weight="500" 
+            fill="#cbd5e1">Gestión de Pagos</text>
+      
+      <path d="M270 471 L275 476 L270 481" fill="none" stroke="#475569" stroke-width="1.5" 
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    
+    <!-- Separador de sección -->
+    <line x1="30" y1="525" x2="290" y2="525" stroke="#334155" stroke-width="1"/>
+    
+    <!-- Título de sección secundaria -->
+    <text x="30" y="555" font-family="Arial, sans-serif" font-size="11" font-weight="600" 
+          fill="#64748b" letter-spacing="1">ADMINISTRACIÓN</text>
+    
+    <!-- Item 5: Usuarios -->
+    <g id="nav-usuarios">
+      <rect x="20" y="570" width="280" height="52" rx="8" fill="#1e293b" opacity="0.3"/>
+      
+      <!-- Icono -->
+      <g transform="translate(40, 588)">
+        <circle cx="8" cy="5" r="3" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+        <path d="M2 13 Q2 9 8 9 Q14 9 14 13" fill="none" stroke="#94a3b8" stroke-width="1.5" 
+              stroke-linecap="round"/>
+      </g>
+      
+      <text x="70" y="601" font-family="Arial, sans-serif" font-size="14" font-weight="500" 
+            fill="#cbd5e1">Usuarios</text>
+      
+      <path d="M270 596 L275 601 L270 606" fill="none" stroke="#475569" stroke-width="1.5" 
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    
+    <!-- Item 6: Reportes -->
+    <g id="nav-reportes">
+      <rect x="20" y="635" width="280" height="52" rx="8" fill="#1e293b" opacity="0.3"/>
+      
+      <!-- Icono -->
+      <g transform="translate(40, 653)">
+        <rect x="3" y="2" width="10" height="13" rx="1" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+        <line x1="5" y1="5" x2="11" y2="5" stroke="#94a3b8" stroke-width="1.5"/>
+        <line x1="5" y1="8" x2="11" y2="8" stroke="#94a3b8" stroke-width="1.5"/>
+        <line x1="5" y1="11" x2="9" y2="11" stroke="#94a3b8" stroke-width="1.5"/>
+      </g>
+      
+      <text x="70" y="666" font-family="Arial, sans-serif" font-size="14" font-weight="500" 
+            fill="#cbd5e1">Reportes</text>
+      
+      <path d="M270 661 L275 666 L270 671" fill="none" stroke="#475569" stroke-width="1.5" 
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    
+    <!-- Item 7: Configuración -->
+    <g id="nav-config">
+      <rect x="20" y="700" width="280" height="52" rx="8" fill="#1e293b" opacity="0.3"/>
+      
+      <!-- Icono -->
+      <g transform="translate(40, 718)">
+        <circle cx="8" cy="8" r="3" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+        <path d="M8 1 L8 3 M8 13 L8 15 M15 8 L13 8 M3 8 L1 8 M12.5 3.5 L11 5 M5 11 L3.5 12.5 
+                 M12.5 12.5 L11 11 M5 5 L3.5 3.5" 
+              stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round"/>
+      </g>
+      
+      <text x="70" y="731" font-family="Arial, sans-serif" font-size="14" font-weight="500" 
+            fill="#cbd5e1">Configuración</text>
+      
+      <path d="M270 726 L275 731 L270 736" fill="none" stroke="#475569" stroke-width="1.5" 
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+  
+  <!-- Footer Section -->
+  <g id="footer">
+    <!-- Separador -->
+    <line x1="30" y1="950" x2="290" y2="950" stroke="#334155" stroke-width="1"/>
+    
+    <!-- Información del usuario -->
+    <g id="user-info">
+      <rect x="20" y="970" width="280" height="60" rx="8" fill="#1e293b" opacity="0.5"/>
+      
+      <!-- Avatar -->
+      <circle cx="45" cy="1000" r="18" fill="#475569"/>
+      <text x="45" y="1006" font-family="Arial, sans-serif" font-size="14" font-weight="bold" 
+            fill="#e2e8f0" text-anchor="middle">A</text>
+      
+      <!-- Nombre y rol -->
+      <text x="75" y="998" font-family="Arial, sans-serif" font-size="13" font-weight="600" 
+            fill="#f1f5f9">admin</text>
+      <text x="75" y="1013" font-family="Arial, sans-serif" font-size="11" 
+            fill="#64748b">Administrador</text>
+      
+      <!-- Icono de configuración de perfil -->
+      <circle cx="270" cy="1000" r="16" fill="#334155"/>
+      <g transform="translate(262, 992)">
+        <circle cx="8" cy="8" r="2" fill="none" stroke="#94a3b8" stroke-width="1.2"/>
+        <path d="M8 2 L8 3 M8 13 L8 14 M14 8 L13 8 M3 8 L2 8" 
+              stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"/>
+      </g>
+    </g>
+    
+    <!-- Botón de cerrar sesión -->
+    <g id="logout-button">
+      <rect x="20" y="1040" width="280" height="45" rx="8" fill="#dc2626" opacity="0.9" 
+            filter="url(#shadow)"/>
+      
+      <!-- Icono de salida -->
+      <g transform="translate(110, 1055)">
+        <path d="M1 8 L8 8 M6 5 L9 8 L6 11" stroke="#ffffff" stroke-width="1.8" 
+              stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M4 1 L1 1 L1 15 L4 15" stroke="#ffffff" stroke-width="1.8" 
+              stroke-linecap="round" fill="none"/>
+      </g>
+      
+      <text x="160" y="1068" font-family="Arial, sans-serif" font-size="14" font-weight="600" 
+            fill="#ffffff" text-anchor="middle">Cerrar Sesión</text>
+    </g>
+  </g>
+  
+  <!-- Elementos decorativos -->
+  <circle cx="310" cy="20" r="2" fill="#2563eb" opacity="0.3"/>
+  <circle cx="300" cy="35" r="1.5" fill="#2563eb" opacity="0.2"/>
+  <circle cx="315" cy="45" r="1" fill="#2563eb" opacity="0.15"/>
+  
+</svg>

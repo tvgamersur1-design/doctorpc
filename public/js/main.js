@@ -239,8 +239,9 @@ window.confirmarEliminarCliente = Clientes.confirmarEliminarCliente;
 window.confirmarEliminarClienteDesdeModal = Clientes.confirmarEliminarClienteDesdeModal;
 window.restaurarCliente = Clientes.restaurarCliente;
 window.consultarDecolecta = Clientes.consultarDecolecta;
-window.cargarClientes = Clientes.cargarClientes; // ✅ AGREGADO: Para el checkbox de eliminados
-window.actualizarSelectsClientes = Clientes.actualizarSelectsClientes; // ✅ AGREGADO: Para actualizar selects
+window.cargarClientes = Clientes.cargarClientes;
+window.actualizarSelectsClientes = Clientes.actualizarSelectsClientes;
+window.renderTablaClientesGlobal = () => Clientes.renderTablaClientes(window.Clientes.clientesCache || []);
 
 // ✅ Exponer módulo completo para funciones auxiliares
 window.Clientes = Clientes;
@@ -258,6 +259,7 @@ window.confirmarEliminarEquipo = Equipos.confirmarEliminarEquipo;
 window.restaurarEquipo = Equipos.restaurarEquipo;
 window.actualizarIconoNuevo = Equipos.actualizarIconoNuevo;
 window.actualizarIconoEditar = Equipos.actualizarIconoEditar;
+window.renderTablaEquiposGlobal = () => Equipos.renderTablaEquipos(window.Equipos.equiposCache || []);
 
 // ✅ Exponer módulo completo
 window.Equipos = Equipos;
@@ -367,6 +369,7 @@ window.buscarClientePago = Pagos.buscarClientePago;
 window.abrirModalRegistrarPago = Pagos.abrirModalRegistrarPago;
 window.cerrarModalRegistrarPago = Pagos.cerrarModalRegistrarPago;
 window.guardarPago = Pagos.guardarPago;
+window.validarMontoPago = Pagos.validarMontoPago;
 window.verHistorialCliente = Pagos.verHistorialCliente;
 window.cerrarModalHistorialCliente = Pagos.cerrarModalHistorialCliente;
 window.verHistorialPagosServicio = Pagos.verHistorialPagosServicio;

@@ -18,6 +18,14 @@ import { getIconoEquipo } from '../utils.js';
 let equiposCache = [];
 let equipoEnEdicion = null;
 
+// Exponer caché globalmente para acceso desde otras funciones
+if (typeof window !== 'undefined') {
+    window.Equipos = window.Equipos || {};
+    Object.defineProperty(window.Equipos, 'equiposCache', {
+        get: () => equiposCache
+    });
+}
+
 // ==================== FUNCIONES PÚBLICAS ====================
 
 /**
@@ -140,17 +148,22 @@ export async function guardarEquipo(e) {
 
 /**
  * Cargar lista de equipos
+ * OPTIMIZADO: Carga todo al inicio y filtra localmente
  */
-export async function cargarEquipos() {
+export async function cargarEquipos(forzarRecarga = false) {
     const container = document.getElementById('equiposContainer');
-    mostrarSpinnerInline('equiposContainer', 'Cargando equipos...');
     
     try {
-        // Verificar si se deben incluir eliminados
-        const toggleEliminados = document.getElementById('toggleEquiposEliminados');
-        const incluirEliminados = toggleEliminados && toggleEliminados.checked;
+        // Usar caché si está disponible y no se fuerza recarga
+        if (!forzarRecarga && equiposCache.length > 0) {
+            renderTablaEquipos(equiposCache);
+            return;
+        }
         
-        const url = incluirEliminados ? `${API.EQUIPOS}?incluirEliminados=true` : API.EQUIPOS;
+        mostrarSpinnerInline('equiposContainer', 'Cargando equipos...');
+        
+        // Cargar TODOS los equipos (incluidos eliminados) una sola vez
+        const url = `${API.EQUIPOS}?incluirEliminados=true`;
         equiposCache = await getJSON(url);
 
         if (equiposCache.length === 0) {
@@ -317,6 +330,7 @@ export async function confirmarEliminarEquipo(id) {
 
 /**
  * Restaurar equipo eliminado
+ * OPTIMIZADO: Actualiza caché localmente
  */
 export async function restaurarEquipo(id) {
     try {
@@ -324,8 +338,19 @@ export async function restaurarEquipo(id) {
         
         await putJSON(`${API.EQUIPOS}/${id}/restaurar`, {});
 
+        // Actualizar caché localmente
+        const index = equiposCache.findIndex(eq => eq._id === id);
+        if (index !== -1) {
+            equiposCache[index].eliminado = false;
+            console.log('✅ Caché actualizado - Equipo restaurado:', equiposCache[index].tipo_equipo);
+        }
+
         cerrarModalCarga();
-        await cargarEquipos();
+        
+        // Re-renderizar tabla con caché actualizado
+        renderTablaEquipos(equiposCache);
+        await actualizarSelectsEquipos();
+        
         mostrarNotificacionExito('Equipo restaurado');
     } catch (error) {
         cerrarModalCarga();
@@ -360,9 +385,23 @@ export function actualizarIconoEditar() {
 
 /**
  * Renderizar tabla de equipos
+ * OPTIMIZADO: Filtra según el checkbox de eliminados
  */
-function renderTablaEquipos(equipos) {
+export function renderTablaEquipos(equipos) {
     const container = document.getElementById('equiposContainer');
+    
+    // Filtrar según el checkbox de eliminados
+    const toggleEliminados = document.getElementById('toggleEquiposEliminados');
+    const mostrarEliminados = toggleEliminados ? toggleEliminados.checked : false;
+    
+    const equiposFiltrados = mostrarEliminados 
+        ? equipos 
+        : equipos.filter(eq => eq.eliminado !== true);
+    
+    if (equiposFiltrados.length === 0) {
+        container.innerHTML = '<div class="no-records">No se encontraron equipos</div>';
+        return;
+    }
     
     let html = `
         <table class="records-table">
@@ -378,7 +417,7 @@ function renderTablaEquipos(equipos) {
             <tbody>
     `;
 
-    equipos.forEach(eq => {
+    equiposFiltrados.forEach(eq => {
         const iconoTipo = getIconoEquipo(eq.tipo_equipo);
         const esEliminado = eq.eliminado === true;
         const rowStyle = esEliminado ? 'style="background-color: #ffebee; opacity: 0.7;"' : '';
@@ -413,6 +452,7 @@ function renderTablaEquipos(equipos) {
 
 /**
  * Eliminar equipo (soft delete)
+ * OPTIMIZADO: Actualiza caché localmente
  */
 async function eliminarEquipo(id) {
     try {
@@ -421,9 +461,19 @@ async function eliminarEquipo(id) {
         // Soft delete: marcar como eliminado
         await putJSON(`${API.EQUIPOS}/${id}`, { eliminado: true });
 
+        // Actualizar caché localmente
+        const index = equiposCache.findIndex(eq => eq._id === id);
+        if (index !== -1) {
+            equiposCache[index].eliminado = true;
+            console.log('✅ Caché actualizado - Equipo eliminado:', equiposCache[index].tipo_equipo);
+        }
+
         cerrarModalCarga();
-        await cargarEquipos();
         cerrarModal('confirmModal');
+        
+        // Re-renderizar tabla con caché actualizado
+        renderTablaEquipos(equiposCache);
+        await actualizarSelectsEquipos();
         
         mostrarNotificacionExito('Equipo eliminado');
     } catch (error) {
