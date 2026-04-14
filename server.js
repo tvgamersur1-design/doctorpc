@@ -1694,14 +1694,32 @@ app.post('/api/pagos', async (req, res) => {
 
     const result = await db.collection('pagos').insertOne(pago);
 
-    // Actualizar el adelanto del servicio
+    // Actualizar el adelanto del servicio en la colección 'servicios'
     if (ObjectId.isValid(servicio_equipo_id)) {
-      const servicio = await db.collection('servicio_equipo').findOne({ _id: new ObjectId(servicio_equipo_id) });
+      const servicio = await db.collection('servicios').findOne({ _id: new ObjectId(servicio_equipo_id) });
       if (servicio) {
-        const nuevoAdelanto = parseFloat(servicio.adelanto || 0) + parseFloat(monto_pagado);
-        await db.collection('servicio_equipo').updateOne(
+        const montoTotalActual = parseFloat(servicio.monto || servicio.costo_total || 0);
+        const montoPagadoActual = parseFloat(servicio.adelanto || 0);
+        const nuevoAdelanto = montoPagadoActual + parseFloat(monto_pagado);
+        const nuevoSaldoPendiente = montoTotalActual - nuevoAdelanto;
+
+        let estadoPago = 'pendiente';
+        if (montoTotalActual === 0) {
+          estadoPago = 'pendiente';
+        } else if (nuevoAdelanto >= montoTotalActual) {
+          estadoPago = 'pagado';
+        } else if (nuevoAdelanto > 0) {
+          estadoPago = 'parcial';
+        }
+
+        await db.collection('servicios').updateOne(
           { _id: new ObjectId(servicio_equipo_id) },
-          { $set: { adelanto: nuevoAdelanto } }
+          { $set: { 
+            adelanto: nuevoAdelanto, 
+            saldo_pendiente: nuevoSaldoPendiente, 
+            estado_pago: estadoPago,
+            fecha_actualizacion: new Date().toISOString()
+          } }
         );
       }
     }
@@ -1841,15 +1859,15 @@ app.get('/api/reporte/:servicioId', async (req, res) => {
       return res.status(400).json({ error: 'ID de servicio inválido' });
     }
     
-    // Buscar primero en servicio_equipo, luego en servicios
-    let servicio = await db.collection('servicio_equipo').findOne({ 
+    // Buscar primero en servicios (colección principal), luego en servicio_equipo
+    let servicio = await db.collection('servicios').findOne({ 
       _id: new ObjectId(servicioId) 
     });
     
-    // Si no se encuentra en servicio_equipo, buscar en servicios
+    // Si no se encuentra en servicios, buscar en servicio_equipo (legacy)
     if (!servicio) {
-      console.log(`⚠️ No encontrado en servicio_equipo, buscando en servicios...`);
-      servicio = await db.collection('servicios').findOne({ 
+      console.log(`⚠️ No encontrado en servicios, buscando en servicio_equipo...`);
+      servicio = await db.collection('servicio_equipo').findOne({ 
         _id: new ObjectId(servicioId) 
       });
     }
@@ -1927,7 +1945,7 @@ app.get('/api/reporte/:servicioId', async (req, res) => {
     }
 
     // Calcular costos
-    const costoBase = parseFloat(servicio.costo_base || servicio.costo_servicio || 0);
+    const costoBase = parseFloat(servicio.monto || servicio.costo_base || servicio.costo_total || servicio.costo_servicio || 0);
     let repuestos = 0;
     if (servicio.repuestos_utilizados && Array.isArray(servicio.repuestos_utilizados)) {
       repuestos = servicio.repuestos_utilizados.reduce((sum, r) => sum + parseFloat(r.costo || 0), 0);

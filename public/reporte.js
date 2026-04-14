@@ -75,10 +75,125 @@ class ReporteServicio {
 
   /**
    * Obtener datos del reporte desde el backend
+   * OPTIMIZADO: Intenta usar caché primero, luego BD
    */
   async obtenerReporte(servicioId) {
     try {
       console.log('🔍 Obteniendo reporte para servicio:', servicioId);
+      
+      // 🚀 OPTIMIZACIÓN: Intentar obtener desde caché primero
+      if (window.Servicios && window.Servicios.serviciosCache) {
+        const servicio = window.Servicios.serviciosCache.find(s => s._id === servicioId);
+        
+        if (servicio) {
+          console.log('💾 Servicio encontrado en caché');
+          
+          // Obtener cliente desde caché
+          const cliente = window.Servicios.clientesCache?.find(c => c._id === servicio.cliente_id);
+          
+          // Obtener equipo desde caché
+          let equipo = null;
+          if (servicio.equipo_id) {
+            equipo = window.Servicios.equiposCache?.find(e => e._id === servicio.equipo_id);
+          }
+          
+          // Verificar si tenemos todos los datos necesarios
+          if (cliente && (equipo || !servicio.equipo_id)) {
+          console.log('✅ Datos completos en caché - Usando caché local');
+          
+          // Parsear diagnóstico: puede ser JSON string, array u objeto
+          let diagnosticoData = servicio.diagnostico || servicio.diagnostico_tecnico || '';
+          if (typeof diagnosticoData === 'string' && diagnosticoData.startsWith('[')) {
+            try {
+              diagnosticoData = JSON.parse(diagnosticoData);
+            } catch (e) {
+              console.warn('Error parsing diagnóstico desde caché:', e);
+            }
+          }
+
+          // Calcular costo de repuestos desde diagnóstico si existe
+          let costoRepuestos = 0;
+          if (Array.isArray(diagnosticoData) && diagnosticoData.length > 0) {
+            costoRepuestos = diagnosticoData.reduce((sum, d) => sum + parseFloat(d.costo || 0), 0);
+          }
+
+          const montoTotal = parseFloat(servicio.monto || servicio.costo_total || 0);
+
+          // Construir objeto de reporte desde caché con formato compatible
+          const reporteDesdeCache = {
+            numero_orden: servicio.numero_servicio || 'N/A',
+            fecha: servicio.fecha || new Date().toISOString(),
+            hora: servicio.hora || '',
+            local: servicio.local || '',
+            estado: servicio.estado || 'Pendiente',
+            cliente: {
+              nombre: cliente.nombre || '',
+              apellido_paterno: cliente.apellido_paterno || '',
+              apellido_materno: cliente.apellido_materno || '',
+              telefono: cliente.telefono || '',
+              email: cliente.email || '',
+              direccion: cliente.direccion || '',
+              dni: cliente.dni || ''
+            },
+            equipo: equipo ? {
+              tipo_equipo: equipo.tipo_equipo || '',
+              marca: equipo.marca || '',
+              modelo: equipo.modelo || '',
+              numero_serie: equipo.numero_serie || '',
+              color: equipo.color || '',
+              accesorios: equipo.accesorios || ''
+            } : null,
+            // Formato compatible con generador de PDF
+            servicio: {
+              descripcion_problema: servicio.problemas_reportados || servicio.problemas || '',
+              diagnostico: diagnosticoData,
+              diagnostico_tecnico: diagnosticoData,
+              trabajo_realizado: servicio.trabajo_realizado || '',
+              solucion_aplicada: servicio.solucion_aplicada || servicio.trabajo_realizado || '',
+              observaciones: servicio.observaciones || servicio.notas || '',
+              tecnico_asignado: servicio.tecnico_asignado || servicio.tecnico || 'No asignado',
+              tecnico_diagnosticador: servicio.tecnico || servicio.tecnico_diagnosticador || servicio.tecnico_asignado || 'No asignado',
+              prioridad: servicio.prioridad || 'Normal',
+              calificacion: servicio.calificacion || 0
+            },
+            // Datos técnicos
+            datos_tecnicos: {
+              tecnico_asignado: servicio.tecnico_asignado || servicio.tecnico || 'No asignado',
+              estado: servicio.estado || 'Pendiente',
+              prioridad: servicio.prioridad || 'Normal',
+              calificacion: servicio.calificacion || 0
+            },
+            // Costos
+            costos: {
+              costo_base: montoTotal,
+              repuestos: costoRepuestos,
+              costo_adicional: parseFloat(servicio.costo_adicional || 0),
+              total: montoTotal
+            },
+            problemas_reportados: servicio.problemas_reportados || servicio.problemas || '',
+            diagnostico: diagnosticoData,
+            trabajo_realizado: servicio.trabajo_realizado || '',
+            observaciones: servicio.observaciones || servicio.notas || '',
+            monto: montoTotal,
+            adelanto: servicio.adelanto || 0,
+            saldo_pendiente: servicio.saldo_pendiente || 0,
+            fotos: servicio.fotos || []
+          };
+            
+            this.reporteActual = reporteDesdeCache;
+            this.servicioIdActual = servicioId;
+            console.log('✅ Reporte construido desde caché:', reporteDesdeCache);
+            return this.reporteActual;
+          } else {
+            console.log('⚠️ Datos incompletos en caché, consultando BD...');
+          }
+        } else {
+          console.log('⚠️ Servicio no encontrado en caché, consultando BD...');
+        }
+      }
+      
+      // Fallback: Consultar BD si no hay caché o datos incompletos
+      console.log('📡 Consultando BD para obtener datos completos...');
       
       // Intentar GET /api/reporte/ (funciona en desarrollo local)
       let response = await fetch(`/api/reporte/${servicioId}`);
@@ -305,6 +420,7 @@ class ReporteServicio {
 
   /**
    * Imprimir reporte - Genera PDF y abre ventana de impresión
+   * OPTIMIZADO: Usa obtenerReporte que intenta caché primero
    */
   async imprimirReporte(servicioId = null) {
     // Usar el servicioId pasado o el almacenado en la clase
@@ -321,28 +437,12 @@ class ReporteServicio {
       // Mostrar indicador de carga
       this.mostrarNotificacion('⏳ Preparando impresión...', 'info');
 
-      // Obtener datos desde la función serverless
-      const response = await fetch('/.netlify/functions/generar-pdf', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ servicioId: idAUsar })
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error response:', errorText);
-        throw new Error('Error al obtener datos del reporte');
-      }
-
-      const result = await response.json();
+      // 🚀 OPTIMIZACIÓN: Usar obtenerReporte que intenta caché primero
+      const reporte = await this.obtenerReporte(idAUsar);
       
-      if (!result.success || !result.data) {
-        throw new Error('Datos del reporte no disponibles');
+      if (!reporte) {
+        throw new Error('No se pudieron obtener los datos del reporte');
       }
-
-      const reporte = result.data;
       
       // Generar PDF con jsPDF y abrir ventana de impresión
       this.mostrarNotificacion('🖨️ Abriendo ventana de impresión...', 'info');
