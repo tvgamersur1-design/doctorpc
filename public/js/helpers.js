@@ -86,7 +86,7 @@ export async function buscarClientePorDNI() {
                     <p style="margin: 0 0 10px 0; font-weight: 600; color: #2E7D32;"><i class="fas fa-check-circle"></i> Cliente encontrado</p>
                     <p style="margin: 5px 0;"><strong>Nombre:</strong> ${clienteEncontrado.nombre}</p>
                     <p style="margin: 5px 0;"><strong>Teléfono:</strong> ${clienteEncontrado.telefono || 'No registrado'}</p>
-                    <button type="button" class="btn-primary" onclick="seleccionarClienteExistente('${clienteEncontrado._id}', '${clienteEncontrado.nombre}')" style="margin-top: 10px; width: 100%;">
+                    <button type="button" class="btn-primary btn-seleccionar-cliente-existente" data-id="${clienteEncontrado._id}" data-nombre="${clienteEncontrado.nombre.replace(/"/g, '&quot;')}" style="margin-top: 10px; width: 100%;">
                         <i class="fas fa-check"></i> Seleccionar este cliente
                     </button>
                 </div>
@@ -100,6 +100,14 @@ export async function buscarClientePorDNI() {
                 </div>
             `;
             document.getElementById('btnConsultarReniecServicio').style.display = 'block';
+        }
+
+        // Event delegation seguro para el botón de seleccionar cliente
+        const btn = container.querySelector('.btn-seleccionar-cliente-existente');
+        if (btn) {
+            btn.addEventListener('click', () => {
+                seleccionarClienteExistente(btn.dataset.id, btn.dataset.nombre);
+            });
         }
     } catch (error) {
         console.error('Error:', error);
@@ -195,8 +203,8 @@ export async function buscarEquiposPorCliente(clienteId) {
         let html = '<div style="display: grid; gap: 10px;">';
         equiposCliente.forEach(equipo => {
             html += `
-                <div style="background: #f5f5f5; padding: 15px; border-radius: 4px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;" 
-                     onclick="seleccionarEquipo('${equipo._id}', '${equipo.tipo_equipo} ${equipo.marca || ''}')"
+                <div class="equipo-seleccionable" data-id="${equipo._id}" data-desc="${(equipo.tipo_equipo + ' ' + (equipo.marca || '')).trim().replace(/"/g, '&quot;')}"
+                     style="background: #f5f5f5; padding: 15px; border-radius: 4px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;"
                      onmouseover="this.style.borderColor='#2192B8'; this.style.background='#e3f2fd';"
                      onmouseout="this.style.borderColor='transparent'; this.style.background='#f5f5f5';">
                     <p style="margin: 0 0 5px 0; font-weight: 600; color: #1e3c72;">
@@ -213,6 +221,11 @@ export async function buscarEquiposPorCliente(clienteId) {
         html += '</div>';
         
         container.innerHTML = html;
+
+        // Event delegation seguro para equipos
+        container.querySelectorAll('.equipo-seleccionable').forEach(el => {
+            el.addEventListener('click', () => seleccionarEquipo(el.dataset.id, el.dataset.desc));
+        });
     } catch (error) {
         console.error('Error:', error);
         container.innerHTML = '<div style="text-align: center; color: #d32f2f; padding: 20px;">Error al cargar equipos</div>';
@@ -300,8 +313,8 @@ export async function buscarClientesPorDNIEquipo() {
         clientesEncontrados.forEach(cliente => {
             const nombreCompleto = `${cliente.nombre} ${cliente.apellido_paterno || ''} ${cliente.apellido_materno || ''}`.trim();
             html += `
-                <div style="background: #f5f5f5; padding: 15px; border-radius: 4px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;" 
-                     onclick="seleccionarClienteEquipo('${cliente._id}', '${nombreCompleto.replace(/'/g, "\\'")}', '${cliente.dni}')"
+                <div class="cliente-equipo-seleccionable" data-id="${cliente._id}" data-nombre="${nombreCompleto.replace(/"/g, '&quot;')}" data-dni="${cliente.dni}"
+                     style="background: #f5f5f5; padding: 15px; border-radius: 4px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;"
                      onmouseover="this.style.borderColor='#2192B8'; this.style.background='#e3f2fd';"
                      onmouseout="this.style.borderColor='transparent'; this.style.background='#f5f5f5';">
                     <p style="margin: 0 0 5px 0; font-weight: 600; color: #1e3c72;">
@@ -317,6 +330,11 @@ export async function buscarClientesPorDNIEquipo() {
         html += '</div>';
         
         container.innerHTML = html;
+
+        // Event delegation seguro
+        container.querySelectorAll('.cliente-equipo-seleccionable').forEach(el => {
+            el.addEventListener('click', () => seleccionarClienteEquipo(el.dataset.id, el.dataset.nombre, el.dataset.dni));
+        });
     } catch (error) {
         console.error('Error:', error);
         container.innerHTML = '<div style="text-align: center; color: #d32f2f; padding: 20px;">Error al buscar clientes</div>';
@@ -353,7 +371,9 @@ export async function buscarClientesPorDNI() {
             coincidencias.forEach(cliente => {
                 const nombreCompleto = `${cliente.nombre} ${cliente.apellido_paterno || ''} ${cliente.apellido_materno || ''}`.trim();
                 html += `
-                    <div style="padding: 12px; border: 1px solid #ddd; margin-bottom: 8px; border-radius: 4px; cursor: pointer; background: #fff; transition: background 0.2s;" onclick="seleccionarClienteServicio('${cliente._id}', '${nombreCompleto.replace(/'/g, "\\'")}')" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='#fff'">
+                    <div class="cliente-servicio-seleccionable" data-id="${cliente._id}" data-nombre="${nombreCompleto.replace(/"/g, '&quot;')}"
+                         style="padding: 12px; border: 1px solid #ddd; margin-bottom: 8px; border-radius: 4px; cursor: pointer; background: #fff; transition: background 0.2s;"
+                         onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='#fff'">
                         <strong>${nombreCompleto}</strong><br>
                         <small>DNI: ${cliente.dni} | Tel: ${cliente.telefono || 'N/A'}</small>
                     </div>
@@ -361,6 +381,12 @@ export async function buscarClientesPorDNI() {
             });
             html += '</div>';
             container.innerHTML = html;
+
+            // Event delegation seguro
+            container.querySelectorAll('.cliente-servicio-seleccionable').forEach(el => {
+                el.addEventListener('click', () => seleccionarClienteServicio(el.dataset.id, el.dataset.nombre));
+            });
+
             btnReniec.style.display = 'none';
             document.getElementById('resultadoReniec').style.display = 'none';
             document.getElementById('errorReniec').style.display = 'none';

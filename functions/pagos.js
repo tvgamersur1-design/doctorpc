@@ -4,7 +4,7 @@ const headers = {
   'Content-Type': 'application/json',
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS'
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS'
 };
 
 let cachedClient = null;
@@ -126,6 +126,15 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({ error: 'Faltan campos requeridos: servicio_equipo_id, monto_pagado, metodo_pago' })
         };
       }
+
+      const montoPagoNum = parseFloat(monto_pagado);
+      if (isNaN(montoPagoNum) || montoPagoNum <= 0) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ error: 'monto_pagado debe ser un número mayor a 0' })
+        };
+      }
       
       // Obtener el servicio
       const servicio = await db.collection('servicios').findOne({ _id: new ObjectId(servicio_equipo_id) });
@@ -142,7 +151,7 @@ exports.handler = async (event, context) => {
       const nuevoPago = {
         servicio_equipo_id: new ObjectId(servicio_equipo_id),
         cliente_id: servicio.cliente_id,
-        monto_pagado: parseFloat(monto_pagado),
+        monto_pagado: montoPagoNum,
         metodo_pago,
         numero_referencia: numero_referencia || null,
         fecha_pago: new Date().toISOString(),
@@ -157,16 +166,16 @@ exports.handler = async (event, context) => {
       console.log('[pagos] Pago insertado en BD, ahora actualizando servicio...');
       
       // Actualizar el servicio con el nuevo monto pagado
-      const montoTotalActual = parseFloat(servicio.monto || servicio.costo_total || 0);
-      const montoPagadoActual = parseFloat(servicio.adelanto || 0);
-      const nuevoMontoPagado = montoPagadoActual + parseFloat(monto_pagado);
+      const montoTotalActual = parseFloat(servicio.monto || servicio.costo_total || 0) || 0;
+      const montoPagadoActual = parseFloat(servicio.adelanto || 0) || 0;
+      const nuevoMontoPagado = montoPagadoActual + montoPagoNum;
       const nuevoSaldoPendiente = montoTotalActual - nuevoMontoPagado;
       
       console.log('[pagos] Cálculos:', {
         servicio_id: servicio_equipo_id,
         montoTotalActual,
         montoPagadoActual,
-        montoPago: parseFloat(monto_pagado),
+        montoPago: montoPagoNum,
         nuevoMontoPagado,
         nuevoSaldoPendiente
       });
@@ -216,64 +225,6 @@ exports.handler = async (event, context) => {
           id: result.insertedId,
           pago: { ...nuevoPago, _id: result.insertedId }
         })
-      };
-    }
-
-    // DELETE /pagos/:id - Eliminar pago (solo admin)
-    if (httpMethod === 'DELETE' && id) {
-      console.log(`[pagos] Eliminando pago con ID: ${id}`);
-      
-      // Obtener el pago antes de eliminarlo
-      const pago = await db.collection('pagos').findOne({ _id: new ObjectId(id) });
-      
-      if (!pago) {
-        return {
-          statusCode: 404,
-          headers,
-          body: JSON.stringify({ error: 'Pago no encontrado' })
-        };
-      }
-      
-      // Eliminar el pago
-      await db.collection('pagos').deleteOne({ _id: new ObjectId(id) });
-      
-      // Actualizar el servicio restando el monto del pago eliminado
-      const servicio = await db.collection('servicios').findOne({ _id: pago.servicio_equipo_id });
-      
-      if (servicio) {
-        const montoTotalActual = parseFloat(servicio.monto || servicio.costo_total || 0);
-        const montoPagadoActual = parseFloat(servicio.adelanto || 0);
-        const nuevoMontoPagado = Math.max(0, montoPagadoActual - pago.monto_pagado);
-        const nuevoSaldoPendiente = montoTotalActual - nuevoMontoPagado;
-        
-        let estadoPago = 'pendiente';
-        if (montoTotalActual === 0) {
-          estadoPago = 'pendiente';
-        } else if (nuevoMontoPagado >= montoTotalActual) {
-          estadoPago = 'pagado';
-        } else if (nuevoMontoPagado > 0) {
-          estadoPago = 'parcial';
-        }
-        
-        await db.collection('servicios').updateOne(
-          { _id: pago.servicio_equipo_id },
-          { 
-            $set: { 
-              adelanto: nuevoMontoPagado,
-              saldo_pendiente: nuevoSaldoPendiente,
-              estado_pago: estadoPago,
-              fecha_actualizacion: new Date().toISOString()
-            } 
-          }
-        );
-      }
-      
-      console.log('[pagos] Pago eliminado exitosamente');
-      
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({ message: 'Pago eliminado exitosamente' })
       };
     }
 

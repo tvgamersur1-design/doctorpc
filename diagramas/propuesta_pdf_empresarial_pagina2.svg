@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1100">
+  <!-- Fondo -->
+  <rect width="800" height="1100" fill="#FFFFFF"/>
+  
+  <!-- Header Simplificado -->
+  <rect width="800" height="50" fill="#2192B8"/>
+  <text x="40" y="32" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#FFFFFF">DOCTOR PC - EVIDENCIA FOTOGRÁFICA</text>
+  <text x="760" y="32" font-family="Arial, sans-serif" font-size="12" fill="#E3F2FD" text-anchor="end">OS-2024-0156</text>
+  
+  <!-- Sección: Fotos al Ingreso -->
+  <rect x="30" y="70" width="740" height="30" rx="4" fill="#FF9800"/>
+  <text x="400" y="92" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#FFFFFF" text-anchor="middle">📸 ESTADO DEL EQUIPO AL INGRESO</text>
+  
+  <rect x="30" y="100" width="740" height="20" fill="#FFF3E0"/>
+  <text x="400" y="114" font-family="Arial, sans-serif" font-size="9" fill="#E65100" text-anchor="middle">Fecha: 15 de enero de 2024 - 10:30 AM | Fotografías tomadas por: Carlos Rodríguez M.</text>
+  
+  <!-- Foto 1 - Vista General -->
+  <rect x="50" y="140" width="330" height="250" rx="8" fill="#F5F5F5" stroke="#BDBDBD" stroke-width="2"/>
+  <rect x="60" y="150" width="310" height="210" fill="#E0E0E0"/>
+  <text x="215" y="250" font-family="Arial, sans-serif" font-size="48" fill="#9E9E9E" text-anchor="middle">📷</text>
+  <text x="215" y="280" font-family="Arial, sans-serif" font-size="11" fill="#757575" text-anchor="middle">FOTO 1: Vista General del Equipo</text>
+  
+  <rect x="60" y="360" width="310" height="20" fill="#2192B8"/>
+  <text x="215" y="374" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">VISTA FRONTAL - LAPTOP CERRADA</text>
+  
+  <!-- Foto 2 - Detalles de Daños -->
+  <rect x="420" y="140" width="330" height="250" rx="8" fill="#F5F5F5" stroke="#BDBDBD" stroke-width="2"/>
+  <rect x="430" y="150" width="310" height="210" fill="#E0E0E0"/>
+  <text x="585" y="250" font-family="Arial, sans-serif" font-size="48" fill="#9E9E9E" text-anchor="middle">📷</text>
+  <text x="585" y="280" font-family="Arial, sans-serif" font-size="11" fill="#757575" text-anchor="middle">FOTO 2: Detalles de Daños Físicos</text>
+  
+  <rect x="430" y="360" width="310" height="20" fill="#FF9800"/>
+  <text x="585" y="374" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">RAYONES EN TAPA - ESQUINA SUPERIOR</text>
+  
+  <!-- Observaciones al Ingreso -->
+  <rect x="30" y="410" width="740" height="80" rx="4" fill="#FFF3E0" stroke="#FFB74D" stroke-width="1"/>
+  <text x="45" y="430" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#E65100">Observaciones al Ingreso:</text>
+  <text x="45" y="448" font-family="Arial, sans-serif" font-size="9" fill="#212121">• Equipo presenta rayones leves en la tapa superior (esquina derecha)</text>
+  <text x="45" y="463" font-family="Arial, sans-serif" font-size="9" fill="#212121">• Ventilador hace ruido anormal al encender</text>
+  <text x="45" y="478" font-family="Arial, sans-serif" font-size="9" fill="#212121">• Batería no carga más del 20% según indicador del sistema</text>
+  
+  <!-- Sección: Fotos al Entregar -->
+  <rect x="30" y="510" width="740" height="30" rx="4" fill="#4CAF50"/>
+  <text x="400" y="532" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#FFFFFF" text-anchor="middle">✅ ESTADO DEL EQUIPO AL ENTREGAR</text>
+  
+  <rect x="30" y="540" width="740" height="20" fill="#E8F5E9"/>
+  <text x="400" y="554" font-family="Arial, sans-serif" font-size="9" fill="#2E7D32" text-anchor="middle">Fecha: 18 de enero de 2024 - 04:15 PM | Fotografías tomadas por: Carlos Rodríguez M.</text>
+  
+  <!-- Foto 3 - Equipo Reparado -->
+  <rect x="50" y="580" width="330" height="250" rx="8" fill="#F5F5F5" stroke="#BDBDBD" stroke-width="2"/>
+  <rect x="60" y="590" width="310" height="210" fill="#E0E0E0"/>
+  <text x="215" y="690" font-family="Arial, sans-serif" font-size="48" fill="#9E9E9E" text-anchor="middle">📷</text>
+  <text x="215" y="720" font-family="Arial, sans-serif" font-size="11" fill="#757575" text-anchor="middle">FOTO 3: Equipo Limpio y Reparado</text>
+  
+  <rect x="60" y="800" width="310" height="20" fill="#4CAF50"/>
+  <text x="215" y="814" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">EQUIPO FUNCIONANDO CORRECTAMENTE</text>
+  
+  <!-- Foto 4 - Prueba de Funcionamiento -->
+  <rect x="420" y="580" width="330" height="250" rx="8" fill="#F5F5F5" stroke="#BDBDBD" stroke-width="2"/>
+  <rect x="430" y="590" width="310" height="210" fill="#E0E0E0"/>
+  <text x="585" y="690" font-family="Arial, sans-serif" font-size="48" fill="#9E9E9E" text-anchor="middle">📷</text>
+  <text x="585" y="720" font-family="Arial, sans-serif" font-size="11" fill="#757575" text-anchor="middle">FOTO 4: Prueba de Funcionamiento</text>
+  
+  <rect x="430" y="800" width="310" height="20" fill="#2196F3"/>
+  <text x="585" y="814" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">SISTEMA OPERATIVO INSTALADO - TESTS OK</text>
+  
+  <!-- Observaciones al Entregar -->
+  <rect x="30" y="850" width="740" height="100" rx="4" fill="#E8F5E9" stroke="#81C784" stroke-width="1"/>
+  <text x="45" y="870" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#2E7D32">Observaciones al Entregar:</text>
+  <text x="45" y="888" font-family="Arial, sans-serif" font-size="9" fill="#212121">• Equipo completamente limpio y desinfectado</text>
+  <text x="45" y="903" font-family="Arial, sans-serif" font-size="9" fill="#212121">• Batería nueva instalada, carga al 100% y mantiene carga correctamente</text>
+  <text x="45" y="918" font-family="Arial, sans-serif" font-size="9" fill="#212121">• SSD instalado, sistema operativo Windows 11 Pro activado y actualizado</text>
+  <text x="45" y="933" font-family="Arial, sans-serif" font-size="9" fill="#212121">• Ventilador funcionando silenciosamente, temperaturas normales (45-50°C en reposo)</text>
+  
+  <!-- Certificación de Calidad -->
+  <rect x="30" y="970" width="740" height="80" rx="4" fill="#E3F2FD" stroke="#2192B8" stroke-width="2"/>
+  <text x="400" y="995" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#1565C0" text-anchor="middle">🏆 CERTIFICACIÓN DE CALIDAD</text>
+  
+  <text x="60" y="1015" font-family="Arial, sans-serif" font-size="9" fill="#212121">✓ Prueba de estrés CPU: APROBADA</text>
+  <text x="300" y="1015" font-family="Arial, sans-serif" font-size="9" fill="#212121">✓ Test de memoria RAM: APROBADA</text>
+  <text x="540" y="1015" font-family="Arial, sans-serif" font-size="9" fill="#212121">✓ Benchmark SSD: APROBADA</text>
+  
+  <text x="60" y="1035" font-family="Arial, sans-serif" font-size="9" fill="#212121">✓ Test de batería: APROBADA</text>
+  <text x="300" y="1035" font-family="Arial, sans-serif" font-size="9" fill="#212121">✓ Temperatura: NORMAL</text>
+  <text x="540" y="1035" font-family="Arial, sans-serif" font-size="9" fill="#212121">✓ Sistema operativo: ACTIVADO</text>
+  
+  <!-- Footer -->
+  <text x="400" y="1070" font-family="Arial, sans-serif" font-size="8" fill="#757575" text-anchor="middle">Página 2 de 3 | Todas las fotografías son propiedad de Doctor PC</text>
+  <text x="400" y="1085" font-family="Arial, sans-serif" font-size="7" fill="#BDBDBD" text-anchor="middle">Las imágenes fueron tomadas con equipo profesional y están disponibles en alta resolución para el cliente</text>
+</svg>

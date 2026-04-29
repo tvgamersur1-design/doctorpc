@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <!-- Fondo -->
+  <rect width="1200" height="800" fill="#F5F5F5"/>
+  
+  <!-- Título -->
+  <rect width="1200" height="80" fill="#2192B8"/>
+  <text x="600" y="50" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF" text-anchor="middle">PROPUESTA: PDF EMPRESARIAL MEJORADO - DOCTOR PC</text>
+  
+  <!-- Sección: PDF Actual vs Propuesto -->
+  <text x="600" y="120" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#212121" text-anchor="middle">COMPARACIÓN: ACTUAL vs PROPUESTO</text>
+  
+  <!-- PDF Actual -->
+  <rect x="50" y="150" width="500" height="600" rx="10" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+  <rect x="50" y="150" width="500" height="50" rx="10" fill="#FF9800"/>
+  <text x="300" y="182" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF" text-anchor="middle">📄 PDF ACTUAL</text>
+  
+  <text x="70" y="240" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#F44336">❌ LIMITACIONES:</text>
+  <text x="90" y="270" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Solo 1 página</text>
+  <text x="90" y="295" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Sin fotos del equipo</text>
+  <text x="90" y="320" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Header básico</text>
+  <text x="90" y="345" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Diagnóstico simple</text>
+  <text x="90" y="370" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Sin timeline visual</text>
+  <text x="90" y="395" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Garantía básica</text>
+  <text x="90" y="420" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Sin certificación de calidad</text>
+  <text x="90" y="445" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Sin código QR</text>
+  
+  <text x="70" y="490" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#4CAF50">✓ VENTAJAS:</text>
+  <text x="90" y="520" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Rápido de generar (~1 seg)</text>
+  <text x="90" y="545" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Archivo liviano (~50KB)</text>
+  <text x="90" y="570" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Información esencial</text>
+  
+  <rect x="70" y="600" width="460" height="120" rx="8" fill="#FFF3E0" stroke="#FF9800" stroke-width="2"/>
+  <text x="300" y="630" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#E65100" text-anchor="middle">CALIFICACIÓN</text>
+  <text x="300" y="660" font-family="Arial, sans-serif" font-size="48" fill="#FF9800" text-anchor="middle">⭐⭐⭐</text>
+  <text x="300" y="700" font-family="Arial, sans-serif" font-size="14" fill="#757575" text-anchor="middle">Funcional pero poco profesional</text>
+  
+  <!-- PDF Propuesto -->
+  <rect x="650" y="150" width="500" height="600" rx="10" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+  <rect x="650" y="150" width="500" height="50" rx="10" fill="#4CAF50"/>
+  <text x="900" y="182" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF" text-anchor="middle">🚀 PDF PROPUESTO</text>
+  
+  <text x="670" y="240" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#4CAF50">✅ MEJORAS:</text>
+  <text x="690" y="270" font-family="Arial, sans-serif" font-size="14" fill="#212121">• 3 páginas profesionales</text>
+  <text x="690" y="295" font-family="Arial, sans-serif" font-size="14" fill="#212121">• 4 fotos (ingreso + entrega)</text>
+  <text x="690" y="320" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Header corporativo completo</text>
+  <text x="690" y="345" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Tabla de diagnóstico profesional</text>
+  <text x="690" y="370" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Timeline visual con colores</text>
+  <text x="690" y="395" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Garantía detallada + términos</text>
+  <text x="690" y="420" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Certificación de calidad</text>
+  <text x="690" y="445" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Código QR de verificación</text>
+  <text x="690" y="470" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Checklist de entrega</text>
+  <text x="690" y="495" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Firmas formales</text>
+  
+  <text x="670" y="540" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#FF9800">⚠️ CONSIDERACIONES:</text>
+  <text x="690" y="570" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Genera en ~3-5 segundos</text>
+  <text x="690" y="595" font-family="Arial, sans-serif" font-size="14" fill="#212121">• Archivo más pesado (~1.5MB)</text>
+  
+  <rect x="670" y="620" width="460" height="100" rx="8" fill="#E8F5E9" stroke="#4CAF50" stroke-width="2"/>
+  <text x="900" y="650" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#2E7D32" text-anchor="middle">CALIFICACIÓN</text>
+  <text x="900" y="685" font-family="Arial, sans-serif" font-size="48" fill="#4CAF50" text-anchor="middle">⭐⭐⭐⭐⭐</text>
+  
+  <!-- Recomendación -->
+  <rect x="50" y="770" width="1100" height="20" rx="10" fill="#4CAF50"/>
+  <text x="600" y="785" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF" text-anchor="middle">✅ RECOMENDACIÓN: IMPLEMENTAR PDF MEJORADO CON IMÁGENES - Diferenciador competitivo clave</text>
+</svg>

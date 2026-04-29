@@ -1,0 +1,487 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 595 1680" width="595" height="1680">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap');
+      text { font-family: 'Inter', 'Segoe UI', Arial, sans-serif; }
+      .title { font-weight: 700; }
+      .subtitle { font-weight: 600; }
+      .normal { font-weight: 400; }
+      .label { font-weight: 600; fill: #1565C0; }
+      .value { font-weight: 400; fill: #333333; }
+      .section-title { font-weight: 700; fill: #FFFFFF; font-size: 10px; }
+      .small { font-size: 7px; fill: #666666; }
+      .tiny { font-size: 6px; fill: #999999; }
+    </style>
+    <!-- Sombra suave -->
+    <filter id="shadow" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#00000020"/>
+    </filter>
+    <filter id="shadowLight" x="-1%" y="-1%" width="102%" height="102%">
+      <feDropShadow dx="0" dy="0.5" stdDeviation="1" flood-color="#00000015"/>
+    </filter>
+  </defs>
+
+  <!-- ============================================== -->
+  <!-- PÁGINA 1: REPORTE PRINCIPAL                     -->
+  <!-- ============================================== -->
+  
+  <!-- Fondo página 1 -->
+  <rect x="0" y="0" width="595" height="842" fill="#FFFFFF"/>
+  
+  <!-- ===== FRANJA SUPERIOR DECORATIVA ===== -->
+  <rect x="0" y="0" width="595" height="4" fill="#0D47A1"/>
+  
+  <!-- ===== ENCABEZADO CORPORATIVO ===== -->
+  <rect x="0" y="4" width="595" height="72" fill="#1565C0"/>
+  <!-- Degradado sutil -->
+  <rect x="0" y="4" width="595" height="72" fill="url(#headerGrad)" opacity="0.3"/>
+  
+  <!-- Logo placeholder -->
+  <rect x="25" y="14" width="52" height="52" rx="8" fill="#FFFFFF" opacity="0.15"/>
+  <circle cx="51" cy="35" r="14" fill="#FFFFFF" opacity="0.9"/>
+  <text x="51" y="39" text-anchor="middle" font-size="11" fill="#1565C0" font-weight="700">DC</text>
+  <text x="51" y="52" text-anchor="middle" font-size="5" fill="#FFFFFF" opacity="0.8">LOGO</text>
+  
+  <!-- Nombre empresa -->
+  <text x="90" y="30" font-size="20" fill="#FFFFFF" class="title">DOCTOR PC</text>
+  <text x="90" y="43" font-size="8" fill="#E3F2FD" class="normal">Soluciones Informáticas Profesionales</text>
+  <text x="90" y="54" font-size="7" fill="#BBDEFB" class="normal">📞 961 509 941  |  ✉ contacto@doctorpc.pe  |  🌐 www.doctorpc.pe</text>
+  <text x="90" y="64" font-size="7" fill="#BBDEFB" class="normal">📍 Av. Principal 123, Lima - Perú  |  RUC: 20XXXXXXXXX</text>
+  
+  <!-- Recuadro Orden -->
+  <rect x="430" y="12" width="140" height="55" rx="6" fill="#FFFFFF" filter="url(#shadow)"/>
+  <rect x="430" y="12" width="140" height="18" rx="6" fill="#0D47A1"/>
+  <rect x="430" y="24" width="140" height="6" fill="#0D47A1"/>
+  <text x="500" y="25" text-anchor="middle" font-size="9" fill="#FFFFFF" class="title">ORDEN DE SERVICIO</text>
+  <text x="500" y="48" text-anchor="middle" font-size="18" fill="#0D47A1" class="title">ORD-2024-0157</text>
+  <text x="500" y="60" text-anchor="middle" font-size="7" fill="#666666" class="normal">Emisión: 28/04/2026</text>
+  
+  <!-- ===== BARRA DE ESTADO ===== -->
+  <rect x="25" y="82" width="545" height="22" rx="4" fill="#E8F5E9" stroke="#4CAF50" stroke-width="0.5"/>
+  <circle cx="40" cy="93" r="5" fill="#4CAF50"/>
+  <text x="43" y="95" font-size="8" fill="#FFFFFF" text-anchor="middle" class="title">✓</text>
+  <text x="52" y="96" font-size="9" fill="#2E7D32" class="subtitle">Estado: COMPLETADO</text>
+  <text x="250" y="96" font-size="7" fill="#666" class="normal">|  Prioridad: ALTA  |  Sucursal: SEDE CENTRAL  |  Fecha Ingreso: 15/04/2026 - 10:30 AM</text>
+  
+  <!-- ===== SECCIÓN: DATOS DEL CLIENTE ===== -->
+  <rect x="25" y="112" width="265" height="16" rx="3" fill="#1565C0"/>
+  <text x="35" y="123" class="section-title">👤  DATOS DEL CLIENTE</text>
+  
+  <rect x="25" y="128" width="265" height="72" rx="3" fill="#F8F9FA" stroke="#E0E0E0" stroke-width="0.5"/>
+  
+  <text x="35" y="142" font-size="7.5" class="label">Cliente:</text>
+  <text x="80" y="142" font-size="7.5" class="value">JUAN CARLOS PÉREZ GARCÍA</text>
+  
+  <text x="35" y="154" font-size="7.5" class="label">DNI:</text>
+  <text x="80" y="154" font-size="7.5" class="value">72345678</text>
+  <text x="150" y="154" font-size="7.5" class="label">Teléfono:</text>
+  <text x="195" y="154" font-size="7.5" class="value">961 509 941</text>
+  
+  <text x="35" y="166" font-size="7.5" class="label">Email:</text>
+  <text x="80" y="166" font-size="7.5" class="value">juan.perez@email.com</text>
+  
+  <text x="35" y="178" font-size="7.5" class="label">Dirección:</text>
+  <text x="80" y="178" font-size="7.5" class="value">Av. Los Olivos 456, San Isidro, Lima</text>
+  
+  <text x="35" y="190" font-size="7.5" class="label">Referencia:</text>
+  <text x="80" y="190" font-size="7.5" class="value">Frente al parque central</text>
+  
+  <!-- ===== SECCIÓN: DATOS DEL EQUIPO ===== -->
+  <rect x="305" y="112" width="265" height="16" rx="3" fill="#1565C0"/>
+  <text x="315" y="123" class="section-title">💻  EQUIPO RECIBIDO</text>
+  
+  <rect x="305" y="128" width="265" height="72" rx="3" fill="#F8F9FA" stroke="#E0E0E0" stroke-width="0.5"/>
+  
+  <text x="315" y="142" font-size="7.5" class="label">Tipo:</text>
+  <text x="370" y="142" font-size="7.5" class="value">Laptop</text>
+  <text x="430" y="142" font-size="7.5" class="label">Marca:</text>
+  <text x="470" y="142" font-size="7.5" class="value">ASUS</text>
+  
+  <text x="315" y="154" font-size="7.5" class="label">Modelo:</text>
+  <text x="370" y="154" font-size="7.5" class="value">VivoBook S15 S533EA</text>
+  
+  <text x="315" y="166" font-size="7.5" class="label">N° Serie:</text>
+  <text x="370" y="166" font-size="7.5" class="value">M8N0CV03R92143Y</text>
+  
+  <text x="315" y="178" font-size="7.5" class="label">Color:</text>
+  <text x="370" y="178" font-size="7.5" class="value">Negro</text>
+  <text x="430" y="178" font-size="7.5" class="label">Cargador:</text>
+  <text x="480" y="178" font-size="7.5" class="value">Sí</text>
+  
+  <text x="315" y="190" font-size="7.5" class="label">Accesorios:</text>
+  <text x="370" y="190" font-size="7.5" class="value">Mouse USB, Funda protectora</text>
+  
+  <!-- ===== NUEVO: SECCIÓN PROBLEMA REPORTADO + OBSERVACIONES ===== -->
+  <rect x="25" y="208" width="545" height="16" rx="3" fill="#1565C0"/>
+  <text x="35" y="219" class="section-title">📝  PROBLEMA REPORTADO Y OBSERVACIONES DEL CLIENTE</text>
+  
+  <rect x="25" y="224" width="545" height="38" rx="3" fill="#FFF8E1" stroke="#FFE082" stroke-width="0.5"/>
+  <text x="35" y="237" font-size="7.5" class="label">Problema:</text>
+  <text x="85" y="237" font-size="7.5" class="value">La laptop se apaga repentinamente al usar programas pesados. También presenta pantallazos azules</text>
+  <text x="85" y="248" font-size="7.5" class="value">frecuentes con código KERNEL_DATA_INPAGE_ERROR. Tarda mucho en encender.</text>
+  <text x="35" y="256" font-size="7" fill="#EF6C00" class="subtitle">⚠ Obs. Cliente: "El equipo se cayó hace 2 semanas del escritorio"</text>
+  
+  <!-- ===== SECCIÓN: DIAGNÓSTICO TÉCNICO ===== -->
+  <rect x="25" y="270" width="545" height="16" rx="3" fill="#1565C0"/>
+  <text x="35" y="281" class="section-title">🔍  DIAGNÓSTICO TÉCNICO</text>
+  <text x="490" y="281" font-size="7" fill="#BBDEFB" class="normal">Técnico: Carlos Ramírez</text>
+  
+  <!-- Tabla de diagnóstico -->
+  <rect x="25" y="286" width="545" height="14" fill="#0D47A1"/>
+  <text x="40" y="295" font-size="7" fill="#FFFFFF" class="subtitle">N°</text>
+  <text x="65" y="295" font-size="7" fill="#FFFFFF" class="subtitle">PROBLEMA ENCONTRADO</text>
+  <text x="275" y="295" font-size="7" fill="#FFFFFF" class="subtitle">SOLUCIÓN PROPUESTA</text>
+  <text x="490" y="295" font-size="7" fill="#FFFFFF" class="subtitle">COSTO</text>
+  <text x="540" y="295" font-size="7" fill="#FFFFFF" class="subtitle">ESTADO</text>
+  
+  <!-- Fila 1 -->
+  <rect x="25" y="300" width="545" height="18" fill="#F5F5F5"/>
+  <text x="40" y="312" font-size="7" class="value">1</text>
+  <text x="65" y="307" font-size="7" class="value">Disco duro con sectores dañados</text>
+  <text x="65" y="314" font-size="6" fill="#999">(SMART Status: Warning)</text>
+  <text x="275" y="312" font-size="7" class="value">Reemplazo por SSD Kingston 480GB</text>
+  <text x="490" y="312" font-size="7" fill="#1565C0" class="subtitle">S/. 120.00</text>
+  <rect x="535" y="305" width="28" height="10" rx="3" fill="#4CAF50"/>
+  <text x="549" y="312" text-anchor="middle" font-size="5.5" fill="#FFF" class="subtitle">HECHO</text>
+  
+  <!-- Fila 2 -->
+  <rect x="25" y="318" width="545" height="18" fill="#FFFFFF"/>
+  <text x="40" y="330" font-size="7" class="value">2</text>
+  <text x="65" y="325" font-size="7" class="value">Pasta térmica reseca</text>
+  <text x="65" y="332" font-size="6" fill="#999">(Temp. CPU: 95°C en idle)</text>
+  <text x="275" y="330" font-size="7" class="value">Limpieza y reemplazo pasta térmica</text>
+  <text x="490" y="330" font-size="7" fill="#1565C0" class="subtitle">S/. 35.00</text>
+  <rect x="535" y="323" width="28" height="10" rx="3" fill="#4CAF50"/>
+  <text x="549" y="330" text-anchor="middle" font-size="5.5" fill="#FFF" class="subtitle">HECHO</text>
+  
+  <!-- Fila 3 -->
+  <rect x="25" y="336" width="545" height="18" fill="#F5F5F5"/>
+  <text x="40" y="348" font-size="7" class="value">3</text>
+  <text x="65" y="343" font-size="7" class="value">RAM módulo 2 con errores</text>
+  <text x="65" y="350" font-size="6" fill="#999">(MemTest: 847 errores detectados)</text>
+  <text x="275" y="348" font-size="7" class="value">Reemplazo RAM DDR4 8GB Kingston</text>
+  <text x="490" y="348" font-size="7" fill="#1565C0" class="subtitle">S/. 85.00</text>
+  <rect x="535" y="341" width="28" height="10" rx="3" fill="#4CAF50"/>
+  <text x="549" y="348" text-anchor="middle" font-size="5.5" fill="#FFF" class="subtitle">HECHO</text>
+  
+  <!-- ===== NUEVO: SECCIÓN TRABAJO REALIZADO ===== -->
+  <rect x="25" y="362" width="545" height="16" rx="3" fill="#1565C0"/>
+  <text x="35" y="373" class="section-title">🔧  TRABAJO REALIZADO / SOLUCIÓN APLICADA</text>
+  
+  <rect x="25" y="378" width="545" height="34" rx="3" fill="#E8F5E9" stroke="#A5D6A7" stroke-width="0.5"/>
+  <text x="35" y="391" font-size="7.5" class="value">✅ Se reemplazó disco HDD por SSD Kingston 480GB. Se migró sistema operativo y datos del cliente.</text>
+  <text x="35" y="401" font-size="7.5" class="value">✅ Limpieza interna completa + reemplazo de pasta térmica. Temp. actual: 42°C en idle.</text>
+  <text x="35" y="411" font-size="7.5" class="value">✅ Reemplazo de módulo RAM dañado. MemTest limpio tras 4 pasadas completas.</text>
+  
+  <!-- ===== SECCIÓN: RESUMEN FINANCIERO ===== -->
+  <rect x="25" y="420" width="265" height="16" rx="3" fill="#1565C0"/>
+  <text x="35" y="431" class="section-title">💰  RESUMEN FINANCIERO</text>
+  
+  <!-- Tabla de costos -->
+  <rect x="25" y="436" width="265" height="14" fill="#0D47A1"/>
+  <text x="35" y="445" font-size="7" fill="#FFFFFF" class="subtitle">CONCEPTO</text>
+  <text x="265" y="445" font-size="7" fill="#FFFFFF" class="subtitle" text-anchor="end">MONTO</text>
+  
+  <rect x="25" y="450" width="265" height="12" fill="#F5F5F5"/>
+  <text x="35" y="459" font-size="7" class="value">Mano de Obra / Servicio Técnico</text>
+  <text x="265" y="459" font-size="7" class="value" text-anchor="end">S/. 50.00</text>
+  
+  <rect x="25" y="462" width="265" height="12" fill="#FFFFFF"/>
+  <text x="35" y="471" font-size="7" class="value">Repuestos (SSD + RAM)</text>
+  <text x="265" y="471" font-size="7" class="value" text-anchor="end">S/. 205.00</text>
+  
+  <rect x="25" y="474" width="265" height="12" fill="#F5F5F5"/>
+  <text x="35" y="483" font-size="7" class="value">Servicios Adicionales (Limpieza)</text>
+  <text x="265" y="483" font-size="7" class="value" text-anchor="end">S/. 35.00</text>
+  
+  <line x1="25" y1="486" x2="290" y2="486" stroke="#BDBDBD" stroke-width="0.5"/>
+  
+  <rect x="25" y="486" width="265" height="12" fill="#ECEFF1"/>
+  <text x="35" y="495" font-size="7" class="subtitle" fill="#333">Subtotal</text>
+  <text x="265" y="495" font-size="7" class="subtitle" fill="#333" text-anchor="end">S/. 245.76</text>
+  
+  <rect x="25" y="498" width="265" height="12" fill="#F5F5F5"/>
+  <text x="35" y="507" font-size="7" class="value">I.G.V. (18%)</text>
+  <text x="265" y="507" font-size="7" class="value" text-anchor="end">S/. 44.24</text>
+  
+  <!-- Total destacado -->
+  <rect x="25" y="510" width="265" height="16" rx="0 0 3 3" fill="#2E7D32"/>
+  <text x="35" y="521" font-size="9" fill="#FFFFFF" class="title">TOTAL</text>
+  <text x="265" y="521" font-size="9" fill="#FFFFFF" class="title" text-anchor="end">S/. 290.00</text>
+  
+  <!-- ===== NUEVO: DETALLE DE PAGOS ===== -->
+  <rect x="305" y="420" width="265" height="16" rx="3" fill="#1565C0"/>
+  <text x="315" y="431" class="section-title">💳  DETALLE DE PAGOS</text>
+  
+  <rect x="305" y="436" width="265" height="90" rx="3" fill="#F8F9FA" stroke="#E0E0E0" stroke-width="0.5"/>
+  
+  <text x="315" y="450" font-size="7.5" class="label">Adelanto pagado:</text>
+  <text x="450" y="450" font-size="7.5" class="value">S/. 100.00</text>
+  <text x="500" y="450" font-size="6" fill="#4CAF50">(15/04/2026)</text>
+  
+  <text x="315" y="463" font-size="7.5" class="label">Saldo pendiente:</text>
+  <text x="450" y="463" font-size="8" fill="#E65100" class="subtitle">S/. 190.00</text>
+  
+  <line x1="315" y1="470" x2="560" y2="470" stroke="#E0E0E0" stroke-width="0.5" stroke-dasharray="3,2"/>
+  
+  <text x="315" y="482" font-size="7.5" class="label">Monto cobrado entrega:</text>
+  <text x="450" y="482" font-size="7.5" class="value">S/. 190.00</text>
+  
+  <text x="315" y="494" font-size="7.5" class="label">Método de pago:</text>
+  <text x="450" y="494" font-size="7.5" class="value">Transferencia Yape</text>
+  
+  <text x="315" y="506" font-size="7.5" class="label">Comprobante:</text>
+  <text x="450" y="506" font-size="7.5" class="value">Boleta B001-00234</text>
+  
+  <!-- TOTAL PAGADO -->
+  <rect x="305" y="510" width="265" height="16" rx="0 0 3 3" fill="#4CAF50"/>
+  <text x="315" y="521" font-size="9" fill="#FFFFFF" class="title">✓ PAGADO COMPLETO</text>
+  <text x="560" y="521" font-size="9" fill="#FFFFFF" class="title" text-anchor="end">S/. 290.00</text>
+  
+  <!-- ===== NUEVO: LÍNEA DE TIEMPO DEL SERVICIO ===== -->
+  <rect x="25" y="536" width="545" height="16" rx="3" fill="#1565C0"/>
+  <text x="35" y="547" class="section-title">📅  LÍNEA DE TIEMPO DEL SERVICIO</text>
+  
+  <rect x="25" y="552" width="545" height="32" rx="3" fill="#F8F9FA" stroke="#E0E0E0" stroke-width="0.5"/>
+  
+  <!-- Timeline visual -->
+  <line x1="60" y1="568" x2="540" y2="568" stroke="#BBDEFB" stroke-width="2"/>
+  
+  <!-- Punto 1: Ingreso -->
+  <circle cx="80" cy="568" r="6" fill="#1565C0"/>
+  <text x="80" y="570" text-anchor="middle" font-size="5" fill="#FFF" class="title">1</text>
+  <text x="80" y="560" text-anchor="middle" font-size="5.5" fill="#1565C0" class="subtitle">Ingreso</text>
+  <text x="80" y="579" text-anchor="middle" font-size="5" fill="#999">15/04</text>
+  
+  <!-- Punto 2: Diagnóstico -->
+  <circle cx="195" cy="568" r="6" fill="#FF9800"/>
+  <text x="195" y="570" text-anchor="middle" font-size="5" fill="#FFF" class="title">2</text>
+  <text x="195" y="560" text-anchor="middle" font-size="5.5" fill="#FF9800" class="subtitle">Diagnóstico</text>
+  <text x="195" y="579" text-anchor="middle" font-size="5" fill="#999">17/04</text>
+  
+  <!-- Punto 3: Aprobación -->
+  <circle cx="310" cy="568" r="6" fill="#9C27B0"/>
+  <text x="310" y="570" text-anchor="middle" font-size="5" fill="#FFF" class="title">3</text>
+  <text x="310" y="560" text-anchor="middle" font-size="5.5" fill="#9C27B0" class="subtitle">Aprobado</text>
+  <text x="310" y="579" text-anchor="middle" font-size="5" fill="#999">18/04</text>
+  
+  <!-- Punto 4: Reparación -->
+  <circle cx="420" cy="568" r="6" fill="#2196F3"/>
+  <text x="420" y="570" text-anchor="middle" font-size="5" fill="#FFF" class="title">4</text>
+  <text x="420" y="560" text-anchor="middle" font-size="5.5" fill="#2196F3" class="subtitle">Reparado</text>
+  <text x="420" y="579" text-anchor="middle" font-size="5" fill="#999">22/04</text>
+  
+  <!-- Punto 5: Entregado -->
+  <circle cx="520" cy="568" r="6" fill="#4CAF50"/>
+  <text x="520" y="570" text-anchor="middle" font-size="5" fill="#FFF" class="title">5</text>
+  <text x="520" y="560" text-anchor="middle" font-size="5.5" fill="#4CAF50" class="subtitle">Entregado</text>
+  <text x="520" y="579" text-anchor="middle" font-size="5" fill="#999">25/04</text>
+  
+  <!-- ===== NUEVO: DATOS DE ENTREGA ===== -->
+  <rect x="25" y="592" width="545" height="16" rx="3" fill="#2E7D32"/>
+  <text x="35" y="603" class="section-title">📦  DATOS DE ENTREGA</text>
+  
+  <rect x="25" y="608" width="265" height="62" rx="3" fill="#F8F9FA" stroke="#E0E0E0" stroke-width="0.5"/>
+  
+  <text x="35" y="621" font-size="7.5" class="label">Recibido por:</text>
+  <text x="110" y="621" font-size="7.5" class="value">Juan Carlos Pérez García</text>
+  
+  <text x="35" y="633" font-size="7.5" class="label">Fecha entrega:</text>
+  <text x="110" y="633" font-size="7.5" class="value">25/04/2026 - 16:45 PM</text>
+  
+  <text x="35" y="645" font-size="7.5" class="label">Encargado:</text>
+  <text x="110" y="645" font-size="7.5" class="value">Miguel Torres (Técnico)</text>
+  
+  <text x="35" y="657" font-size="7.5" class="label">Estado equipo:</text>
+  <rect x="110" y="650" width="55" height="10" rx="3" fill="#4CAF50"/>
+  <text x="137" y="658" text-anchor="middle" font-size="6" fill="#FFF" class="subtitle">OPERATIVO</text>
+  
+  <!-- Garantía y Recomendaciones -->
+  <rect x="305" y="608" width="265" height="62" rx="3" fill="#F8F9FA" stroke="#E0E0E0" stroke-width="0.5"/>
+  
+  <text x="315" y="621" font-size="7.5" class="label">Garantía hasta:</text>
+  <text x="400" y="621" font-size="7.5" fill="#E65100" class="subtitle">25/05/2026 (30 días)</text>
+  
+  <text x="315" y="633" font-size="7.5" class="label">Recomendaciones:</text>
+  <text x="315" y="644" font-size="7" class="value">• No bloquear ventilación del equipo</text>
+  <text x="315" y="653" font-size="7" class="value">• Realizar limpieza cada 6 meses</text>
+  <text x="315" y="662" font-size="7" class="value">• Usar base refrigerante para laptop</text>
+  
+  <!-- ===== NUEVO: CALIFICACIÓN DEL SERVICIO ===== -->
+  <rect x="25" y="678" width="545" height="22" rx="4" fill="#FFF8E1" stroke="#FFE082" stroke-width="0.5"/>
+  <text x="35" y="692" font-size="8" class="subtitle" fill="#F57F17">⭐ Calificación del Servicio:</text>
+  <text x="170" y="692" font-size="12" fill="#FFC107">★★★★★</text>
+  <text x="230" y="692" font-size="7" class="value">5/5 - Excelente</text>
+  <text x="350" y="692" font-size="7" fill="#999" class="normal">| Comentario: "Muy buen servicio, equipo como nuevo"</text>
+  
+  <!-- ===== FIRMAS ===== -->
+  <text x="140" y="720" text-anchor="middle" font-size="7" class="value">________________________</text>
+  <text x="140" y="732" text-anchor="middle" font-size="7.5" class="subtitle" fill="#333">Firma del Técnico</text>
+  <text x="140" y="742" text-anchor="middle" font-size="6" fill="#999">Carlos Ramírez M.</text>
+  <text x="140" y="750" text-anchor="middle" font-size="6" fill="#999">Técnico certificado</text>
+  
+  <text x="455" y="720" text-anchor="middle" font-size="7" class="value">________________________</text>
+  <text x="455" y="732" text-anchor="middle" font-size="7.5" class="subtitle" fill="#333">Firma del Cliente</text>
+  <text x="455" y="742" text-anchor="middle" font-size="6" fill="#999">Juan Carlos Pérez G.</text>
+  <text x="455" y="750" text-anchor="middle" font-size="6" fill="#999">DNI: 72345678</text>
+  
+  <!-- ===== NUEVO: QR DE VERIFICACIÓN ===== -->
+  <rect x="265" y="710" width="65" height="48" rx="4" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="0.5"/>
+  <!-- QR placeholder -->
+  <rect x="275" y="715" width="30" height="30" fill="#333" rx="2"/>
+  <rect x="278" y="718" width="8" height="8" fill="#FFF"/>
+  <rect x="292" y="718" width="8" height="8" fill="#FFF"/>
+  <rect x="278" y="732" width="8" height="8" fill="#FFF"/>
+  <rect x="286" y="726" width="4" height="4" fill="#FFF"/>
+  <rect x="294" y="730" width="4" height="4" fill="#FFF"/>
+  <text x="297" y="750" text-anchor="middle" font-size="5" fill="#999">Verificar</text>
+  <text x="297" y="756" text-anchor="middle" font-size="4.5" fill="#999">autenticidad</text>
+  
+  <!-- ===== TÉRMINOS Y CONDICIONES ===== -->
+  <rect x="0" y="770" width="595" height="3" fill="#1565C0"/>
+  <rect x="0" y="773" width="595" height="69" fill="#F5F5F5"/>
+  
+  <text x="297" y="786" text-anchor="middle" font-size="7" class="subtitle" fill="#333">TÉRMINOS Y CONDICIONES</text>
+  
+  <text x="35" y="798" font-size="5.5" fill="#666">1. La garantía de 30 días cubre únicamente defectos en mano de obra. No incluye daños por mal uso, golpes, caídas o líquidos derramados.</text>
+  <text x="35" y="807" font-size="5.5" fill="#666">2. Los equipos no recogidos en un plazo máximo de 30 días calendario después de la notificación no serán sujeto de reclamo.</text>
+  <text x="35" y="816" font-size="5.5" fill="#666">3. Los repuestos reemplazados originales quedan en propiedad de DOCTOR PC salvo acuerdo previo por escrito.</text>
+  <text x="35" y="825" font-size="5.5" fill="#666">4. El cliente acepta haber recibido el equipo en las condiciones descritas en el presente documento al momento de firmar.</text>
+  
+  <text x="297" y="838" text-anchor="middle" font-size="5" fill="#BBBBBB">DOCTOR PC © 2026 - Documento generado automáticamente | ORD-2024-0157 | Pág. 1/2</text>
+  
+  <!-- ============================================== -->
+  <!-- SEPARADOR DE PÁGINAS                            -->
+  <!-- ============================================== -->
+  <line x1="0" y1="845" x2="595" y2="845" stroke="#CCC" stroke-width="1" stroke-dasharray="8,4"/>
+  <text x="297" y="855" text-anchor="middle" font-size="8" fill="#CCC">- - - PÁGINA 2: EVIDENCIA FOTOGRÁFICA (ANEXO) - - -</text>
+  
+  <!-- ============================================== -->
+  <!-- PÁGINA 2: EVIDENCIA FOTOGRÁFICA                 -->
+  <!-- ============================================== -->
+  
+  <!-- Fondo página 2 -->
+  <rect x="0" y="865" width="595" height="815" fill="#FFFFFF"/>
+  
+  <!-- Franja superior -->
+  <rect x="0" y="865" width="595" height="4" fill="#0D47A1"/>
+  
+  <!-- Mini header -->
+  <rect x="0" y="869" width="595" height="30" fill="#1565C0"/>
+  <text x="35" y="888" font-size="12" fill="#FFFFFF" class="title">DOCTOR PC</text>
+  <text x="120" y="888" font-size="8" fill="#BBDEFB" class="normal">| Anexo Fotográfico</text>
+  <text x="470" y="888" font-size="8" fill="#FFFFFF" class="subtitle">ORD-2024-0157</text>
+  
+  <!-- ===== FOTOS DE INGRESO ===== -->
+  <rect x="25" y="907" width="545" height="16" rx="3" fill="#FF9800"/>
+  <text x="35" y="918" class="section-title">📸  EVIDENCIA FOTOGRÁFICA - INGRESO DEL EQUIPO (15/04/2026)</text>
+  
+  <!-- Grid de fotos ingreso -->
+  <rect x="25" y="928" width="170" height="130" rx="4" fill="#EEEEEE" stroke="#BDBDBD" stroke-width="0.5"/>
+  <text x="110" y="998" text-anchor="middle" font-size="20" fill="#BDBDBD">📷</text>
+  <text x="110" y="1015" text-anchor="middle" font-size="6" fill="#999">Vista frontal del equipo</text>
+  <rect x="30" y="1038" width="160" height="12" rx="2" fill="#FFF3E0"/>
+  <text x="110" y="1047" text-anchor="middle" font-size="5.5" fill="#E65100">Estado: Carcasa con rayón en esquina sup.</text>
+  
+  <rect x="212" y="928" width="170" height="130" rx="4" fill="#EEEEEE" stroke="#BDBDBD" stroke-width="0.5"/>
+  <text x="297" y="998" text-anchor="middle" font-size="20" fill="#BDBDBD">📷</text>
+  <text x="297" y="1015" text-anchor="middle" font-size="6" fill="#999">Pantalla encendida (error BSOD)</text>
+  <rect x="217" y="1038" width="160" height="12" rx="2" fill="#FFF3E0"/>
+  <text x="297" y="1047" text-anchor="middle" font-size="5.5" fill="#E65100">Error: KERNEL_DATA_INPAGE_ERROR</text>
+  
+  <rect x="400" y="928" width="170" height="130" rx="4" fill="#EEEEEE" stroke="#BDBDBD" stroke-width="0.5"/>
+  <text x="485" y="998" text-anchor="middle" font-size="20" fill="#BDBDBD">📷</text>
+  <text x="485" y="1015" text-anchor="middle" font-size="6" fill="#999">Base / ventilación obstruida</text>
+  <rect x="405" y="1038" width="160" height="12" rx="2" fill="#FFF3E0"/>
+  <text x="485" y="1047" text-anchor="middle" font-size="5.5" fill="#E65100">Polvo acumulado en rejillas</text>
+  
+  <!-- ===== FOTOS DE ENTREGA ===== -->
+  <rect x="25" y="1065" width="545" height="16" rx="3" fill="#4CAF50"/>
+  <text x="35" y="1076" class="section-title">📸  EVIDENCIA FOTOGRÁFICA - ENTREGA DEL EQUIPO (25/04/2026)</text>
+  
+  <!-- Grid de fotos entrega -->
+  <rect x="25" y="1086" width="170" height="130" rx="4" fill="#EEEEEE" stroke="#BDBDBD" stroke-width="0.5"/>
+  <text x="110" y="1156" text-anchor="middle" font-size="20" fill="#BDBDBD">📷</text>
+  <text x="110" y="1173" text-anchor="middle" font-size="6" fill="#999">Equipo encendido correctamente</text>
+  <rect x="30" y="1196" width="160" height="12" rx="2" fill="#E8F5E9"/>
+  <text x="110" y="1205" text-anchor="middle" font-size="5.5" fill="#2E7D32">✅ Boot normal - Windows OK</text>
+  
+  <rect x="212" y="1086" width="170" height="130" rx="4" fill="#EEEEEE" stroke="#BDBDBD" stroke-width="0.5"/>
+  <text x="297" y="1156" text-anchor="middle" font-size="20" fill="#BDBDBD">📷</text>
+  <text x="297" y="1173" text-anchor="middle" font-size="6" fill="#999">SSD nuevo instalado</text>
+  <rect x="217" y="1196" width="160" height="12" rx="2" fill="#E8F5E9"/>
+  <text x="297" y="1205" text-anchor="middle" font-size="5.5" fill="#2E7D32">✅ Kingston A400 480GB</text>
+  
+  <rect x="400" y="1086" width="170" height="130" rx="4" fill="#EEEEEE" stroke="#BDBDBD" stroke-width="0.5"/>
+  <text x="485" y="1156" text-anchor="middle" font-size="20" fill="#BDBDBD">📷</text>
+  <text x="485" y="1173" text-anchor="middle" font-size="6" fill="#999">Equipo limpio - ventilación</text>
+  <rect x="405" y="1196" width="160" height="12" rx="2" fill="#E8F5E9"/>
+  <text x="485" y="1205" text-anchor="middle" font-size="5.5" fill="#2E7D32">✅ Temp 42°C después de limpieza</text>
+  
+  <!-- ===== NUEVO: COMPARATIVA ANTES/DESPUÉS ===== -->
+  <rect x="25" y="1225" width="545" height="16" rx="3" fill="#7B1FA2"/>
+  <text x="35" y="1236" class="section-title">🔄  COMPARATIVA ANTES / DESPUÉS</text>
+  
+  <rect x="25" y="1246" width="265" height="90" rx="4" fill="#FFEBEE" stroke="#EF9A9A" stroke-width="0.5"/>
+  <text x="157" y="1260" text-anchor="middle" font-size="8" fill="#C62828" class="subtitle">❌ ANTES (Ingreso)</text>
+  <rect x="40" y="1267" width="235" height="50" rx="3" fill="#FFF"/>
+  <text x="157" y="1295" text-anchor="middle" font-size="14" fill="#BDBDBD">📷</text>
+  <text x="55" y="1327" font-size="6" fill="#C62828">• HDD con errores  • CPU 95°C  • RAM dañada</text>
+  
+  <rect x="305" y="1246" width="265" height="90" rx="4" fill="#E8F5E9" stroke="#A5D6A7" stroke-width="0.5"/>
+  <text x="437" y="1260" text-anchor="middle" font-size="8" fill="#2E7D32" class="subtitle">✅ DESPUÉS (Entrega)</text>
+  <rect x="320" y="1267" width="235" height="50" rx="3" fill="#FFF"/>
+  <text x="437" y="1295" text-anchor="middle" font-size="14" fill="#BDBDBD">📷</text>
+  <text x="320" y="1327" font-size="6" fill="#2E7D32">• SSD 480GB nuevo  • CPU 42°C  • RAM 8GB nueva</text>
+  
+  <!-- Flecha central -->
+  <text x="297" y="1295" text-anchor="middle" font-size="18" fill="#7B1FA2">→</text>
+  
+  <!-- ===== PIE DE PÁGINA 2 ===== -->
+  <rect x="0" y="1350" width="595" height="3" fill="#1565C0"/>
+  <rect x="0" y="1353" width="595" height="25" fill="#F5F5F5"/>
+  <text x="297" y="1365" text-anchor="middle" font-size="6" fill="#999">Las fotografías son evidencia del estado del equipo al momento del ingreso y entrega. Forman parte integral del documento de servicio.</text>
+  <text x="297" y="1374" text-anchor="middle" font-size="5" fill="#BBBBBB">DOCTOR PC © 2026 - Documento generado automáticamente | ORD-2024-0157 | Pág. 2/2</text>
+  
+  <!-- ============================================== -->
+  <!-- LEYENDA / ANOTACIONES DE PROPUESTA             -->
+  <!-- ============================================== -->
+  <rect x="0" y="1395" width="595" height="285" fill="#263238" rx="0"/>
+  
+  <text x="297" y="1420" text-anchor="middle" font-size="14" fill="#4FC3F7" class="title">📋 PROPUESTA DE MEJORAS - RESUMEN</text>
+  
+  <!-- Columna 1 -->
+  <text x="35" y="1445" font-size="9" fill="#81D4FA" class="subtitle">🆕 DATOS NUEVOS EN PÁGINA 1:</text>
+  <text x="35" y="1460" font-size="7" fill="#B0BEC5">✅ RUC de la empresa</text>
+  <text x="35" y="1473" font-size="7" fill="#B0BEC5">✅ Dirección de la empresa</text>
+  <text x="35" y="1486" font-size="7" fill="#B0BEC5">✅ Barra de estado visual (estado + prioridad + sucursal)</text>
+  <text x="35" y="1499" font-size="7" fill="#B0BEC5">✅ Observaciones del cliente</text>
+  <text x="35" y="1512" font-size="7" fill="#B0BEC5">✅ Color + accesorios del equipo</text>
+  <text x="35" y="1525" font-size="7" fill="#B0BEC5">✅ Estado por cada ítem del diagnóstico (HECHO/PENDIENTE)</text>
+  <text x="35" y="1538" font-size="7" fill="#B0BEC5">✅ Sección "Trabajo Realizado" separada</text>
+  <text x="35" y="1551" font-size="7" fill="#B0BEC5">✅ Detalle de pagos (adelanto, saldo, método, comprobante)</text>
+  <text x="35" y="1564" font-size="7" fill="#B0BEC5">✅ Línea de tiempo visual del servicio</text>
+  <text x="35" y="1577" font-size="7" fill="#B0BEC5">✅ Datos de entrega estructurados</text>
+  <text x="35" y="1590" font-size="7" fill="#B0BEC5">✅ Garantía y recomendaciones</text>
+  <text x="35" y="1603" font-size="7" fill="#B0BEC5">✅ Calificación del servicio</text>
+  <text x="35" y="1616" font-size="7" fill="#B0BEC5">✅ Código QR de verificación</text>
+  
+  <!-- Columna 2 -->
+  <text x="315" y="1445" font-size="9" fill="#81D4FA" class="subtitle">🆕 PÁGINA 2 - ANEXO FOTOGRÁFICO:</text>
+  <text x="315" y="1460" font-size="7" fill="#B0BEC5">✅ Fotos de INGRESO con descripciones</text>
+  <text x="315" y="1473" font-size="7" fill="#B0BEC5">✅ Fotos de ENTREGA con verificación</text>
+  <text x="315" y="1486" font-size="7" fill="#B0BEC5">✅ Comparativa visual ANTES / DESPUÉS</text>
+  <text x="315" y="1499" font-size="7" fill="#B0BEC5">✅ Estado anotado en cada foto</text>
+  
+  <text x="315" y="1525" font-size="9" fill="#FFAB40" class="subtitle">💡 RECOMENDACIÓN SOBRE FOTOS:</text>
+  <text x="315" y="1540" font-size="7" fill="#B0BEC5">SÍ incluir fotos de ingreso y entrega.</text>
+  <text x="315" y="1553" font-size="7" fill="#B0BEC5">Dan transparencia y protección legal al negocio.</text>
+  <text x="315" y="1566" font-size="7" fill="#B0BEC5">Mantenerlas en página 2 separada para no</text>
+  <text x="315" y="1579" font-size="7" fill="#B0BEC5">sobrecargar la página 1 (datos + costos).</text>
+  
+  <text x="315" y="1605" font-size="9" fill="#EF5350" class="subtitle">⚡ FORMATO:</text>
+  <text x="315" y="1620" font-size="7" fill="#B0BEC5">Página 1: Reporte completo (imprimible)</text>
+  <text x="315" y="1633" font-size="7" fill="#B0BEC5">Página 2: Anexo fotográfico (opcional)</text>
+  
+  <text x="297" y="1665" text-anchor="middle" font-size="6" fill="#546E7A">Propuesta diseñada para DOCTOR PC — Sistema de Gestión de Servicios Técnicos</text>
+</svg>

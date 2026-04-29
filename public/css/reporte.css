@@ -1,4 +1,6 @@
 /* ==================== MODAL REPORTE MEJORADO ==================== */
+/* Importar variables unificadas */
+@import url('./pdf-variables.css');
 
 #modal-reporte {
   display: none;
@@ -27,14 +29,14 @@
 }
 
 .modal-reporte-contenedor {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  background: var(--color-fondo);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
   max-width: 750px;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
-  animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: slideInUp var(--transition-slow) cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes slideInUp {
@@ -54,17 +56,17 @@
 }
 
 .modal-reporte-contenedor::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 0 12px 12px 0;
+  background: var(--color-fondo-gris);
+  border-radius: 0 var(--border-radius-lg) var(--border-radius-lg) 0;
 }
 
 .modal-reporte-contenedor::-webkit-scrollbar-thumb {
-  background: #2196F3;
-  border-radius: 4px;
+  background: var(--color-primario-light);
+  border-radius: var(--border-radius-sm);
 }
 
 .modal-reporte-contenedor::-webkit-scrollbar-thumb:hover {
-  background: #1976D2;
+  background: var(--color-secundario);
 }
 
 /* Botón Cerrar */
@@ -72,19 +74,19 @@
   position: absolute;
   top: 15px;
   right: 15px;
-  background: linear-gradient(135deg, #ff4444, #cc0000);
-  color: white;
+  background: linear-gradient(135deg, var(--color-error), #cc0000);
+  color: var(--color-texto-blanco);
   border: none;
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  font-size: 20px;
+  font-size: var(--font-size-3xl);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1001;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--transition-base) cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(255, 68, 68, 0.3);
 }
 
@@ -105,18 +107,18 @@
 
 .reporte-header {
   text-align: center;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 3px solid #2196F3;
-  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-  margin: -45px -35px 30px -35px;
-  padding: 30px 35px 20px 35px;
-  border-radius: 12px 12px 0 0;
+  margin-bottom: var(--spacing-3xl);
+  padding-bottom: var(--spacing-3xl);
+  border-bottom: 3px solid var(--color-primario-light);
+  background: linear-gradient(135deg, var(--color-primario-bg) 0%, var(--color-primario-lighter) 100%);
+  margin: -45px -35px var(--spacing-3xl) -35px;
+  padding: var(--spacing-3xl) 35px var(--spacing-3xl) 35px;
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
 }
 
 .reporte-header h2 {
-  margin: 0 0 10px 0;
-  color: #1565C0;
+  margin: 0 0 var(--spacing-lg) 0;
+  color: var(--color-primario);
   font-size: 26px;
   font-weight: 700;
   text-transform: uppercase;
@@ -124,32 +126,32 @@
 }
 
 .orden-numero {
-  color: #1976D2;
+  color: var(--color-secundario);
   font-size: 15px;
   margin: 0;
   font-weight: 500;
 }
 
 .orden-numero strong {
-  color: #0D47A1;
+  color: var(--color-primario-dark);
   font-size: 18px;
   font-weight: 700;
-  background: white;
-  padding: 4px 12px;
+  background: var(--color-fondo);
+  padding: var(--spacing-sm) var(--spacing-xl);
   border-radius: 20px;
   display: inline-block;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Secciones Mejoradas */
 .reporte-seccion {
   margin-bottom: 25px;
   padding: 18px;
-  background: linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%);
-  border-left: 5px solid #2196F3;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
+  background: linear-gradient(135deg, var(--color-fondo-claro) 0%, var(--color-fondo) 100%);
+  border-left: 5px solid var(--color-primario-light);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-base);
+  transition: all var(--transition-base);
 }
 
 .reporte-seccion:hover {
@@ -159,12 +161,12 @@
 
 .reporte-seccion h3 {
   margin: 0 0 15px 0;
-  color: #2196F3;
+  color: var(--color-primario-light);
   font-size: 17px;
   font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--spacing-base);
 }
 
 .reporte-seccion h3 i {
@@ -172,27 +174,27 @@
 }
 
 .reporte-seccion p {
-  margin: 10px 0;
-  color: #555;
-  font-size: 14px;
+  margin: var(--spacing-lg) 0;
+  color: var(--color-texto-claro);
+  font-size: var(--font-size-2xl);
   line-height: 1.7;
 }
 
 .reporte-seccion strong {
-  color: #1976D2;
+  color: var(--color-secundario);
   font-weight: 600;
   min-width: 120px;
   display: inline-block;
 }
 
 .reporte-seccion ul {
-  margin: 8px 0 8px 20px;
+  margin: var(--spacing-base) 0 var(--spacing-base) var(--spacing-3xl);
   padding: 0;
 }
 
 .reporte-seccion ul li {
-  margin: 6px 0;
-  color: #666;
+  margin: var(--spacing-md) 0;
+  color: var(--color-texto-claro);
   line-height: 1.6;
 }
 

@@ -1,0 +1,109 @@
+/**
+ * Variables CSS Unificadas para Sistema de PDF
+ * Centraliza colores, tamaños y espaciados
+ */
+
+:root {
+  /* ===== COLORES PRIMARIOS ===== */
+  --color-primario: #2192B8;
+  --color-primario-dark: #156590;
+  --color-primario-light: #2192B8;
+  --color-primario-lighter: #B3E5FC;
+  --color-primario-bg: #E1F5FE;
+
+  /* ===== COLORES SECUNDARIOS ===== */
+  --color-secundario: #1976a2;
+  --color-acento: #546E7A;
+  --color-acento-light: #78909C;
+  --color-naranja: #546E7A;
+  --color-naranja-light: #78909C;
+  --color-purpura: #455A64;
+
+  /* ===== COLORES DE TEXTO ===== */
+  --color-texto: #333333;
+  --color-texto-claro: #666666;
+  --color-texto-muy-claro: #999999;
+  --color-texto-blanco: #FFFFFF;
+
+  /* ===== COLORES DE FONDO ===== */
+  --color-fondo: #FFFFFF;
+  --color-fondo-claro: #FAFAFA;
+  --color-fondo-gris: #F5F5F5;
+  --color-fondo-oscuro: #E0E0E0;
+
+  /* ===== COLORES DE BORDE ===== */
+  --color-borde: #E0E0E0;
+  --color-borde-claro: #EEEEEE;
+  --color-borde-oscuro: #CCCCCC;
+
+  /* ===== COLORES DE ESTADO ===== */
+  --color-exito: #4CAF50;
+  --color-exito-bg: #E8F5E9;
+  --color-exito-border: #A5D6A7;
+  --color-advertencia: #FF9800;
+  --color-advertencia-bg: #FFF8E1;
+  --color-advertencia-border: #FFE082;
+  --color-error: #F44336;
+  --color-info: #2196F3;
+
+  /* ===== TAMAÑOS DE FUENTE ===== */
+  --font-size-xs: 6.5px;
+  --font-size-sm: 7.5px;
+  --font-size-base: 8.5px;
+  --font-size-md: 9px;
+  --font-size-lg: 10px;
+  --font-size-xl: 12px;
+  --font-size-2xl: 14px;
+  --font-size-3xl: 16px;
+
+  /* ===== ESPACIADO ===== */
+  --spacing-xs: 2px;
+  --spacing-sm: 4px;
+  --spacing-md: 6px;
+  --spacing-base: 8px;
+  --spacing-lg: 10px;
+  --spacing-xl: 12px;
+  --spacing-2xl: 16px;
+  --spacing-3xl: 20px;
+
+  /* ===== BORDES Y RADIOS ===== */
+  --border-radius-sm: 3px;
+  --border-radius-base: 5px;
+  --border-radius-md: 6px;
+  --border-radius-lg: 8px;
+  --border-width: 1px;
+
+  /* ===== SOMBRAS ===== */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-base: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.3);
+
+  /* ===== TRANSICIONES ===== */
+  --transition-fast: 0.2s ease;
+  --transition-base: 0.3s ease;
+  --transition-slow: 0.4s ease;
+
+  /* ===== TEMA OSCURO ===== */
+  --dark-bg-primary: #1a2332;
+  --dark-bg-secondary: #1e2a3a;
+  --dark-bg-tertiary: #243447;
+  --dark-bg-darker: #0f1419;
+  --dark-text: #cbd5e0;
+  --dark-text-light: #a0aec0;
+  --dark-border: #2d3748;
+  --dark-primario: #3bb4e5;
+  --dark-primario-light: #90cdf4;
+}
+
+/* ===== TEMA OSCURO ===== */
+body.dark-theme {
+  --color-fondo: var(--dark-bg-primary);
+  --color-fondo-claro: var(--dark-bg-secondary);
+  --color-fondo-gris: var(--dark-bg-tertiary);
+  --color-texto: var(--dark-text);
+  --color-texto-claro: var(--dark-text-light);
+  --color-borde: var(--dark-border);
+  --color-primario: var(--dark-primario);
+  --color-primario-light: var(--dark-primario-light);
+}
