@@ -161,6 +161,22 @@ exports.handler = async (event, context) => {
     // POST /clientes (create)
     if (httpMethod === 'POST') {
       console.log('[clientes] POST: Creando nuevo cliente');
+      
+      // Verificar unicidad de DNI
+      if (body.dni) {
+        const dniExistente = await db.collection('clientes').findOne({ dni: body.dni, eliminado: { $ne: true } });
+        if (dniExistente) {
+          return {
+            statusCode: 409,
+            headers,
+            body: JSON.stringify({ 
+              error: 'DNI ya registrado',
+              cliente_existente: dniExistente
+            })
+          };
+        }
+      }
+
       const nuevoCliente = {
         nombre: body.nombre?.trim() || '',
         apellido_paterno: body.apellido_paterno?.trim() || '',

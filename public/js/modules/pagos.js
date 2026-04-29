@@ -50,20 +50,28 @@ export async function cargarPagos(forzarRecarga = false) {
         </div>`;
     
     try {
-        console.log('📡 Consultando BD para cargar pagos...');
+        console.log('📡 Cargando datos para pagos...');
         
-        // Cargar servicios (colección principal con numero_servicio)
-        const serviciosRes = await fetch(`${API_BASE}/api/servicios`);
-        const serviciosRaw = await serviciosRes.json();
-        const servicios = serviciosRaw.data || serviciosRaw;
+        // 🚀 OPTIMIZACIÓN: Reutilizar cachés de otros módulos si están disponibles
+        let servicios, clientes, equipos;
         
-        // Cargar clientes
-        const clientesRes = await fetch(`${API_BASE}/api/clientes`);
-        const clientes = await clientesRes.json();
-        
-        // Cargar equipos
-        const equiposRes = await fetch(`${API_BASE}/api/equipos`);
-        const equipos = await equiposRes.json();
+        if (window.Servicios && window.Servicios.serviciosCache && window.Servicios.serviciosCache.length > 0) {
+            console.log('✅ Reutilizando caché de Servicios');
+            servicios = window.Servicios.serviciosCache;
+            clientes = window.Servicios.clientesCache || [];
+            equipos = window.Servicios.equiposCache || [];
+        } else {
+            console.log('📡 Consultando BD (sin caché disponible)...');
+            const serviciosRes = await fetch(`${API_BASE}/api/servicios`);
+            const serviciosRaw = await serviciosRes.json();
+            servicios = serviciosRaw.data || serviciosRaw;
+            
+            const clientesRes = await fetch(`${API_BASE}/api/clientes`);
+            clientes = await clientesRes.json();
+            
+            const equiposRes = await fetch(`${API_BASE}/api/equipos`);
+            equipos = await equiposRes.json();
+        }
         
         console.log('📊 Procesando todos los servicios para gestión de pagos...');
         

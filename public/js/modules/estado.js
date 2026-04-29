@@ -149,11 +149,16 @@ export async function cambiarEstadoServicio(servicioId, nuevoEstado, datosAdicio
     try {
         mostrarModalCarga('Cambiando estado...');
         
-        const serviciosRes = await fetch(`${API_SERVICIOS}`);
-        const servicios = await serviciosRes.json();
-        const servicio = servicios.find(s => s._id === servicioId);
-        
-        if (!servicio) throw new Error('Servicio no encontrado');
+        // 🚀 OPTIMIZACIÓN: Usar caché en vez de consultar todos los servicios
+        let servicio;
+        if (window.Servicios && window.Servicios.serviciosCache && window.Servicios.serviciosCache.length > 0) {
+            servicio = window.Servicios.serviciosCache.find(s => s._id === servicioId);
+        }
+        if (!servicio) {
+            const servicioRes = await fetch(`${API_SERVICIOS}/${servicioId}`);
+            if (!servicioRes.ok) throw new Error('Servicio no encontrado');
+            servicio = await servicioRes.json();
+        }
         
         const actualizacion = {
             ...servicio,

@@ -488,7 +488,10 @@ async function eliminarEquipo(id) {
  */
 async function actualizarSelectsEquipos() {
     try {
-        const equipos = await getJSON(API.EQUIPOS);
+        // 🚀 OPTIMIZACIÓN: Usar caché local en vez de consultar BD
+        const equipos = equiposCache.length > 0 
+            ? equiposCache.filter(eq => eq.eliminado !== true)
+            : await getJSON(API.EQUIPOS);
 
         const selectEquipos = document.getElementById('selectEquipos');
         if (selectEquipos) {

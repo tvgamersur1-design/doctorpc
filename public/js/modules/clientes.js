@@ -473,7 +473,7 @@ function mostrarModalConfirmacionTelefono(telefonoAnterior, telefonoNuevo, clien
                     <button onclick="window.Clientes.cerrarModalConfirmacionTelefono()" style="flex: 1; padding: 12px; background: #e0e0e0; color: #333; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">
                         <i class="fas fa-times" style="margin-right: 8px;"></i>Cancelar
                     </button>
-                    <button onclick="window.Clientes.confirmarCambioTelefono('${clienteId}', '${telefonoNuevo}', '${emailNuevo}', '${direccionNueva}')" style="flex: 1; padding: 12px; background: #2192B8; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">
+                    <button id="btnConfirmarCambioTelefono" style="flex: 1; padding: 12px; background: #2192B8; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">
                         <i class="fas fa-check" style="margin-right: 8px;"></i>Sí, cambiar
                     </button>
                 </div>
@@ -489,6 +489,11 @@ function mostrarModalConfirmacionTelefono(telefonoAnterior, telefonoNuevo, clien
     const div = document.createElement('div');
     div.innerHTML = modalHTML;
     document.body.appendChild(div);
+
+    // Event listener seguro — sin datos en onclick
+    document.getElementById('btnConfirmarCambioTelefono').addEventListener('click', () => {
+        confirmarCambioTelefono(clienteId, telefonoNuevo, emailNuevo, direccionNueva);
+    });
 }
 
 /**
@@ -582,7 +587,10 @@ async function eliminarCliente(id) {
  */
 export async function actualizarSelectsClientes() {
     try {
-        const clientes = await getJSON(API.CLIENTES);
+        // 🚀 OPTIMIZACIÓN: Usar caché local en vez de consultar BD
+        const clientes = clientesCache.length > 0 
+            ? clientesCache.filter(c => c.eliminado !== true)
+            : await getJSON(API.CLIENTES);
 
         const selectClientes = document.getElementById('selectClientes');
         if (selectClientes) {
