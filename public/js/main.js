@@ -73,8 +73,20 @@ console.log('✅ Funciones globales expuestas:', {
 
 // Verificar sesión al cargar (solo si no estamos en index.html)
 if (!window.location.pathname.includes('index.html') && window.location.pathname !== '/') {
-    verificarSesion();
+    if (!verificarSesion()) {
+        // verificarSesion ya redirige, pero por si acaso detenemos aquí
+        throw new Error('No autenticado');
+    }
 }
+
+// Bloquear regreso por caché del navegador (bfcache)
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted || performance.getEntriesByType('navigation')[0]?.type === 'back_forward') {
+        if (!localStorage.getItem('token')) {
+            window.location.replace('index.html');
+        }
+    }
+});
 
 // Inicializar aplicación cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
@@ -101,6 +113,9 @@ function inicializarAplicacion() {
         
         // 5. Cargar datos iniciales del tab activo
         cargarDatosIniciales();
+
+        // 6. Mostrar el body ahora que la auth está confirmada
+        document.body.style.visibility = 'visible';
         
         console.log('✅ Aplicación inicializada correctamente');
     } catch (error) {

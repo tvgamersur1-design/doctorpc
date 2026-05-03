@@ -91,9 +91,18 @@ export function cerrarSesion() {
     
     // Función global para confirmar
     window.confirmarCerrarSesion = function() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('usuario');
-        window.location.href = 'index.html';
+        // Limpiar todo el storage
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // Limpiar caché del navegador para dashboard
+        if ('caches' in window) {
+            caches.keys().then(keys => keys.forEach(key => caches.delete(key)));
+        }
+
+        // Reemplazar historial para que el botón atrás no regrese al dashboard
+        window.history.replaceState(null, '', 'index.html');
+        window.location.replace('index.html');
     };
 }
 
