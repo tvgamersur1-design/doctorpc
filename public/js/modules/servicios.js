@@ -4,6 +4,7 @@ import { API_CLIENTES, API_SERVICIOS, API_EQUIPOS, API_SERVICIO_EQUIPO, API_BASE
 import { mostrarModalCarga, cerrarModalCarga, mostrarNotificacionExito } from '../ui.js';
 import { formatearFecha, formatearMoneda } from '../utils.js';
 import { getJSON, postJSON, putJSON } from '../api.js';
+import { getToken } from '../auth.js';
 
 // ==================== ESTADO DEL MÓDULO ====================
 
@@ -48,8 +49,20 @@ export async function cargarServicios(page = 1, busqueda = '', forzarRecarga = f
                     <p class="loading-spinner-text">Cargando servicios...</p>
                 </div>`;
             
-            const clientesRes = await fetch(`${API_CLIENTES}`);
-            clientesCache = await clientesRes.json();
+            // Cargar clientes incluyendo eliminados (para mostrar nombre en servicios históricos).
+            // Se hace fetch manual para evitar que un 403 (usuario no-admin) redirija al login.
+            {
+                const token = getToken();
+                const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+                const resConEliminados = await fetch(`${API_CLIENTES}?incluirEliminados=true`, { headers });
+                if (resConEliminados.ok) {
+                    clientesCache = await resConEliminados.json();
+                } else {
+                    // Fallback sin eliminados (usuario no-admin)
+                    const resSinEliminados = await fetch(`${API_CLIENTES}`, { headers });
+                    clientesCache = await resSinEliminados.json();
+                }
+            }
 
             const equiposRes = await fetch(`${API_EQUIPOS}`);
             equiposCache = await equiposRes.json();
@@ -591,7 +604,28 @@ export async function guardarServicioReal(servicio) {
 
         // Agregar el nuevo servicio al caché (al inicio para que aparezca primero)
         serviciosCache.unshift(servicioGuardado);
-        
+
+        // Asegurar que el cliente del nuevo servicio esté en clientesCache
+        if (servicio.cliente_id) {
+            const clienteEnCache = clientesCache.find(c => String(c._id) === String(servicio.cliente_id));
+            if (!clienteEnCache) {
+                // Usar datos temporales del cliente si están disponibles
+                if (window.clienteSeleccionadoTemp && String(window.clienteSeleccionadoTemp._id) === String(servicio.cliente_id)) {
+                    clientesCache.push(window.clienteSeleccionadoTemp);
+                    console.log('✅ Cliente agregado al caché desde temp:', window.clienteSeleccionadoTemp.nombre);
+                } else {
+                    // Recargar clientes desde el servidor
+                    try {
+                        const clientesRes = await fetch(`${API_CLIENTES}`);
+                        clientesCache = await clientesRes.json();
+                        console.log('✅ clientesCache recargado desde servidor');
+                    } catch (e) {
+                        console.warn('⚠️ No se pudo recargar clientesCache:', e);
+                    }
+                }
+            }
+        }
+
         // Actualizar la tabla sin recargar desde el servidor
         renderTablaServicios(serviciosCache);
     } catch (error) {
@@ -1593,7 +1627,22 @@ export async function guardarServicioRealConFoto(servicio) {
             
             // Agregar el nuevo servicio al inicio del caché
             serviciosCache.unshift(servicioCompleto);
-            
+
+            // Asegurar que el cliente del nuevo servicio esté en clientesCache
+            if (servicio.cliente_id) {
+                const clienteEnCache = clientesCache.find(c => String(c._id) === String(servicio.cliente_id));
+                if (!clienteEnCache) {
+                    if (window.clienteSeleccionadoTemp && String(window.clienteSeleccionadoTemp._id) === String(servicio.cliente_id)) {
+                        clientesCache.push(window.clienteSeleccionadoTemp);
+                        console.log('✅ Cliente agregado al caché desde temp:', window.clienteSeleccionadoTemp.nombre);
+                    } else {
+                        const clientesRes = await fetch(`${API_CLIENTES}`);
+                        clientesCache = await clientesRes.json();
+                        console.log('✅ clientesCache recargado desde servidor');
+                    }
+                }
+            }
+
             // Actualizar la tabla sin recargar todo
             renderTablaServicios(serviciosCache);
             

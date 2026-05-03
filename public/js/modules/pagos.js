@@ -231,27 +231,7 @@ function renderizarPanelPagos() {
             </div>
         </div>
         
-        <!-- Filtros y búsqueda -->
-        <div style="display: flex; gap: 15px; margin-bottom: 20px; align-items: center;">
-            <div style="flex: 1; position: relative;">
-                <i class="fas fa-search" id="iconoBusquedaPagos" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #2192B8; font-size: 14px; transition: all 0.3s;"></i>
-                <input type="text" id="buscarClientePago" placeholder="Buscar por cliente, DNI o número de servicio..." 
-                    value="${busquedaCliente}"
-                    onkeyup="buscarClientePago(this.value)"
-                    style="width: 100%; padding: 12px 15px 12px 40px; font-size: 14px; border: 2px solid #e0e0e0; border-radius: 8px; transition: border-color 0.3s;">
-            </div>
-            
-            <div style="position: relative;">
-                <i class="fas fa-filter" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #5f6368; font-size: 14px; pointer-events: none;"></i>
-                <select id="filtroEstadoPago" onchange="filtrarPorEstadoPago(this.value)" 
-                    style="padding: 12px 15px 12px 40px; font-size: 14px; border: 2px solid #e0e0e0; border-radius: 8px; min-width: 200px; appearance: none; background: white url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27 viewBox=%270 0 12 8%27%3e%3cpath fill=%27%235f6368%27 d=%27M6 8L0 0h12z%27/%3e%3c/svg%3e') no-repeat right 12px center; padding-right: 35px; cursor: pointer;">
-                    <option value="todos" ${filtroEstadoPago === 'todos' ? 'selected' : ''}>Todos los estados</option>
-                    <option value="pendiente" ${filtroEstadoPago === 'pendiente' ? 'selected' : ''}>Pendiente</option>
-                    <option value="parcial" ${filtroEstadoPago === 'parcial' ? 'selected' : ''}>Pago Parcial</option>
-                    <option value="pagado" ${filtroEstadoPago === 'pagado' ? 'selected' : ''}>Pagado</option>
-                </select>
-            </div>
-        </div>
+        <!-- Filtros y búsqueda ahora están en dashboard.html (estáticos) -->
     `;
     
     if (pagosFiltrados.length === 0) {
@@ -353,15 +333,7 @@ export function filtrarPorEstadoPago(estado) {
  * Buscar cliente con debounce
  */
 export function buscarClientePago(busqueda) {
-    // Actualizar la variable inmediatamente (sin esperar)
     busquedaCliente = busqueda;
-    
-    // Mostrar indicador de búsqueda
-    const icono = document.getElementById('iconoBusquedaPagos');
-    
-    if (icono) {
-        icono.className = 'fas fa-spinner fa-spin';
-    }
     
     // Limpiar el timer anterior
     if (busquedaTimer) {
@@ -371,11 +343,6 @@ export function buscarClientePago(busqueda) {
     // Establecer nuevo timer para actualizar solo la tabla
     busquedaTimer = setTimeout(() => {
         actualizarTablaPagos();
-        
-        // Restaurar icono
-        if (icono) {
-            icono.className = 'fas fa-search';
-        }
     }, 300);
 }
 

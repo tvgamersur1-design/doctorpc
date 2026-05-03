@@ -158,7 +158,8 @@ function renderTablaUsuarios(usuarios) {
  * Eliminar usuario
  */
 export async function eliminarUsuario(id, nombre) {
-    if (!confirm(`¿Estás seguro de eliminar al usuario "${nombre}"?`)) return;
+    const confirmado = await mostrarModalConfirmacionEliminar(nombre);
+    if (!confirmado) return;
 
     try {
         mostrarModalCarga('Eliminando usuario...');
@@ -172,8 +173,61 @@ export async function eliminarUsuario(id, nombre) {
         renderTablaUsuarios(usuariosCache);
     } catch (error) {
         cerrarModalCarga();
-        alert('Error: ' + error.message);
+        mostrarNotificacionError('Error: ' + error.message);
     }
+}
+
+function mostrarModalConfirmacionEliminar(nombre) {
+    return new Promise((resolve) => {
+        const modalAnterior = document.getElementById('modalConfirmacionEliminar');
+        if (modalAnterior) modalAnterior.remove();
+
+        const modal = document.createElement('div');
+        modal.id = 'modalConfirmacionEliminar';
+        modal.className = 'modal show';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 420px; padding: 0; overflow: hidden;">
+                <div style="background: #d32f2f; padding: 28px 20px; text-align: center;">
+                    <i class="fas fa-trash-alt" style="font-size: 48px; color: white;"></i>
+                </div>
+                <div style="padding: 24px 30px 30px;">
+                    <h2 style="color: #333; margin: 0 0 16px; font-size: 20px; text-align: center;">
+                        ¿Eliminar Usuario?
+                    </h2>
+                    <div style="background: #f5f7fa; padding: 14px; border-radius: 8px; margin-bottom: 18px; border-left: 4px solid #d32f2f;">
+                        <p style="margin: 0; color: #888; font-size: 13px;">Usuario:</p>
+                        <p style="margin: 4px 0 0; color: #2192B8; font-weight: 700; font-size: 17px;">${nombre}</p>
+                    </div>
+                    <div style="color: #555; font-size: 13px; line-height: 1.8; margin-bottom: 24px;">
+                        <p style="margin: 0;"><i class="fas fa-times" style="color: #d32f2f; width: 18px;"></i> Esta acción no se puede deshacer</p>
+                        <p style="margin: 0;"><i class="fas fa-times" style="color: #d32f2f; width: 18px;"></i> Se eliminarán todos los datos del usuario</p>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button id="btnCancelarEliminar"
+                            style="flex: 1; padding: 11px 0; background: #e9ecef; color: #495057; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px;">
+                            <i class="fas fa-times" style="margin-right: 6px;"></i>Cancelar
+                        </button>
+                        <button id="btnConfirmarEliminar"
+                            style="flex: 1; padding: 11px 0; background: #d32f2f; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px;">
+                            <i class="fas fa-trash-alt" style="margin-right: 6px;"></i>Sí, Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const cerrar = (valor) => {
+            modal.remove();
+            resolve(valor);
+        };
+
+        modal.querySelector('#btnCancelarEliminar').addEventListener('click', () => cerrar(false));
+        modal.querySelector('#btnConfirmarEliminar').addEventListener('click', () => cerrar(true));
+        // Cerrar al hacer click fuera del contenido
+        modal.addEventListener('click', (e) => { if (e.target === modal) cerrar(false); });
+    });
 }
 
 /**
